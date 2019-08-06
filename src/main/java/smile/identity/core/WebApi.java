@@ -251,6 +251,7 @@ public class WebApi {
         uploadFile(uploadUrl, baos);
 
         if(returnJobStatus == true) {
+          Integer counter = 0;
           String jobStatusResponse = queryJobStatus(counter).toString();
           res = jobStatusResponse;
         }
