@@ -23,7 +23,7 @@ public class ImageParameters {
     }
   }
 
-  public JSONArray get() {
-    return images;
+  public String get() {
+    return images.toString();
   }
 }

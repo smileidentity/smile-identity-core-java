@@ -20,7 +20,7 @@ public class Options implements Parameters {
 
   public void add(String key, String value) {}
 
-  public JSONObject get() {
-    return options;
+  public String get() {
+    return options.toString();
   }
 }

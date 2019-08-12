@@ -36,7 +36,7 @@ public class IDParameters implements Parameters {
 
   public void add(String key, String value) {}
 
-  public JSONObject get() {
-    return idInfo;
+  public String get() {
+    return idInfo.toString();
   }
 }

@@ -3,7 +3,7 @@ import org.json.simple.JSONObject;
 
 interface Parameters {
   public void add(String key1, String key2);
-  public JSONObject get();
+  public String get();
 }
 
 public class PartnerParameters implements Parameters {
@@ -35,7 +35,7 @@ public class PartnerParameters implements Parameters {
     this.partnerParams.put(key, value);
   }
 
-  public JSONObject get() {
-    return partnerParams;
+  public String get() {
+    return partnerParams.toString();
   }
 }

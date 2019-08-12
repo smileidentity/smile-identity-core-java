@@ -92,11 +92,23 @@ public class WebApi {
     }
   }
 
-  public String submit_job(JSONObject partnerParams, JSONArray images, JSONObject idInfo, JSONObject options) throws Exception {
+  public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws Exception {
     try {
+
+      JSONParser parser = new JSONParser();
+      JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
+      JSONArray images = (JSONArray) parser.parse(images_params);
+      JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
+      JSONObject options = (JSONObject) parser.parse(options_params);
+
+      System.out.println(partnerParams);
+      System.out.println(images);
+      System.out.println(idInfo);
+      System.out.println(options);
+
       validateImages(images);
 
-      Integer job_type = (Integer) partnerParams.get("job_type");
+      Long job_type = (Long) partnerParams.get("job_type");
       if(job_type == 1) {
         validateEnrollWithId(images, idInfo);
       }
@@ -127,7 +139,7 @@ public class WebApi {
 
       Integer counter = 0;
       for (Object o : images) {
-        Integer image_type_id = (Integer) ((JSONObject)o).get("image_type_id");
+        Long image_type_id = (Long) ((JSONObject)o).get("image_type_id");
         if (image_type_id == 0 || image_type_id == 2)  {
           counter = counter + 1;
         }
@@ -146,7 +158,7 @@ public class WebApi {
 
     Integer counter = 0;
     for (Object o : images) {
-      Integer image_type_id = (Integer) ((JSONObject)o).get("image_type_id");
+      Long image_type_id = (Long) ((JSONObject)o).get("image_type_id");
 
       if ((image_type_id == 1) || (image_type_id == 3) || (entered.equals("true")))  {
         counter = counter + 1;
@@ -344,7 +356,7 @@ public class WebApi {
     for(Object o: images) {
       JSONObject imageObject = new JSONObject();
       if ( o instanceof JSONObject ) {
-        Integer image_type_id = (Integer) ((JSONObject)o).get("image_type_id");
+        Long image_type_id = (Long) ((JSONObject)o).get("image_type_id");
         imageObject.put("image_type_id", ((JSONObject)o).get("image_type_id"));
 
         if( image_type_id == 0 || image_type_id == 1 ) {
@@ -378,7 +390,7 @@ public class WebApi {
       for(Object o: images) {
         if (o instanceof JSONObject) {
 
-          Integer image_type_id = (Integer) ((JSONObject)o).get("image_type_id");
+          Long image_type_id = (Long) ((JSONObject)o).get("image_type_id");
           if(image_type_id == 0 || image_type_id == 1 ) {
             String fileName = ((JSONObject)o).get("image").toString();
             File file = new File(fileName);
