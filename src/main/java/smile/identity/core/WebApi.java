@@ -101,11 +101,6 @@ public class WebApi {
       JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
       JSONObject options = (JSONObject) parser.parse(options_params);
 
-      System.out.println(partnerParams);
-      System.out.println(images);
-      System.out.println(idInfo);
-      System.out.println(options);
-
       validateImages(images);
 
       Long job_type = (Long) partnerParams.get("job_type");
