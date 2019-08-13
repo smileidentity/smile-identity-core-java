@@ -2,7 +2,6 @@ plugins {
   id 'java-library'
 }
 
-
 apply plugin: 'java'
 repositories {
     mavenCentral()
@@ -14,7 +13,6 @@ dependencies {
   implementation 'org.apache.httpcomponents:httpclient:4.5.9'
   implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
-
 
 // Signing
 apply plugin: 'signing'
@@ -41,7 +39,7 @@ artifacts {
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.2"
 
 // Build, sign, and upload
 uploadArchives {
