@@ -1,14 +1,17 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes two classes namely, the Web API and AuthSmile class.
+The official Smile Identity gem exposes two classes namely, the Web API and Signature class.
 
 The Web API allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
+
+The Signature class allows you as the Partner to generate a sec key to interact with our servers.
 
 ## Documentation
 
 This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction).
 
 Please note that you will have to be a Smile Identity Partner to be able to query our services.
+
 ## Usage
 
 Add the group, name and version to your application's build file, it will look similar based on your build tool:
@@ -96,6 +99,34 @@ You can also view your response asynchronously at the callback that you have set
 }
 ```
 
+#### Calculating your Signature
+
+Import the necessary class:
+
+```java
+import smile.identity.core.Signature;
+```
+
+Then call the Signature class as follows:
+
+```java
+  try {
+    Signature connection = new Signature(partner_id, api_key);
+    String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
+
+    // In order to get the sec_key you can then use a json parser and extract the sec_key
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+```
+
+The response will be a stringified json object:
+```java
+{
+  sec_key: "<the generated sec key>",
+ timestamp: "<timestamp that you passed in or that was generated>"
+}
+```
 ## Development
 
 After checking out the repo, run `gradle build` to build. ensure that you have a gradle.properties file setup with the necessary variables required by the build. To deploy to staging run the task `./gradlew uploadArchives`
