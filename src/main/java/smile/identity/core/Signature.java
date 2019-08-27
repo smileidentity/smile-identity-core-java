@@ -57,6 +57,31 @@ public class Signature {
     return generate_sec_key(timestamp);
   }
 
+  public Boolean confirm_sec_key(String timestamp, String sec_key) throws Exception {
+    String toHash = partnerId + ":" + timestamp;
+    Boolean valid = false;
+
+    try {
+      MessageDigest md = MessageDigest.getInstance("SHA-256");
+      md.update(toHash.getBytes());
+      byte[] hashed = md.digest();
+      String hashSignature = bytesToHexStr(hashed);
+
+      String[] arrOfStr = sec_key.split("\\|");
+      String encrypted = arrOfStr[0];
+
+      PublicKey publicKey = loadPublicKey(api_key);
+
+      byte[] decodedBytes = Base64.getDecoder().decode(encrypted);
+      String decrypted = decryptString(publicKey, decodedBytes);
+
+      return decrypted.equals(hashSignature);
+    } catch(Exception  e) {
+      throw e;
+    }
+
+  }
+
   private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
     byte[] data = Base64.getDecoder().decode((apiKey.getBytes()));
     X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
@@ -71,6 +96,12 @@ public class Signature {
     return cipher.doFinal(plaintext.getBytes());
   }
 
+  private static String decryptString(PublicKey key, byte[] encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+    cipher.init(Cipher.DECRYPT_MODE, key);
+    return new String(cipher.doFinal(encrypted));
+  }
+
   private static String bytesToHexStr(byte[] bytes) {
     StringBuilder sb = new StringBuilder();
     for (byte b : bytes) {
@@ -78,4 +109,5 @@ public class Signature {
     }
     return sb.toString();
   }
+
 }
