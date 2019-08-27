@@ -37,11 +37,11 @@ public class Signature {
       MessageDigest md = MessageDigest.getInstance("SHA-256");
       md.update(toHash.getBytes());
       byte[] hashed = md.digest();
-      String toEncryptString = bytesToHexStr(hashed);
+      String hashSignature = bytesToHexStr(hashed);
 
       PublicKey publicKey = loadPublicKey(api_key);
-      byte[] encSignature = encryptString(publicKey, toEncryptString);
-      signature = Base64.getEncoder().encodeToString(encSignature) + "|" + toEncryptString;
+      byte[] encSignature = encryptString(publicKey, hashSignature);
+      signature = Base64.getEncoder().encodeToString(encSignature) + "|" + hashSignature;
     } catch(Exception  e) {
       throw e;
     }
