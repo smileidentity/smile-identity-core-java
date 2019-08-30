@@ -421,6 +421,16 @@ public class WebApi {
       } else {
         JSONParser parser = new JSONParser();
         responseJson = (JSONObject) parser.parse(strResult);
+
+        String timestamp = (String) responseJson.get("timestamp");
+        String secKey = (String) responseJson.get("signature");
+
+        Boolean valid = new Signature(partner_id, api_key).confirm_sec_key(timestamp, secKey);
+
+        if(!valid) {
+          throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
+        }
+
         job_complete = (Boolean) responseJson.get("job_complete");
 
         if (job_complete == true || counter == 20) {
