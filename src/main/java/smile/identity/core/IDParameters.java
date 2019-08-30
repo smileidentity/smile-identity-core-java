@@ -18,18 +18,13 @@ public class IDParameters implements Parameters {
       obj.put("entered", entered);
 
       if(entered == "true") {
-        if (first_name == null || last_name == null || country == null || id_type == null || id_number == null) {
-          throw new IllegalArgumentException("ID Arguments may not be null");
+        if (checkNullAndEmpty(first_name) || checkNullAndEmpty(last_name) || checkNullAndEmpty(country) || checkNullAndEmpty(id_type) || checkNullAndEmpty(id_number)) {
+          throw new IllegalArgumentException("None of the ID Arguments first_name, last_name, country, id_type and id_number can be empty");
         }
 
-        if (first_name.trim().isEmpty() || last_name.trim().isEmpty() || country.trim().isEmpty() || id_type.trim().isEmpty() || id_number.trim().isEmpty()) {
-          throw new IllegalArgumentException("ID Arguments may not be empty");
-        }
-
-        if ((country == "NG") &&  (id_type == "PASSPORT" ||  id_type == "VOTER_ID" || id_type == "DRIVERS_LICENSE" || id_type == "DRIVERS_LICENSE" || id_type == "TIN" || id_type == "CAC") && (dob.trim().isEmpty())) {
+        if ((country.equalsIgnoreCase("NG")) &&  (id_type.equalsIgnoreCase("PASSPORT") ||  id_type.equalsIgnoreCase("VOTER_ID") || id_type.equalsIgnoreCase("DRIVERS_LICENSE") ||  id_type.equalsIgnoreCase("NATIONAL_ID") ||  id_type.equalsIgnoreCase("TIN") ||  id_type.equalsIgnoreCase("CAC")) && (checkNullAndEmpty(dob))) {
           throw new IllegalArgumentException("The ID type " + id_type + "for " + country + " requires a valid dob paramater." );
         }
-
       }
 
     } catch(Exception e) {
@@ -44,5 +39,9 @@ public class IDParameters implements Parameters {
 
   public String get() {
     return idInfo.toString();
+  }
+
+  private Boolean checkNullAndEmpty(String value) {
+    return value == null || value.trim().isEmpty();
   }
 }
