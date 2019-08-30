@@ -37,7 +37,8 @@ Your call to the library will be similar to the below code snippet:
     PartnerParameters partnerParameters = new PartnerParameters("1", "1", 1);
     partnerParameters.add("optional_info", "some optional info");
 
-    IDParameters idInfo = new IDParameters("John", "", "Doe", "NG", "BVN", "00000000", "true");
+    // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
+    IDParameters idInfo = new IDParameters("John", "", "Doe", "NG", "BVN", "00000000", "", "true");
 
     ImageParameters imageParameters = new ImageParameters();
     imageParameters.add(0, "../download.png");
@@ -53,6 +54,11 @@ Your call to the library will be similar to the below code snippet:
   } catch (Exception e) {
     e.printStackTrace();
   }
+```
+
+Please note that if you do not need to pass through IDParameters or Options, you may omit calling those class and send through null in submit_job, as follows:
+```
+String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), null, null);
 ```
 
 The response will be nil if you chose to set return_job_status to false, however if you have set return_job_status to true then you will receive a response like below:
