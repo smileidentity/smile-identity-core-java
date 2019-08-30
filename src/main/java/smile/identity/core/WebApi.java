@@ -6,24 +6,6 @@ package smile.identity.core;
 import java.util.HashMap;
 import java.util.Map;
 
-// security base 64
-import java.util.Base64;
-import java.security.spec.X509EncodedKeySpec;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchProviderException;
-
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.NoSuchPaddingException;
-
-
 // json converter;
 import java.io.StringWriter;
 import org.json.simple.JSONObject;
@@ -50,8 +32,6 @@ import java.util.zip.ZipEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
-
-import java.io.IOException;
 
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.Header;
@@ -188,44 +168,21 @@ public class WebApi {
   }
 
   private String determineSecKey() throws Exception {
-    String toHash = partner_id + ":" + timestamp;
-    String signature = "";
+    Signature connection = new Signature(partner_id, api_key);
+    String secKey = "";
+    JSONParser parser = new JSONParser();
 
     try {
-      MessageDigest md = MessageDigest.getInstance("SHA-256");
-      md.update(toHash.getBytes());
-      byte[] hashed = md.digest();
-      String toEncryptString = bytesToHexStr(hashed);
+      String signatureJsonStr = connection.generate_sec_key(timestamp);
 
-      PublicKey publicKey = loadPublicKey(api_key);  //function defined above
-      byte[] encSignature = encryptString(publicKey, toEncryptString); //function defined above
-      signature = Base64.getEncoder().encodeToString(encSignature) + "|" + toEncryptString;
-    } catch(Exception  e) {
+      System.out.println(signatureJsonStr);
+      JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
+      secKey = (String) signature.get("sec_key");
+    } catch(Exception e) {
       throw e;
     }
-    return signature;
-  }
 
-  private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
-    byte[] data = Base64.getDecoder().decode((apiKey.getBytes()));
-    X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-    KeyFactory factObj = KeyFactory.getInstance("RSA");
-    PublicKey lPKey = factObj.generatePublic(spec);
-    return lPKey;
-  }
-
-  private static byte[] encryptString(PublicKey key, String plaintext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-    cipher.init(Cipher.ENCRYPT_MODE, key);
-    return cipher.doFinal(plaintext.getBytes());
-  }
-
-  private static String bytesToHexStr(byte[] bytes) {
-    StringBuilder sb = new StringBuilder();
-    for (byte b : bytes) {
-      sb.append(String.format("%02x", b));
-    }
-    return sb.toString();
+    return secKey;
   }
 
   private String setupRequests() throws Exception {
