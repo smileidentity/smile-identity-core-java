@@ -175,7 +175,6 @@ public class WebApi {
     try {
       String signatureJsonStr = connection.generate_sec_key(timestamp);
 
-      System.out.println(signatureJsonStr);
       JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
       secKey = (String) signature.get("sec_key");
     } catch(Exception e) {
