@@ -78,8 +78,20 @@ public class WebApi {
       JSONParser parser = new JSONParser();
       JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
       JSONArray images = (JSONArray) parser.parse(images_params);
-      JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
-      JSONObject options = (JSONObject) parser.parse(options_params);
+
+      JSONObject idInfo;
+      if(id_info_params != null && !id_info_params.trim().isEmpty()) {
+        idInfo = (JSONObject) parser.parse(id_info_params);
+      } else {
+        idInfo = fillInIdInfo();
+      }
+
+      if(options_params != null && !options_params.trim().isEmpty()) {
+        JSONObject options = (JSONObject) parser.parse(options_params);
+        extractOptions(options);
+      } else {
+        fillInOptions();
+      }
 
       validateImages(images);
 
@@ -88,14 +100,11 @@ public class WebApi {
         validateEnrollWithId(images, idInfo);
       }
 
-      extractOptions(options);
       validateReturnData();
 
       this.partnerParams = partnerParams;
       this.images = images;
       this.idInfo = idInfo;
-      this.returnJobStatus = returnJobStatus;
-
 
       this.timestamp = System.currentTimeMillis();
       this.sec_key = determineSecKey();
@@ -165,6 +174,31 @@ public class WebApi {
     this.returnJobStatus = returnJobStatus;
     this.returnHistory = returnHistory;
     this.returnImages = returnImages;
+  }
+
+  private void fillInOptions() throws Exception {
+    try {
+      Boolean returnJobStatus = false;
+      Boolean returnHistory = false;
+      Boolean returnImages = false;
+
+      this.returnJobStatus = returnJobStatus;
+      this.returnHistory = returnHistory;
+      this.returnImages = returnImages;
+    } catch(Exception e) {
+      throw e;
+    }
+  }
+
+  private JSONObject fillInIdInfo() throws Exception {
+    JSONObject obj = new JSONObject();
+    try {
+      obj.put("entered", "false");
+    } catch(Exception e) {
+      throw e;
+    }
+
+    return obj;
   }
 
   private String determineSecKey() throws Exception {
