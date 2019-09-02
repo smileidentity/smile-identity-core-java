@@ -123,15 +123,17 @@ import smile.identity.core.Signature;
 Then call the Signature class as follows:
 
 ```java
-  try {
-    Signature connection = new Signature(partner_id, api_key);
-    String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
+import smile.identity.core.Signature;
 
-    // In order to utilise the signature you can then use a json parser and extract the signature
-  } catch (Exception e) {
-    e.printStackTrace();
-    throw e;
-  }
+try {
+  Signature connection = new Signature(partner_id, api_key);
+  String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
+
+  // In order to utilise the signature you can then use a json parser and extract the signature
+} catch (Exception e) {
+  e.printStackTrace();
+  throw e;
+}
 ```
 
 The response will be a stringified json object:
@@ -145,14 +147,16 @@ The response will be a stringified json object:
 You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
 
 ```java
-  try {
-    Signature connection = new Signature(partner_id, api_key);
-    String signatureJsonStr = connection.confirm_sec_key(sec_key, timestamp);
-    // If it is valid then use the response, else throw an error
-  } catch (Exception e) {
-    e.printStackTrace();
-    throw e;
-  }
+import smile.identity.core.Signature;
+
+try {
+  Signature connection = new Signature(partner_id, api_key);
+  String signatureJsonStr = connection.confirm_sec_key(sec_key, timestamp);
+  // If it is valid then use the response, else throw an error
+} catch (Exception e) {
+  e.printStackTrace();
+  throw e;
+}
 ```
 
 #### Utilities Class
@@ -160,6 +164,8 @@ You can also confirm the signature that you receive when you interacting with ou
 You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options class. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
 
 ```java
+import smile.identity.core.Utilities;
+
 String job_status = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).get_job_status(<user_id>, <job_id>, <return_image_links> , <return_history>);
 
 System.out.println(job_status);
