@@ -42,14 +42,14 @@ public class Utilities {
     }
   }
 
-  public String get_job_status(String user_id, String job_id, Boolean returnImages, Boolean returnHistory) throws Exception {
+  public String get_job_status(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
     this.timestamp = System.currentTimeMillis();
     this.sec_key = determineSecKey();
 
-    return queryJobStatus(user_id, job_id, returnImages, returnHistory).toString();
+    return queryJobStatus(user_id, job_id, return_images, return_history).toString();
   }
 
-  private JSONObject queryJobStatus(String user_id, String job_id, Boolean returnImages, Boolean returnHistory) throws Exception {
+  private JSONObject queryJobStatus(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
     Boolean job_complete = false;
     JSONObject responseJson = null;
 
@@ -58,7 +58,7 @@ public class Utilities {
     HttpPost post = new HttpPost(jobStatusUrl);
 
     try {
-      StringEntity entityForPost = new StringEntity(configureJobQueryBody(user_id, job_id, returnImages, returnHistory).toString());
+      StringEntity entityForPost = new StringEntity(configureJobQueryBody(user_id, job_id, return_images, return_history).toString());
       post.setHeader("content-type", "application/json");
       post.setEntity(entityForPost);
 
@@ -88,7 +88,7 @@ public class Utilities {
     return responseJson;
   }
 
-  private JSONObject configureJobQueryBody(String user_id, String job_id, Boolean returnImages, Boolean returnHistory) throws Exception {
+  private JSONObject configureJobQueryBody(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
     JSONObject body = new JSONObject();
     try {
       body.put("sec_key", determineSecKey());
@@ -96,8 +96,8 @@ public class Utilities {
       body.put("partner_id", partner_id);
       body.put("user_id", user_id);
       body.put("job_id", job_id);
-      body.put("image_links", returnImages);
-      body.put("history", returnHistory);
+      body.put("image_links", return_images);
+      body.put("history", return_history);
     } catch(Exception e) {
       throw e;
     }
