@@ -52,7 +52,7 @@ Your call to the library will be similar to the below code snippet:
 
     Options options = new Options("optional_callback.com", true, false, false);
 
-    WebApi connection = new WebApi("125", "default_callback.com", "<your-api-key>", 0);
+    WebApi connection = new WebApi("125", "default_callback.com", "<the decoded-version of-your-api-key>", 0);
 
     String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get());
 
@@ -160,7 +160,7 @@ You can also confirm the signature that you receive when you interacting with ou
 You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options class. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
 
 ```java
-String job_status = new Utilities(<partner_id>, <api_key>, <sid_server>).get_job_status(<user_id>, <job_id>, <return_image_links> , <return_history>);
+String job_status = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).get_job_status(<user_id>, <job_id>, <return_image_links> , <return_history>);
 
 System.out.println(job_status);
 ```
