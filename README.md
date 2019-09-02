@@ -1,6 +1,6 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes two classes namely, the Web API and Signature class.
+The official Smile Identity gem exposes three classes namely; the Web API class, the Signature class and the Utilities class.
 
 The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
 
@@ -169,7 +169,14 @@ This returns the job status as stringified json data.
 
 ## Development
 
-After checking out the repo, run `gradle build` to build. ensure that you have a gradle.properties file setup with the necessary variables required by the build. To deploy to staging run the task `./gradlew uploadArchives`
+After checking out the repo, run `gradle build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
+
+
+## Deployment
+Update the version number in the build file
+It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
+
+To deploy run the task `./gradlew uploadArchives`
 
 Please note that you should tag the release when doing a push to maven.
 
