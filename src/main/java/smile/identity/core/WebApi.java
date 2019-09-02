@@ -6,24 +6,6 @@ package smile.identity.core;
 import java.util.HashMap;
 import java.util.Map;
 
-// security base 64
-import java.util.Base64;
-import java.security.spec.X509EncodedKeySpec;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.MessageDigest;
-import java.security.Signature;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchProviderException;
-
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.NoSuchPaddingException;
-
-
 // json converter;
 import java.io.StringWriter;
 import org.json.simple.JSONObject;
@@ -50,8 +32,6 @@ import java.util.zip.ZipEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
-
-import java.io.IOException;
 
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.Header;
@@ -98,8 +78,20 @@ public class WebApi {
       JSONParser parser = new JSONParser();
       JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
       JSONArray images = (JSONArray) parser.parse(images_params);
-      JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
-      JSONObject options = (JSONObject) parser.parse(options_params);
+
+      JSONObject idInfo;
+      if(id_info_params != null && !id_info_params.trim().isEmpty()) {
+        idInfo = (JSONObject) parser.parse(id_info_params);
+      } else {
+        idInfo = fillInIdInfo();
+      }
+
+      if(options_params != null && !options_params.trim().isEmpty()) {
+        JSONObject options = (JSONObject) parser.parse(options_params);
+        extractOptions(options);
+      } else {
+        fillInOptions();
+      }
 
       validateImages(images);
 
@@ -108,14 +100,11 @@ public class WebApi {
         validateEnrollWithId(images, idInfo);
       }
 
-      extractOptions(options);
       validateReturnData();
 
       this.partnerParams = partnerParams;
       this.images = images;
       this.idInfo = idInfo;
-      this.returnJobStatus = returnJobStatus;
-
 
       this.timestamp = System.currentTimeMillis();
       this.sec_key = determineSecKey();
@@ -187,45 +176,46 @@ public class WebApi {
     this.returnImages = returnImages;
   }
 
-  private String determineSecKey() throws Exception {
-    String toHash = partner_id + ":" + timestamp;
-    String signature = "";
-
+  private void fillInOptions() throws Exception {
     try {
-      MessageDigest md = MessageDigest.getInstance("SHA-256");
-      md.update(toHash.getBytes());
-      byte[] hashed = md.digest();
-      String toEncryptString = bytesToHexStr(hashed);
+      Boolean returnJobStatus = false;
+      Boolean returnHistory = false;
+      Boolean returnImages = false;
 
-      PublicKey publicKey = loadPublicKey(api_key);  //function defined above
-      byte[] encSignature = encryptString(publicKey, toEncryptString); //function defined above
-      signature = Base64.getEncoder().encodeToString(encSignature) + "|" + toEncryptString;
-    } catch(Exception  e) {
+      this.returnJobStatus = returnJobStatus;
+      this.returnHistory = returnHistory;
+      this.returnImages = returnImages;
+    } catch(Exception e) {
       throw e;
     }
-    return signature;
   }
 
-  private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
-    byte[] data = Base64.getDecoder().decode((apiKey.getBytes()));
-    X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-    KeyFactory factObj = KeyFactory.getInstance("RSA");
-    PublicKey lPKey = factObj.generatePublic(spec);
-    return lPKey;
-  }
-
-  private static byte[] encryptString(PublicKey key, String plaintext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-    cipher.init(Cipher.ENCRYPT_MODE, key);
-    return cipher.doFinal(plaintext.getBytes());
-  }
-
-  private static String bytesToHexStr(byte[] bytes) {
-    StringBuilder sb = new StringBuilder();
-    for (byte b : bytes) {
-      sb.append(String.format("%02x", b));
+  private JSONObject fillInIdInfo() throws Exception {
+    JSONObject obj = new JSONObject();
+    try {
+      obj.put("entered", "false");
+    } catch(Exception e) {
+      throw e;
     }
-    return sb.toString();
+
+    return obj;
+  }
+
+  private String determineSecKey() throws Exception {
+    Signature connection = new Signature(partner_id, api_key);
+    String secKey = "";
+    JSONParser parser = new JSONParser();
+
+    try {
+      String signatureJsonStr = connection.generate_sec_key(timestamp);
+
+      JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
+      secKey = (String) signature.get("sec_key");
+    } catch(Exception e) {
+      throw e;
+    }
+
+    return secKey;
   }
 
   private String setupRequests() throws Exception {
@@ -465,6 +455,16 @@ public class WebApi {
       } else {
         JSONParser parser = new JSONParser();
         responseJson = (JSONObject) parser.parse(strResult);
+
+        String timestamp = (String) responseJson.get("timestamp");
+        String secKey = (String) responseJson.get("signature");
+
+        Boolean valid = new Signature(partner_id, api_key).confirm_sec_key(timestamp, secKey);
+
+        if(!valid) {
+          throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
+        }
+
         job_complete = (Boolean) responseJson.get("job_complete");
 
         if (job_complete == true || counter == 20) {
