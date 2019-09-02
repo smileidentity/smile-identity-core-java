@@ -48,9 +48,12 @@ public class WebApi {
   private Boolean returnImages;
 
   private String url;
+  private String sid_server;
   private String callbackUrl;
   private String sec_key;
   private long timestamp;
+
+  private Utilities utilitiesConnection;
 
   public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
     try {
@@ -64,6 +67,7 @@ public class WebApi {
         url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
       }
 
+      this.sid_server = sid_server;
       this.url = url;
 
     } catch (Exception e) {
@@ -247,8 +251,11 @@ public class WebApi {
         uploadFile(uploadUrl, baos);
 
         if(returnJobStatus == true) {
+          Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server);
+          this.utilitiesConnection = utilitiesConnection;
+
           Integer counter = 0;
-          String jobStatusResponse = queryJobStatus(counter).toString();
+          String jobStatusResponse = pollJobStatus(counter).toString();
           res = jobStatusResponse;
         }
       }
@@ -424,9 +431,11 @@ public class WebApi {
     }
   }
 
-  private JSONObject queryJobStatus(Integer counter) throws Exception {
+  private JSONObject pollJobStatus(Integer counter) throws Exception {
     Boolean job_complete = false;
     JSONObject responseJson = null;
+    String responseStr = null;
+
     try {
       counter = counter + 1;
       if(counter < 4) {
@@ -435,64 +444,21 @@ public class WebApi {
         Thread.sleep(4000);
       }
 
-      String jobStatusUrl = (url + "/job_status").toString();
-      HttpClient client = new DefaultHttpClient();
-      HttpPost post = new HttpPost(jobStatusUrl);
+      String user_id = (String) partnerParams.get("user_id");
+      String job_id = (String) partnerParams.get("job_id");
 
-      StringEntity entityForPost = new StringEntity(configureJobQueryBody().toString());
-      post.setHeader("content-type", "application/json");
-        post.setEntity(entityForPost);
+      responseStr = utilitiesConnection.get_job_status(user_id, job_id, returnImages, returnHistory);
 
-      HttpResponse response = client.execute(post);
-      final int statusCode = response.getStatusLine().getStatusCode();
-      String strResult = readHttpResponse(response);
+      JSONParser parser = new JSONParser();
+      responseJson = (JSONObject) parser.parse(responseStr);
 
-      if (statusCode != 200) {
-        final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
-          jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
-        throw new RuntimeException(msg);
-      } else {
-        JSONParser parser = new JSONParser();
-        responseJson = (JSONObject) parser.parse(strResult);
-
-        String timestamp = (String) responseJson.get("timestamp");
-        String secKey = (String) responseJson.get("signature");
-
-        Boolean valid = new Signature(partner_id, api_key).confirm_sec_key(timestamp, secKey);
-
-        if(!valid) {
-          throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
-        }
-
-        job_complete = (Boolean) responseJson.get("job_complete");
-
-        if (job_complete == true || counter == 20) {
-        } else {
-          responseJson = queryJobStatus(counter);
-        }
+      job_complete = (Boolean) responseJson.get("job_complete");
+      if (job_complete != true || counter != 20) {
+        responseJson = pollJobStatus(counter);
       }
     } catch (Exception e) {
       throw e;
     }
-
     return responseJson;
   }
-
-  private JSONObject configureJobQueryBody() throws Exception {
-    JSONObject body = new JSONObject();
-
-    try {
-      body.put("sec_key", sec_key);
-      body.put("timestamp", timestamp);
-      body.put("user_id", partnerParams.get("user_id"));
-      body.put("job_id", partnerParams.get("job_id"));
-      body.put("partner_id", partner_id);
-      body.put("image_links", returnImages);
-      body.put("history", returnHistory);
-    } catch(Exception e) {
-      throw e;
-    }
-    return body;
-  }
-
 }
