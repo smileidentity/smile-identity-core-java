@@ -48,7 +48,7 @@ public class WebApi {
   private Boolean returnImages;
 
   private String url;
-  private String sid_server;
+  private Integer sid_server;
   private String callbackUrl;
   private String sec_key;
   private long timestamp;
