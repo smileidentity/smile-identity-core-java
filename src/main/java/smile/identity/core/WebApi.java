@@ -453,7 +453,7 @@ public class WebApi {
       responseJson = (JSONObject) parser.parse(responseStr);
 
       job_complete = (Boolean) responseJson.get("job_complete");
-      if (job_complete != true || counter != 20) {
+      if (job_complete == false && counter < 20) {
         responseJson = pollJobStatus(counter);
       }
     } catch (Exception e) {
