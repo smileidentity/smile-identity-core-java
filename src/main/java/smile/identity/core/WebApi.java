@@ -6,8 +6,7 @@ package smile.identity.core;
 import java.util.HashMap;
 import java.util.Map;
 
-// json converter;
-import java.io.StringWriter;
+// json converter
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
