@@ -13,3 +13,4 @@ Ensure that we allow null for options and idInfo
 Add dob for idInfo
 Allow some null and empty strings for idInfo parameters
 Update the docs
+Add a Utilities class that exposes a query job status as its own function
