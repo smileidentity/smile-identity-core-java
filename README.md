@@ -53,6 +53,7 @@ Your call to the library will be similar to the below code snippet:
 
   } catch (Exception e) {
     e.printStackTrace();
+    throw e;
   }
 ```
 
