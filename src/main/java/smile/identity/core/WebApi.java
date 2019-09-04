@@ -118,6 +118,25 @@ public class WebApi {
     }
   }
 
+  public String get_job_status(String partner_params, String options) throws Exception {
+    String response = null;
+
+    try {
+      JSONParser parser = new JSONParser();
+      JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
+
+      String user_id = (String) partnerParams.get("user_id");
+      String job_id = (String) partnerParams.get("job_id");
+
+      Utilities utilities = new Utilities(partner_id, api_key, sid_server);
+      response = utilities.get_job_status(user_id, job_id, options);
+    } catch (Exception e) {
+      throw e;
+    }
+
+    return response;
+  }
+
   private void validateImages(JSONArray images) throws Exception {
     try {
       if(images.size() < 1) {
