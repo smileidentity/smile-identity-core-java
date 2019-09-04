@@ -136,9 +136,6 @@ Thereafter, simply call get_job_status with the correct parameters using the cla
   response = connection.get_job_status(partnerParameters.get(), job_status_options.get());
 ```
 
-
-
-
 #### Signature Class
 
 To calculate your signature first import the necessary class:
