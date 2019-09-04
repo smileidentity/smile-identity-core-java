@@ -42,14 +42,17 @@ public class Utilities {
     }
   }
 
-  public String get_job_status(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
+  public String get_job_status(String user_id, String job_id, String options) throws Exception {
     this.timestamp = System.currentTimeMillis();
     this.sec_key = determineSecKey();
 
-    return queryJobStatus(user_id, job_id, return_images, return_history).toString();
+    JSONParser parser = new JSONParser();
+    JSONObject optionsJson = (JSONObject) parser.parse(options);
+
+    return queryJobStatus(user_id, job_id, optionsJson).toString();
   }
 
-  private JSONObject queryJobStatus(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
+  private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws Exception {
     Boolean job_complete = false;
     JSONObject responseJson = null;
 
@@ -58,7 +61,8 @@ public class Utilities {
     HttpPost post = new HttpPost(jobStatusUrl);
 
     try {
-      StringEntity entityForPost = new StringEntity(configureJobQueryBody(user_id, job_id, return_images, return_history).toString());
+      StringEntity entityForPost = new StringEntity(configureJobQueryBody(user_id, job_id, options).toString());
+
       post.setHeader("content-type", "application/json");
       post.setEntity(entityForPost);
 
@@ -88,16 +92,19 @@ public class Utilities {
     return responseJson;
   }
 
-  private JSONObject configureJobQueryBody(String user_id, String job_id, Boolean return_images, Boolean return_history) throws Exception {
+  private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws Exception {
     JSONObject body = new JSONObject();
+    Boolean returnImages = (Boolean) options.get("return_images");
+    Boolean returnHistory = (Boolean) options.get("return_history");
+
     try {
       body.put("sec_key", determineSecKey());
       body.put("timestamp", timestamp);
       body.put("partner_id", partner_id);
       body.put("user_id", user_id);
       body.put("job_id", job_id);
-      body.put("image_links", return_images);
-      body.put("history", return_history);
+      body.put("image_links", returnImages);
+      body.put("history", returnHistory);
     } catch(Exception e) {
       throw e;
     }
@@ -135,5 +142,4 @@ public class Utilities {
       throw e;
     }
   }
-
 }
