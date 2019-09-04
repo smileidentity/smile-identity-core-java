@@ -2,11 +2,16 @@
 
 The official Smile Identity gem exposes three classes namely; the Web API class, the Signature class and the Utilities class.
 
-The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
+The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
+- submit_job
+- get_job_status
 
-The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers.
+The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
+- generate_sec_key
+- confirm_sec_key
 
-The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data.
+<!-- The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
+- get_job_status -->
 
 ## Documentation
 
@@ -27,6 +32,7 @@ group: "com.smileidentity", name: "smile-identity-core", version: "<current-vers
 You now may use the classes as follows:
 
 #### Web Api Class
+
 
 Import the necessary dependant classes for Web Api:
 
@@ -113,6 +119,26 @@ You can also view your response asynchronously at the callback that you have set
 }
 ```
 
+Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
+
+You will already have your Web Api class initialised as follows:
+```java
+  WebApi connection = new WebApi(<String partner_id>, <String default_callback_url>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
+```
+Thereafter, simply call get_job_status with the correct parameters using the classes we have provided:
+```java
+  // create the stringified json for the partner params using our class (i.e. user_id, job_id, and job_type that you would are querying)
+  PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer job_type>);
+
+  // create the options - whether you would like to return_history and return_image_links in the job status response
+  Options job_status_options = new Options(<Boolean return_history>, <Boolean return_image_links>);
+
+  response = connection.get_job_status(partnerParameters.get(), job_status_options.get());
+```
+
+
+
+
 #### Signature Class
 
 To calculate your signature first import the necessary class:
@@ -159,7 +185,7 @@ try {
 }
 ```
 
-#### Utilities Class
+<!-- #### Utilities Class
 
 You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options class. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
 
@@ -171,7 +197,7 @@ String job_status = new Utilities(<partner_id>, <the decoded-version of-your-api
 System.out.println(job_status);
 ```
 
-This returns the job status as stringified json data.
+This returns the job status as stringified json data. -->
 
 ## Development
 
