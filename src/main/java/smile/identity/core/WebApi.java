@@ -466,7 +466,8 @@ public class WebApi {
       String user_id = (String) partnerParams.get("user_id");
       String job_id = (String) partnerParams.get("job_id");
 
-      responseStr = utilitiesConnection.get_job_status(user_id, job_id, returnImages, returnHistory);
+      String jobStatusOptions = new Options(returnHistory, returnImages).get();
+      responseStr = utilitiesConnection.get_job_status(user_id, job_id, jobStatusOptions);
 
       JSONParser parser = new JSONParser();
       responseJson = (JSONObject) parser.parse(responseStr);
