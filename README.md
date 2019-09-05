@@ -33,7 +33,6 @@ You now may use the classes as follows:
 
 #### Web Api Class
 
-
 Import the necessary dependant classes for Web Api:
 
 ```java
@@ -43,6 +42,8 @@ import smile.identity.core.IDParameters;
 import smile.identity.core.Options;
 import smile.identity.core.WebApi;
 ```
+
+##### submit_job method
 
 Your call to the library will be similar to the below code snippet:
 ```java
@@ -119,6 +120,8 @@ You can also view your response asynchronously at the callback that you have set
 }
 ```
 
+##### get_job_status method
+
 Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
 
 You will already have your Web Api class initialised as follows:
@@ -143,6 +146,8 @@ To calculate your signature first import the necessary class:
 import smile.identity.core.Signature;
 ```
 
+##### generate_sec_key method
+
 Then call the Signature class as follows:
 
 ```java
@@ -166,6 +171,8 @@ The response will be a stringified json object:
  timestamp: "<timestamp that you passed in or that was generated>"
 }
 ```
+
+##### confirm_sec_key method
 
 You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
 
