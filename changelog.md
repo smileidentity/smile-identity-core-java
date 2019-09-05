@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 The first release version of Web Api.
 
-## [0.0.3] - 2019-08-30
+## [0.0.3] - 2019-09-05
 ### Updated
 Add a signature class
 Confirm the signature when querying the job status
