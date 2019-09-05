@@ -139,6 +139,11 @@ Thereafter, simply call get_job_status with the correct parameters using the cla
   response = connection.get_job_status(partnerParameters.get(), job_status_options.get());
 ```
 
+Please note that if you do not need to pass through Options if you will not be using them, you may omit calling those class and send through null instead:
+```
+String response = connection.get_job_status(partnerParameters.get(), null);
+```
+
 #### Signature Class
 
 To calculate your signature first import the necessary class:
