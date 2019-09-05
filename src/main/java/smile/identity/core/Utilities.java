@@ -45,9 +45,14 @@ public class Utilities {
   public String get_job_status(String user_id, String job_id, String options) throws Exception {
     this.timestamp = System.currentTimeMillis();
     this.sec_key = determineSecKey();
+    JSONObject optionsJson = null;
 
-    JSONParser parser = new JSONParser();
-    JSONObject optionsJson = (JSONObject) parser.parse(options);
+    if(options != null && !options.trim().isEmpty()) {
+      JSONParser parser = new JSONParser();
+      optionsJson = (JSONObject) parser.parse(options);
+    } else {
+      optionsJson = fillInJobStatusOptions();
+    }
 
     return queryJobStatus(user_id, job_id, optionsJson).toString();
   }
@@ -111,7 +116,6 @@ public class Utilities {
     return body;
   }
 
-
   // these two methods are common across web api, we could put it in a helper class but it would mean that the functions are public
   private String determineSecKey() throws Exception {
     Signature connection = new Signature(partner_id, api_key);
@@ -141,5 +145,17 @@ public class Utilities {
     } catch (Exception e) {
       throw e;
     }
+  }
+
+  private JSONObject fillInJobStatusOptions() throws Exception {
+    JSONObject obj = new JSONObject();
+    try {
+      obj.put("return_history", false);
+      obj.put("return_images", false);
+    } catch(Exception e) {
+      throw e;
+    }
+
+    return obj;
   }
 }
