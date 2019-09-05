@@ -218,8 +218,17 @@ Update the version number in the build file
 It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
 
 To deploy run the task `./gradlew uploadArchives`
+This will deploy to the staging release repository.
+Log in to the nexus repo (with the same osshr details you've specified in the gradle.properties) to inspect the deploy.
+Go to the staging repositories and navigate to the last item.
 
-Please note that you should tag the release when doing a push to maven.
+To release to the production repository, close the staging repository, then release.
+Refresh the interface using the button.
+Now check the activity on the repo to ensure that there are no failures.
+Once the release button is available (this may take a little while), click release.
+The synchronisation may take a little while, but it will appear [here](https://search.maven.org/search?q=g:com.smileidentity).
+
+Please note that you should tag the release on github too.
 
 ## Contributing
 
