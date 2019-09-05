@@ -13,3 +13,5 @@ Ensure that we allow null for options and idInfo
 Add dob for idInfo
 Allow some null and empty strings for idInfo parameters
 Update the docs
+Add a get_job_status public method to the Web API class
+Add a Utilities class we use to query job status as its own function

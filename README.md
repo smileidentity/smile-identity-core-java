@@ -1,25 +1,40 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes two classes namely, the Web API and Signature class.
+The official Smile Identity gem exposes two classes namely; the Web API class, and the Signature class.
 
-The Web API allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare).
+The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
+- submit_job
+- get_job_status
 
-The Signature class allows you as the Partner to generate a sec key to interact with our servers.
+The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
+- generate_sec_key
+- confirm_sec_key
+
+<!-- The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
+- get_job_status -->
 
 ## Documentation
 
 This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction).
 
-Please note that you will have to be a Smile Identity Partner to be able to query our services.
+Please note that you will have to be a Smile Identity Partner to be able to query our services. You can sign up on the [Portal](https://test-smileid.herokuapp.com/signup?products[]=1-IDVALIDATION&products[]=2-AUTHENTICATION).
 
-## Usage
+## Installation
+
+View the package on [Maven](https://search.maven.org/search?q=a:smile-identity-core).
 
 Add the group, name and version to your application's build file, it will look similar based on your build tool:
 
 ```java
 group: "com.smileidentity", name: "smile-identity-core", version: "<current-version>"
 ```
-Thereafter, import the necessary classes:
+
+You now may use the classes as follows:
+
+#### Web Api Class
+
+
+Import the necessary dependant classes for Web Api:
 
 ```java
 import smile.identity.core.PartnerParameters;
@@ -28,8 +43,6 @@ import smile.identity.core.IDParameters;
 import smile.identity.core.Options;
 import smile.identity.core.WebApi;
 ```
-
-#### Web api
 
 Your call to the library will be similar to the below code snippet:
 ```java
@@ -45,7 +58,7 @@ Your call to the library will be similar to the below code snippet:
 
     Options options = new Options("optional_callback.com", true, false, false);
 
-    WebApi connection = new WebApi("125", "default_callback.com", "<your-api-key>", 0);
+    WebApi connection = new WebApi("125", "default_callback.com", "<the decoded-version of-your-api-key>", 0);
 
     String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get());
 
@@ -53,6 +66,7 @@ Your call to the library will be similar to the below code snippet:
 
   } catch (Exception e) {
     e.printStackTrace();
+    throw e;
   }
 ```
 
@@ -105,10 +119,26 @@ You can also view your response asynchronously at the callback that you have set
 }
 ```
 
-#### Calculating your Signature
+Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
 
-Import the necessary class:
+You will already have your Web Api class initialised as follows:
+```java
+  WebApi connection = new WebApi(<String partner_id>, <String default_callback_url>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
+```
+Thereafter, simply call get_job_status with the correct parameters using the classes we have provided:
+```java
+  // create the stringified json for the partner params using our class (i.e. user_id, job_id, and job_type that you would are querying)
+  PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer job_type>);
 
+  // create the options - whether you would like to return_history and return_image_links in the job status response
+  Options job_status_options = new Options(<Boolean return_history>, <Boolean return_image_links>);
+
+  response = connection.get_job_status(partnerParameters.get(), job_status_options.get());
+```
+
+#### Signature Class
+
+To calculate your signature first import the necessary class:
 ```java
 import smile.identity.core.Signature;
 ```
@@ -116,14 +146,17 @@ import smile.identity.core.Signature;
 Then call the Signature class as follows:
 
 ```java
-  try {
-    Signature connection = new Signature(partner_id, api_key);
-    String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
+import smile.identity.core.Signature;
 
-    // In order to get the sec_key you can then use a json parser and extract the sec_key
-  } catch (Exception e) {
-    e.printStackTrace();
-  }
+try {
+  Signature connection = new Signature(partner_id, api_key);
+  String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
+
+  // In order to utilise the signature you can then use a json parser and extract the signature
+} catch (Exception e) {
+  e.printStackTrace();
+  throw e;
+}
 ```
 
 The response will be a stringified json object:
@@ -133,9 +166,46 @@ The response will be a stringified json object:
  timestamp: "<timestamp that you passed in or that was generated>"
 }
 ```
+
+You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
+
+```java
+import smile.identity.core.Signature;
+
+try {
+  Signature connection = new Signature(partner_id, api_key);
+  String signatureJsonStr = connection.confirm_sec_key(sec_key, timestamp);
+  // If it is valid then use the response, else throw an error
+} catch (Exception e) {
+  e.printStackTrace();
+  throw e;
+}
+```
+
+<!-- #### Utilities Class
+
+You may want to receive more information about a job. This is built into Web Api if you choose to set return_job_status as true in the options class. However, you also have the option to build the functionality yourself by using the Utilities class. Please note that if you are querying a job immediately after submitting it, you will need to poll it for the duration of the job.
+
+```java
+import smile.identity.core.Utilities;
+
+String job_status = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).get_job_status(<user_id>, <job_id>, <return_image_links> , <return_history>);
+
+System.out.println(job_status);
+```
+
+This returns the job status as stringified json data. -->
+
 ## Development
 
-After checking out the repo, run `gradle build` to build. ensure that you have a gradle.properties file setup with the necessary variables required by the build. To deploy to staging run the task `./gradlew uploadArchives`
+After checking out the repo, run `gradle build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
+
+
+## Deployment
+Update the version number in the build file
+It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
+
+To deploy run the task `./gradlew uploadArchives`
 
 Please note that you should tag the release when doing a push to maven.
 

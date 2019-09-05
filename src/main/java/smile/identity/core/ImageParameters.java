@@ -18,8 +18,7 @@ public class ImageParameters {
       image_obj.put("image", image);
       images.add(image_obj);
     } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("Exception" + e);
+      throw e;
     }
   }
 

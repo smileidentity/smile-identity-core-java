@@ -28,7 +28,6 @@ public class IDParameters implements Parameters {
       }
 
     } catch(Exception e) {
-      System.out.println("exception" + e);
       throw e;
     }
 
