@@ -15,3 +15,6 @@ Allow some null and empty strings for idInfo parameters
 Update the docs
 Add a get_job_status public method to the Web API class
 Add a Utilities class we use to query job status as its own function
+
+## [0.0.4] - 2019-09-17
+Move the language key to the package information section
