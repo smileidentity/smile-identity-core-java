@@ -212,9 +212,8 @@ This returns the job status as stringified json data. -->
 
 After checking out the repo, run `gradle build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
 
-
 ## Deployment
-Update the version number in the build file
+Update the version number in the build file.
 It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
 
 To deploy run the task `./gradlew uploadArchives`

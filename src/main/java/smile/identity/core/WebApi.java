@@ -325,6 +325,7 @@ public class WebApi {
 
       JSONObject package_information = new JSONObject();
       package_information.put("apiVersion", api_version);
+      package_information.put("language", "java");
 
       JSONObject userData = new JSONObject();
       userData.put("isVerifiedProcess", new Boolean(false));
@@ -353,7 +354,6 @@ public class WebApi {
       json.put("id_info", idInfo);
       json.put("images", configureImagePayload(images));
       json.put("server_information", uploadUrl);
-      json.put("language", "java");
     } catch(Exception e) {
       throw e;
     }
