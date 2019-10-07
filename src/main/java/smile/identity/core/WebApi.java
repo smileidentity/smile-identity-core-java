@@ -277,6 +277,11 @@ public class WebApi {
           Integer counter = 0;
           String jobStatusResponse = pollJobStatus(counter).toString();
           res = jobStatusResponse;
+        } else {
+          JSONObject successResponse = new JSONObject();
+          successResponse.put("success", true);
+          successResponse.put("smile_job_id", smileJobId);
+          res = successResponse.toString();
         }
       }
     } catch(Exception e) {
