@@ -264,6 +264,7 @@ public class WebApi {
         JSONParser parser = new JSONParser();
         JSONObject responseJson = (JSONObject) parser.parse(strResult);
         String uploadUrl = responseJson.get("upload_url").toString();
+        String smileJobId = responseJson.get("smile_job_id").toString();
 
         JSONObject infoJson = configureInfoJson(uploadUrl);
         ByteArrayOutputStream baos = zipUpFile(infoJson);
