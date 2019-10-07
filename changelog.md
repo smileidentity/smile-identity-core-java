@@ -18,3 +18,6 @@ Add a Utilities class we use to query job status as its own function
 
 ## [0.0.4] - 2019-09-17
 Move the language key to the package information section
+
+## [1.0.0] - 2019-10-07
+Amend the success response to be a stringified json of {"success":true,"smile_job_id":"job_id"}

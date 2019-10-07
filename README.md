@@ -76,7 +76,15 @@ Please note that if you do not need to pass through IDParameters or Options, you
 String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), null, null);
 ```
 
-The response will be nil if you chose to set return_job_status to false, however if you have set return_job_status to true then you will receive a response like below:
+If you chose to set return_job_status to false, the response will be
+```
+{
+  success: true,
+  smile_job_id: <smile_job_id>
+}
+```
+
+However if you have set return_job_status to true then you will receive a response like below:
 
 ```
 {

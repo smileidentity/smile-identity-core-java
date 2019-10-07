@@ -264,6 +264,7 @@ public class WebApi {
         JSONParser parser = new JSONParser();
         JSONObject responseJson = (JSONObject) parser.parse(strResult);
         String uploadUrl = responseJson.get("upload_url").toString();
+        String smileJobId = responseJson.get("smile_job_id").toString();
 
         JSONObject infoJson = configureInfoJson(uploadUrl);
         ByteArrayOutputStream baos = zipUpFile(infoJson);
@@ -276,6 +277,11 @@ public class WebApi {
           Integer counter = 0;
           String jobStatusResponse = pollJobStatus(counter).toString();
           res = jobStatusResponse;
+        } else {
+          JSONObject successResponse = new JSONObject();
+          successResponse.put("success", true);
+          successResponse.put("smile_job_id", smileJobId);
+          res = successResponse.toString();
         }
       }
     } catch(Exception e) {
