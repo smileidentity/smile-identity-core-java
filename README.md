@@ -55,7 +55,7 @@ Your call to the library will be similar to the below code snippet:
     partnerParameters.add("optional_info", "some optional info");
 
     // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-    IDParameters idInfo = new IDParameters("Adeyemi", "", "Adunola", "NG", "BVN", "00000000", null, "086565345", "true");
+    IDParameters idInfo = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>, <String entered>);
 
     ImageParameters imageParameters = new ImageParameters();
     imageParameters.add(0, "../download.png");
@@ -323,7 +323,7 @@ Your call to the library will be similar to the below code snippet:
   PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer 5>);
 
   // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-  IDParameters idInfo = new IDParameters("Adeyemi", "", "Adunola", "NG", "BVN", "00000000", null, "086565345", "true");
+  IDParameters idInfo = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>, <String entered>);
 
   IDApi connection = new IDApi(<String partner_id>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
   String response = connection.submit_job(partnerParameters.get(), idInfo.get());  
