@@ -80,7 +80,6 @@ public class WebApi {
 
       JSONParser parser = new JSONParser();
       JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
-      JSONArray images = (JSONArray) parser.parse(images_params);
 
       JSONObject idInfo;
       if(id_info_params != null && !id_info_params.trim().isEmpty()) {
@@ -89,6 +88,12 @@ public class WebApi {
         idInfo = fillInIdInfo();
       }
 
+      Long job_type = (Long) partnerParams.get("job_type");
+      if(job_type == 5) {
+        return callIDApi(partnerParams, idInfo);
+      }
+
+      JSONArray images = (JSONArray) parser.parse(images_params);
       if(options_params != null && !options_params.trim().isEmpty()) {
         JSONObject options = (JSONObject) parser.parse(options_params);
         extractOptions(options);
@@ -98,7 +103,6 @@ public class WebApi {
 
       validateImages(images);
 
-      Long job_type = (Long) partnerParams.get("job_type");
       if(job_type == 1) {
         validateEnrollWithId(images, idInfo);
       }
@@ -118,6 +122,43 @@ public class WebApi {
     }
   }
 
+  public String submit_job(String partner_params, String id_info_params) throws Exception {
+    String response = null;
+    try {
+
+      JSONParser parser = new JSONParser();
+      JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
+
+      JSONObject idInfo;
+      if(id_info_params == null && id_info_params.trim().isEmpty()) {
+        throw new IllegalArgumentException("You need to send through a vaild ID Information payload");
+      } else {
+        idInfo = (JSONObject) parser.parse(id_info_params);
+      }
+
+      Long job_type = (Long) partnerParams.get("job_type");
+      if(job_type == 5) {
+        response = callIDApi(partnerParams, idInfo);
+      } else {
+        throw new IllegalArgumentException("You need to send through more parameters");
+      }
+
+      this.partnerParams = partnerParams;
+      this.idInfo = idInfo;
+
+      this.timestamp = System.currentTimeMillis();
+      this.sec_key = determineSecKey();
+
+      System.out.println("\n----------IN SUBMIT JOBS-------------");
+      System.out.println("partnerParams: " + partnerParams);
+      System.out.println("idInfo: " + idInfo);
+
+    } catch (Exception e) {
+      throw e;
+    }
+     return response;
+  }
+
   public String get_job_status(String partner_params, String options) throws Exception {
     String response = null;
 
@@ -130,6 +171,18 @@ public class WebApi {
 
       Utilities utilities = new Utilities(partner_id, api_key, sid_server);
       response = utilities.get_job_status(user_id, job_id, options);
+    } catch (Exception e) {
+      throw e;
+    }
+
+    return response;
+  }
+
+  private String callIDApi(JSONObject partnerParams, JSONObject idInfo) throws Exception {
+    String response = null;
+    try {
+      IDApi connection = new IDApi(partner_id, api_key, sid_server);
+      response = connection.submit_job(partnerParams.toString(), idInfo.toString());
     } catch (Exception e) {
       throw e;
     }
