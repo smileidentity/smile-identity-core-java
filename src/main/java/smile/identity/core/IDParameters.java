@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 public class IDParameters implements Parameters {
   JSONObject idInfo;
 
-  public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String entered) {
+  public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number, String entered) {
     JSONObject obj = new JSONObject();
 
     try {
@@ -15,11 +15,12 @@ public class IDParameters implements Parameters {
       obj.put("id_type", id_type);
       obj.put("id_number", id_number);
       obj.put("dob", dob);
+      obj.put("phone_number", phone_number);
       obj.put("entered", entered);
 
       if(entered == "true") {
-        if (checkNullAndEmpty(first_name) || checkNullAndEmpty(last_name) || checkNullAndEmpty(country) || checkNullAndEmpty(id_type) || checkNullAndEmpty(id_number)) {
-          throw new IllegalArgumentException("None of the ID Arguments first_name, last_name, country, id_type and id_number can be empty");
+        if (checkNullAndEmpty(id_number)) {
+          throw new IllegalArgumentException("id_number cannot be empty");
         }
 
         if ((country.equalsIgnoreCase("NG")) &&  (id_type.equalsIgnoreCase("PASSPORT") ||  id_type.equalsIgnoreCase("VOTER_ID") || id_type.equalsIgnoreCase("DRIVERS_LICENSE") ||  id_type.equalsIgnoreCase("NATIONAL_ID") ||  id_type.equalsIgnoreCase("TIN") ||  id_type.equalsIgnoreCase("CAC")) && (checkNullAndEmpty(dob))) {
@@ -33,8 +34,8 @@ public class IDParameters implements Parameters {
 
     this.idInfo = obj;
   }
-  
-  public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String entered) {
+
+  public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number) {
   JSONObject obj = new JSONObject();
 
   try {
@@ -45,21 +46,14 @@ public class IDParameters implements Parameters {
     obj.put("id_type", id_type);
     obj.put("id_number", id_number);
     obj.put("dob", dob);
-    obj.put("entered", entered);
-
-    if(entered == "true") {
-      if (checkNullAndEmpty(first_name) || checkNullAndEmpty(last_name) || checkNullAndEmpty(country) || checkNullAndEmpty(id_type) || checkNullAndEmpty(id_number)) {
-        throw new IllegalArgumentException("None of the ID Arguments first_name, last_name, country, id_type and id_number can be null or empty");
-      }
-
-      if ((country.equalsIgnoreCase("NG")) &&  (id_type.equalsIgnoreCase("PASSPORT") ||  id_type.equalsIgnoreCase("VOTER_ID") || id_type.equalsIgnoreCase("DRIVERS_LICENSE") ||  id_type.equalsIgnoreCase("NATIONAL_ID") ||  id_type.equalsIgnoreCase("TIN") ||  id_type.equalsIgnoreCase("CAC")) && (checkNullAndEmpty(dob))) {
-        throw new IllegalArgumentException("The ID type " + id_type + "for " + country + " requires a valid dob paramater." );
-      }
-    }
-
+    obj.put("phone_number", phone_number);
   } catch(Exception e) {
     System.out.println("exception" + e);
     throw e;
+  }
+
+  if (checkNullAndEmpty(id_number)) {
+    throw new IllegalArgumentException("id_number cannot be empty");
   }
 
   this.idInfo = obj;
