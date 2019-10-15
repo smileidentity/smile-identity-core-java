@@ -48,7 +48,6 @@ public class IDParameters implements Parameters {
     obj.put("dob", dob);
     obj.put("phone_number", phone_number);
   } catch(Exception e) {
-    System.out.println("exception" + e);
     throw e;
   }
 

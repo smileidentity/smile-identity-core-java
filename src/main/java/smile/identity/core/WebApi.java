@@ -149,10 +149,6 @@ public class WebApi {
       this.timestamp = System.currentTimeMillis();
       this.sec_key = determineSecKey();
 
-      System.out.println("\n----------IN SUBMIT JOBS-------------");
-      System.out.println("partnerParams: " + partnerParams);
-      System.out.println("idInfo: " + idInfo);
-
     } catch (Exception e) {
       throw e;
     }
