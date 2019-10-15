@@ -1,12 +1,12 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes three classes namely; the Web API class, and the Signature class.
+The official Smile Identity gem exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
 
-The **Web API Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
+The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
 - get_job_status
 
-The **ID Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
+The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
