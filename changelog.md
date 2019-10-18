@@ -21,3 +21,9 @@ Move the language key to the package information section
 
 ## [1.0.0] - 2019-10-07
 Amend the success response to be a stringified json of {"success":true,"smile_job_id":"job_id"}
+
+## [1.0.1] - 2019-10-10
+Add the ID API Class
+Add the ability to query ID Api from the Web API class
+Add the ability to query ID Api from the Web API class with method overloading
+Update the documentation
