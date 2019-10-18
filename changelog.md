@@ -25,5 +25,7 @@ Amend the success response to be a stringified json of {"success":true,"smile_jo
 ## [1.0.1] - 2019-10-10
 Add the ID API Class
 Add the ability to query ID Api from the Web API class
-Add the ability to query ID Api from the Web API class with method overloading
-Update the documentation
+Add an extra required parameter of phone_number to ID Info params (can be null)
+Allow for entered parameter to be left out (specifically for ID API)
+Update the documentation to include Web API (job type 5) and ID API
+Remove the id_info validations for Web API (only validate the id_number, id_type and country)

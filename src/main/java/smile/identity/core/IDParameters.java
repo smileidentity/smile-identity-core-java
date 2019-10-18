@@ -18,13 +18,13 @@ public class IDParameters implements Parameters {
       obj.put("phone_number", phone_number);
       obj.put("entered", entered);
 
+      String[] requiredFields = { "id_number", "id_type", "country" };
       if(entered == "true") {
-        if (checkNullAndEmpty(id_number)) {
-          throw new IllegalArgumentException("id_number cannot be empty");
-        }
-
-        if ((country.equalsIgnoreCase("NG")) &&  (id_type.equalsIgnoreCase("PASSPORT") ||  id_type.equalsIgnoreCase("VOTER_ID") || id_type.equalsIgnoreCase("DRIVERS_LICENSE") ||  id_type.equalsIgnoreCase("NATIONAL_ID") ||  id_type.equalsIgnoreCase("TIN") ||  id_type.equalsIgnoreCase("CAC")) && (checkNullAndEmpty(dob))) {
-          throw new IllegalArgumentException("The ID type " + id_type + "for " + country + " requires a valid dob paramater." );
+        for (String field : requiredFields) {
+          String fieldValue = (String) obj.get(field);
+          if (checkNullAndEmpty(fieldValue)) {
+            throw new IllegalArgumentException(field + " cannot be empty");
+          }
         }
       }
 
@@ -51,8 +51,12 @@ public class IDParameters implements Parameters {
     throw e;
   }
 
-  if (checkNullAndEmpty(id_number)) {
-    throw new IllegalArgumentException("id_number cannot be empty");
+  String[] requiredFields = { "id_number", "id_type", "country" };
+  for (String field : requiredFields) {
+    String fieldValue = (String) obj.get(field);
+    if (checkNullAndEmpty(fieldValue)) {
+      throw new IllegalArgumentException(field + " cannot be empty");
+    }
   }
 
   this.idInfo = obj;
