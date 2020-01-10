@@ -432,15 +432,14 @@ After checking out the repo, run `gradle build` to build. Ensure that you have a
 
 ## Deployment
 
-### Access Rights
+#### Access Rights
 
 For reference, find the Sonatype guides [here](https://central.sonatype.org/pages/ossrh-guide.html)
 
 Create an account on [Sonatype](https://issues.sonatype.org/secure/Signup!default.jspa)
 Thereafter, comment on the [original issue](https://issues.sonatype.org/browse/OSSRH-50589) (or make a new ticket) to allow access to new users.
 
-###  GPG Keys
-
+#### GPG Keys
 
 Follow these [instructions](https://central.sonatype.org/pages/working-with-pgp-signatures.html), however, you can find an overview of the instructions below:
 
@@ -452,7 +451,7 @@ Follow these [instructions](https://central.sonatype.org/pages/working-with-pgp-
 Please note it takes some time to upload your key, so please wait some time before checking.
 
 
-## Accessing OSSHR
+#### Accessing OSSHR
 If you go to https://oss.sonatype.org/service/local/staging/deploy/maven2 you can login using the the username and password that you used for sonatype to access the nexus repo.
 
 In addition, the nexus repo has a feature that allows you to use credentials different from the username and password, no need to expose these credentials on the maven Repo in the settings.xml
@@ -471,7 +470,7 @@ In addition, the nexus repo has a feature that allows you to use credentials dif
 ```
 Those credentials can be used from your build system to deploy to the repos in this OSS server (snapshots and release artefacts and ultimately get deploy to the central repository.
 
-## Add a Gradle.properties file to the repo
+#### Gradle.properties
 
 Setting up a consistent environment for your build is as simple as placing these settings into a gradle.properties file.
 
@@ -497,8 +496,7 @@ To obtain the above information:
 -ossrhUsername: Your sonatype login ossrh username
 -ossrhPassword: Your sonatype login ossrh password
 
-### Build and Deploy
-
+#### Build and Deploy
 Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
 
 Update the version number in the build file.
