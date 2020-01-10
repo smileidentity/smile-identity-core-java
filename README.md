@@ -431,6 +431,76 @@ This returns the job status as stringified json data.
 After checking out the repo, run `gradle build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
 
 ## Deployment
+
+### Access Rights
+
+For reference, find the Sonatype guides [here](https://central.sonatype.org/pages/ossrh-guide.html)
+
+Create an account on [Sonatype](https://issues.sonatype.org/secure/Signup!default.jspa)
+Thereafter, comment on the [original issue](https://issues.sonatype.org/browse/OSSRH-50589) (or make a new ticket) to allow access to new users.
+
+###  GPG Keys
+
+
+Follow these [instructions](https://central.sonatype.org/pages/working-with-pgp-signatures.html), however, you can find an overview of the instructions below:
+
+- Check that you have [gpg](http://www.gnupg.org/download/) installed. You can do this by running `gpg --version`
+- Next you want to create or generate a gpg key using `gpg —-gen-key`. You will need some basic details for this, like your name, email, and a passphrase. After entering your passphrase move your mouse etc. to gives the random number generator a better chance to gain enough entropy.
+- To list the keys that you've now generated run `gpg --list-secret-keys --keyid-format LONG` or `gpg --list-keys --keyid-format LONG`
+- Since others need your public key to verify your files, you have to distribute your public key to a key server `gpg --keyserver pool.sks-keyservers.net --send-keys <your KEYID>`,  but if you're using ipv4 you'll need to run $ gpg --keyserver ipv4.pool.sks-keyservers.net  --send-key <your KEYID>
+- To double check your key is there run `gpg --keyserver ipv4.pool.sks-keyservers.net  --search-key <your key>`
+Please note it takes some time to upload your key, so please wait some time before checking.
+
+
+## Accessing OSSHR
+If you go to https://oss.sonatype.org/service/local/staging/deploy/maven2 you can login using the the username and password that you used for sonatype to access the nexus repo.
+
+In addition, the nexus repo has a feature that allows you to use credentials different from the username and password, no need to expose these credentials on the maven Repo in the settings.xml
+- Go to profile, and dropdown to user token
+    - Access token DNS (see in clear text)
+    - You need to add your username and password
+    - You can add this to your .env file
+    - Authentication to deploy (more securer for deployments)
+    - You have verifies that you can access the ossrh server  for deployment.
+```
+    <server>
+      <id>${server}</id>
+      <username>{usernamee}</username>
+      <password>{password}</password>
+    </server>
+```
+Those credentials can be used from your build system to deploy to the repos in this OSS server (snapshots and release artefacts and ultimately get deploy to the central repository.
+
+## Add a Gradle.properties file to the repo
+
+Setting up a consistent environment for your build is as simple as placing these settings into a gradle.properties file.
+
+Create a gradle.properties file in the root of your projects (please never commit this file):
+
+```
+signing.keyId=<short ID specifically of your gpg key>
+signing.password=<passphrase for your gpgp key>
+
+# https://github.com/gradle/gradle/issues/888
+signing.secretKeyRingFile=<path to your secret key ring - secring.gpg>
+
+ossrhUsername=<your username for sonatype>
+ossrhPassword=<your password for sonatype>
+```
+
+To obtain the above information:
+
+- keyId: run `gpg --list-keys --keyid-format SHORT`
+- passphrase: the passphrase you use to set up your gpg keys
+- secretKeyRingFile: With gpg2.1, it doesn't use secring.gpg file. Hence you need to [generate one as a workaround](https://github.com/gradle/gradle/issues/888), using `gpg --export-secret-keys >~/.gnupg/secring.gpg`
+
+-ossrhUsername: Your sonatype login ossrh username
+-ossrhPassword: Your sonatype login ossrh password
+
+### Build and Deploy
+
+Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
+
 Update the version number in the build file.
 It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
 
