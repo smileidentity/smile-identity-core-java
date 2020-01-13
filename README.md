@@ -499,7 +499,7 @@ To obtain the above information:
 #### Build and Deploy
 Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
 
-Update the version number in the build file.
+Update the version number in the build file. Make sure you do due diligence on the changelog too. 
 It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
 
 To deploy run the task `./gradlew uploadArchives`
