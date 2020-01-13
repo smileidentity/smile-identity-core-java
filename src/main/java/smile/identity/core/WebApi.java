@@ -324,7 +324,7 @@ public class WebApi {
           this.utilitiesConnection = utilitiesConnection;
 
           Integer counter = 0;
-          String jobStatusResponse = pollJobStatus(counter).toString();
+          String jobStatusResponse = pollJobStatus(counter, smileJobId).toString();
           res = jobStatusResponse;
         } else {
           JSONObject successResponse = new JSONObject();
@@ -505,7 +505,7 @@ public class WebApi {
     }
   }
 
-  private JSONObject pollJobStatus(Integer counter) throws Exception {
+  private JSONObject pollJobStatus(Integer counter, String smileJobId) throws Exception {
     Boolean job_complete = false;
     JSONObject responseJson = null;
     String responseStr = null;
@@ -529,7 +529,12 @@ public class WebApi {
 
       job_complete = (Boolean) responseJson.get("job_complete");
       if (job_complete == false && counter < 20) {
-        responseJson = pollJobStatus(counter);
+        responseJson = pollJobStatus(counter, smileJobId);
+      }
+
+      if (job_complete == true || counter == 20) {
+        responseJson.put("success", true);
+        responseJson.put("smile_job_id", smileJobId);
       }
     } catch (Exception e) {
       throw e;
