@@ -18,7 +18,7 @@ The **Utilities Class** allows you as the Partner to have access to our general 
 
 ## Documentation
 
-This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs-smileid.herokuapp.com/docs#web-api-introduction).
+This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs.smileidentity.com/products/web-api/java).
 
 Please note that you will have to be a Smile Identity Partner to be able to query our services. You can sign up on the [Portal](https://test-smileid.herokuapp.com/signup?products[]=1-IDVALIDATION&products[]=2-AUTHENTICATION).
 
@@ -464,7 +464,7 @@ In addition, the nexus repo has a feature that allows you to use credentials dif
 ```
     <server>
       <id>${server}</id>
-      <username>{usernamee}</username>
+      <username>{username}</username>
       <password>{password}</password>
     </server>
 ```
@@ -499,7 +499,7 @@ To obtain the above information:
 #### Build and Deploy
 Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
 
-Update the version number in the build file. Make sure you do due diligence on the changelog too. 
+Update the version number in the build file. Make sure you do due diligence on the changelog too.
 It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
 
 To deploy run the task `./gradlew uploadArchives`
@@ -512,7 +512,7 @@ Refresh the interface using the button.
 Now check the activity on the repo to ensure that there are no failures.
 Once the release button is available (this may take a little while), click release.
 The synchronisation may take a little while, but it will appear [here](https://search.maven.org/search?q=g:com.smileidentity).
-
+<!--  -->
 Please note that you should tag the release on github too.
 
 ## Contributing

@@ -30,5 +30,5 @@ Allow for entered parameter to be left out (specifically for ID API)
 Update the documentation to include Web API (job type 5) and ID API
 Remove the id_info validations for Web API (only validate the id_number, id_type and country)
 
-## [1.0.2] - 2020-01-13
+## [1.0.2] - 2020-01-14
 Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too
