@@ -452,7 +452,7 @@ Please note it takes some time to upload your key, so please wait some time befo
 
 
 #### Accessing OSSHR
-If you go to https://oss.sonatype.org/service/local/staging/deploy/maven2 you can login using the the username and password that you used for sonatype to access the nexus repo.
+If you go to https://oss.sonatype.org/ you can login using the username and password that you used for sonatype to access the nexus repo.
 
 In addition, the nexus repo has a feature that allows you to use credentials different from the username and password, no need to expose these credentials on the maven Repo in the settings.xml
 - Go to profile, and dropdown to user token
