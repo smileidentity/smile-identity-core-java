@@ -430,7 +430,9 @@ This returns the job status as stringified json data.
 
 ## Development
 
-After checking out the repo, run `gradle build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
+Reference: https://guides.gradle.org/building-java-libraries/
+
+After checking out the repo, run `gradle build` or `./gradlew build` to build. Ensure that you have a gradle.properties file setup with the necessary variables required by the build.
 
 ## Deployment
 
