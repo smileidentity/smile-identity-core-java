@@ -501,8 +501,10 @@ To obtain the above information:
 #### Build and Deploy
 Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
 
-Update the version number in the build file. Make sure you do due diligence on the changelog too.
-It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version), and thereafter deploy to the release repository.
+Update the version number in the build.gradle file. Make sure you do due diligence on the changelog.md too.
+It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version). As an example on line 42 of the build.gradle chnage the version as follows: `version = "1.0.2-SNAPSHOT)`.
+
+Thereafter deploy to the release repository as follows:
 
 To deploy run the task `./gradlew uploadArchives`
 This will deploy to the staging release repository.
