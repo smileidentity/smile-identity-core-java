@@ -170,7 +170,9 @@ However, if you have *set return_job_status to true (with image_links and histor
    "image_links":{
       "selfie_image":"image_link"
    },
-   "timestamp":"2019-10-10T12:32:04.622Z"
+   "timestamp":"2019-10-10T12:32:04.622Z",
+   "success": true,
+   "smile_job_id": "0000001111"
 }
 ```
 
