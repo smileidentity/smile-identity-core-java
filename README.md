@@ -436,6 +436,8 @@ After checking out the repo, run `gradle build` or `./gradlew build` to build. E
 
 ## Deployment
 
+This is the https://issues.sonatype.org/browse/OSSRH-50589 that you can always reference for history.
+
 #### Access Rights
 
 For reference, find the Sonatype guides [here](https://central.sonatype.org/pages/ossrh-guide.html)
@@ -455,9 +457,10 @@ Follow these [instructions](https://central.sonatype.org/pages/working-with-pgp-
 Please note it takes some time to upload your key, so please wait some time before checking.
 
 
-#### Accessing OSSHR
+#### Accessing OSSHR and the Nexus Repo
 If you go to https://oss.sonatype.org/ you can login using the username and password that you used for sonatype to access the nexus repo.
 
+Additional Reading (not necessary for current setup):
 In addition, the nexus repo has a feature that allows you to use credentials different from the username and password, no need to expose these credentials on the maven Repo in the settings.xml
 - Go to profile, and dropdown to user token
     - Access token DNS (see in clear text)
@@ -493,33 +496,49 @@ ossrhPassword=<your password for sonatype>
 
 To obtain the above information:
 
-- keyId: run `gpg --list-keys --keyid-format SHORT`
-- passphrase: the passphrase you use to set up your gpg keys
-- secretKeyRingFile: With gpg2.1, it doesn't use secring.gpg file. Hence you need to [generate one as a workaround](https://github.com/gradle/gradle/issues/888), using `gpg --export-secret-keys >~/.gnupg/secring.gpg`
-
--ossrhUsername: Your sonatype login ossrh username
--ossrhPassword: Your sonatype login ossrh password
+1. keyId: run `gpg --list-keys --keyid-format SHORT`
+2. passphrase: the passphrase you use to set up your gpg keys
+3. secretKeyRingFile: With gpg2.1, it doesn't use secring.gpg file. Hence you need to [generate one as a workaround](https://github.com/gradle/gradle/issues/888), using `gpg --export-secret-keys >~/.gnupg/secring.gpg`
+4. ossrhUsername: Your sonatype login ossrh username
+5. ossrhPassword: Your sonatype login ossrh password
 
 #### Build and Deploy
 Reference: https://docs.gradle.org/current/userguide/publishing_overview.html#sec:basic_publishing
 
-Update the version number in the build.gradle file. Make sure you do due diligence on the changelog.md too.
-It is good practice to first test your changes on the snapshot repo (add -SNAPSHOT to your version). As an example on line 42 of the build.gradle chnage the version as follows: `version = "1.0.2-SNAPSHOT)`.
 
-Thereafter deploy to the release repository as follows:
+**Deploying a snapshot Version (this is a development version):**
 
-To deploy run the task `./gradlew uploadArchives`
-This will deploy to the staging release repository.
-Log in to the nexus repo (with the same osshr details you've specified in the gradle.properties) to inspect the deploy.
-Go to the staging repositories and navigate to the last item.
+You should deploy a snapshot version first before deploying to staging/production. It is good practice to first test your changes on the snapshot repo.
 
-To release to the production repository, close the staging repository, then release.
-Refresh the interface using the button.
-Now check the activity on the repo to ensure that there are no failures.
-Once the release button is available (this may take a little while), click release.
-The synchronisation may take a little while, but it will appear [here](https://search.maven.org/search?q=g:com.smileidentity).
-<!--  -->
-Please note that you should tag the release on github too.
+To do this:
+1. Update the version number in the build.gradle file.
+2. Make sure you do due diligence on the changelog.md too.
+3. In your build.gradle file, find the version variable and update your version to the next version number with `-SNAPSHOT` added.
+As an example on line 42 of the build.gradle change the version as follows: `version = "1.0.2-SNAPSHOT)`.
+4. To now deploy run the task `./gradlew uploadArchives`
+5. You can validate your SNAPSHOTs by using them in a build, or you can use the UI on oss.sonatype.org (find the Snapshots repo after clicking the "Repositories" link in the left-hand menu)
+6. ask for access to the test-app if you are an internal staff member, you can test your build using the test app.
+7. Once you are satisfied, deploy to staging and release to production.
+
+**Deploying to staging and releasing to production:**
+
+This will deploy to the staging repository where you will release to production.
+
+1. Remove the snapshot version by removing `-SNAPSHOT` from the version. Make sure your version number is correct.
+2. To now deploy run the task `./gradlew uploadArchives` again.
+3. Log in to the nexus repo (with the same osshr details you've specified in the gradle.properties).
+4. Go to the staging repositories and navigate to the last item.
+5. To release to the production repository, click on the comsmileidentity repository table item. Then click on `Close` on the top bar. Add the description from the changelog for that version.
+6. Thereafter you will see a sign in the activity section at the bottom that reads `Operation in Progress`. The activity section on the repo will tell you if there are any failures. Wait a minute before clicking on the `Refresh` button on the top bar.
+7. You should now see the activity change to `Last Operation completed successfully`, and the `Release` button on the top menu bar will enable.
+Now, click the `Release` button to release the repository from staging to production. You may keep the `Automatically Drop` checked. Add the description from the changelog for that version.  
+8. `Refresh` again and the staging repositories should be empty for Smile. The synchronisation may take a little while, but it will appear [here](https://search.maven.org/search?q=g:com.smileidentity).
+9. You should tag the release on github too. You can do this as follows, as an example:
+```
+git tag -a '1.0.2' -m 'Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too'
+git push origin --tags
+```
+
 
 ## Contributing
 
