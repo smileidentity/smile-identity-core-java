@@ -29,3 +29,6 @@ Add an extra required parameter of phone_number to ID Info params (can be null)
 Allow for entered parameter to be left out (specifically for ID API)
 Update the documentation to include Web API (job type 5) and ID API
 Remove the id_info validations for Web API (only validate the id_number, id_type and country)
+
+## [1.0.2] - 2020-01-16
+Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too

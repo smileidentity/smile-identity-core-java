@@ -324,7 +324,12 @@ public class WebApi {
           this.utilitiesConnection = utilitiesConnection;
 
           Integer counter = 0;
-          String jobStatusResponse = pollJobStatus(counter).toString();
+          JSONObject jsonJobStatusResponse = pollJobStatus(counter);
+          jsonJobStatusResponse.put("success", true);
+          jsonJobStatusResponse.put("smile_job_id", smileJobId);
+
+          String jobStatusResponse = jsonJobStatusResponse.toString();
+
           res = jobStatusResponse;
         } else {
           JSONObject successResponse = new JSONObject();
