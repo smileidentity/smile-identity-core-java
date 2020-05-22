@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="smile-identity-core.java10" target="10" />
+      <module name="smile-identity-core.java11" target="11" />
+      <module name="smile-identity-core.java12" target="12" />
+      <module name="smile-identity-core.java9" target="9" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

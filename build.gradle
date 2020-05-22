@@ -1,5 +1,10 @@
 plugins {
-  id 'java-library'
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 apply plugin: 'java'
@@ -7,11 +12,12 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-  testImplementation 'junit:junit:4.12'
 
-  implementation 'org.apache.httpcomponents:httpclient:4.5.9'
-  implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+dependencies {
+    testImplementation 'junit:junit:4.12'
+
+    implementation 'org.apache.httpcomponents:httpclient:4.5.9'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 // Signing
@@ -25,8 +31,8 @@ apply plugin: 'maven'
 
 // Add Javadoc JAR and sources JAR to artifact
 task javadocJar(type: Jar) {
-  classifier = 'javadoc'
-  from javadoc
+    classifier = 'javadoc'
+    from javadoc
 }
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -39,7 +45,7 @@ artifacts {
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
-version = "1.0.2"
+version = "1.0.3-SNAPSHOT"
 
 // Build, sign, and upload
 uploadArchives {
