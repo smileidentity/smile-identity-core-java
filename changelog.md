@@ -32,3 +32,16 @@ Remove the id_info validations for Web API (only validate the id_number, id_type
 
 ## [1.0.2] - 2020-01-16
 Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job status too
+
+## [1.0.3] - 2020-05-29
+Added support for java 8 and up 
+Gradle version 4 fully supports java 8 and gradle version 3 will work with java 8 but has limited support so
+###  IMPORTANT
+IDParameters() has two constructors please use the 8 parameters for Job Type 5 and  the 9 parameters constructor for Job Type 1
+the difference being the entered parameter
+
+####  JOB TYPE 1
+public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number, String entered)
+
+#### JOB TYPE 5  
+public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number)
