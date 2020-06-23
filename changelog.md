@@ -35,7 +35,7 @@ Add {"success":true,"smile_job_id":"job_id"} to the response when we poll job st
 
 ## [1.0.3] - 2020-05-29
 Added support for java 8 and up 
-Gradle version 4 fully supports java 8 and gradle version 3 will work with java 8 but has limited support so
+Gradle from version 4 fully supports java 8 and gradle version 3 will work with java 8 but has limited support so
 ###  IMPORTANT
 IDParameters() has two constructors please use the 8 parameters for Job Type 5 and  the 9 parameters constructor for Job Type 1
 the difference being the entered parameter
@@ -45,3 +45,6 @@ public IDParameters(String first_name, String middle_name, String last_name, Str
 
 #### JOB TYPE 5  
 public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number)
+
+## [1.0.4] - 2020-06-23
+Allow more image_type_id specifically 4 and 6 for more information on this please see https://docs.smileidentity.com/products/web-api/core-libraries
