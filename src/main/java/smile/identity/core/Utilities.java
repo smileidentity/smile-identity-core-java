@@ -23,12 +23,10 @@ public class Utilities {
     private String partner_id;
     private String api_key;
     private String url;
-    private String sec_key;
-    private long timestamp;
 
     public Utilities(String partner_id, String api_key, Integer sid_server) {
         try {
-            this.partner_id = partner_id.toString();
+            this.partner_id = partner_id;
             this.api_key = api_key;
 
             if (sid_server == 0) {
@@ -44,8 +42,8 @@ public class Utilities {
     }
 
     public String get_job_status(String user_id, String job_id, String options) throws Exception {
-        this.timestamp = System.currentTimeMillis();
-        this.sec_key = determineSecKey();
+        Long timestamp = System.currentTimeMillis();
+        String sec_key = determineSecKey(timestamp);
         JSONObject optionsJson = null;
 
         if (options != null && !options.trim().isEmpty()) {
@@ -102,9 +100,9 @@ public class Utilities {
         JSONObject body = new JSONObject();
         Boolean returnImages = (Boolean) options.get("return_images");
         Boolean returnHistory = (Boolean) options.get("return_history");
-
+        Long timestamp = System.currentTimeMillis();
         try {
-            body.put("sec_key", determineSecKey());
+            body.put("sec_key", determineSecKey(timestamp));
             body.put("timestamp", timestamp);
             body.put("partner_id", partner_id);
             body.put("user_id", user_id);
@@ -118,7 +116,7 @@ public class Utilities {
     }
 
     // these two methods are common across web api, we could put it in a helper class but it would mean that the functions are public
-    private String determineSecKey() throws Exception {
+    private String determineSecKey(Long timestamp) throws Exception {
         Signature connection = new Signature(partner_id, api_key);
         String secKey = "";
         JSONParser parser = new JSONParser();

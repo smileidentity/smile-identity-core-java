@@ -40,25 +40,15 @@ public class WebApi {
     private String partner_id;
     private String api_key;
 
-    private JSONObject partnerParams;
-    private JSONArray images;
-    private JSONObject idInfo;
-
-    private Boolean returnJobStatus;
-    private Boolean returnHistory;
-    private Boolean returnImages;
-
     private String url;
     private Integer sid_server;
     private String callbackUrl;
-    private String sec_key;
-    private long timestamp;
 
     private Utilities utilitiesConnection;
 
     public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
         try {
-            this.partner_id = partner_id.toString();
+            this.partner_id = partner_id;
             this.callbackUrl = default_callback.trim();
             this.api_key = api_key;
 
@@ -69,7 +59,6 @@ public class WebApi {
             }
 
             this.sid_server = sid_server;
-            this.url = url;
 
         } catch (Exception e) {
             throw e;
@@ -95,29 +84,18 @@ public class WebApi {
             }
 
             JSONArray images = (JSONArray) parser.parse(images_params);
-            if (options_params != null && !options_params.trim().isEmpty()) {
-                JSONObject options = (JSONObject) parser.parse(options_params);
-                extractOptions(options);
-            } else {
-                fillInOptions();
+            JSONObject options = extractOptions(options_params, parser);
+
+            validateImages(images);
+
+            if (job_type == 1) {
+                validateEnrollWithId(images, idInfo);
             }
+            validateReturnData((Boolean) options.get("return_job_status"));
+            Long timestamp = System.currentTimeMillis();
+            String sec_key = determineSecKey(timestamp);
 
-//            validateImages(images);
-//
-//            if (job_type == 1) {
-//                validateEnrollWithId(images, idInfo);
-//            }
-
-            validateReturnData();
-
-            this.partnerParams = partnerParams;
-            this.images = images;
-            this.idInfo = idInfo;
-
-            this.timestamp = System.currentTimeMillis();
-            this.sec_key = determineSecKey();
-
-            return setupRequests();
+            return setupRequests(sec_key, timestamp, partnerParams, options, idInfo, images);
         } catch (Exception e) {
             throw e;
         }
@@ -143,12 +121,6 @@ public class WebApi {
             } else {
                 throw new IllegalArgumentException("You need to send through more parameters");
             }
-
-            this.partnerParams = partnerParams;
-            this.idInfo = idInfo;
-
-            this.timestamp = System.currentTimeMillis();
-            this.sec_key = determineSecKey();
 
         } catch (Exception e) {
             throw e;
@@ -187,25 +159,9 @@ public class WebApi {
         return response;
     }
 
-    private void validateImages(JSONArray images) throws Exception {
-        try {
-            if (images.size() < 1) {
-                throw new IllegalArgumentException("You need to send through at least one selfie image");
-            }
-
-            Integer counter = 0;
-            for (Object o : images) {
-                Long image_type_id = (Long) ((JSONObject) o).get("image_type_id");
-                if (image_type_id == 0 || image_type_id == 2) {
-                    counter = counter + 1;
-                }
-            }
-
-            if (counter < 1) {
-                throw new IllegalArgumentException("You need to send through at least one selfie image");
-            }
-        } catch (Exception e) {
-            throw e;
+    private void validateImages(JSONArray images) throws IllegalArgumentException {
+        if (images == null || images.size() < 1) {
+            throw new IllegalArgumentException("You need to send through at least one selfie image");
         }
     }
 
@@ -226,40 +182,31 @@ public class WebApi {
         }
     }
 
-    private void validateReturnData() throws Exception {
-        if (this.callbackUrl.trim().isEmpty() && this.returnJobStatus == false) {
+    private void validateReturnData(boolean returnJobStatus) throws Exception {
+        if (this.callbackUrl.trim().isEmpty() && returnJobStatus == false) {
             throw new IllegalArgumentException("Please choose to either get your response via the callback or job status query");
         }
     }
 
-    private void extractOptions(JSONObject options) throws Exception {
+    private JSONObject extractOptions(String options_params, JSONParser parser) throws Exception {
 
-        String optionalCallback = (String) ((JSONObject) options).get("optional_callback");
-        Boolean returnJobStatus = (Boolean) ((JSONObject) options).get("return_job_status");
-        Boolean returnHistory = (Boolean) ((JSONObject) options).get("return_history");
-        Boolean returnImages = (Boolean) ((JSONObject) options).get("return_images");
-
-        if (optionalCallback != null && !optionalCallback.trim().isEmpty()) {
-            this.callbackUrl = optionalCallback;
+        JSONObject options;
+        String optionalCallback;
+        if (options_params != null && !options_params.trim().isEmpty()) {
+            options = (JSONObject) parser.parse(options_params);
+            if (options.containsKey("optional_callback")) {
+                String optionalCallBack = (String) options.get("optional_callback");
+                if (optionalCallBack != null && optionalCallBack.trim().isEmpty()) {
+                    options.put("optional_callback", options.containsKey("optional_callback"));
+                }
+            }
+        } else {
+            options = new JSONObject();
+            options.put("return_job_status", false);
+            options.put("return_history", false);
+            options.put("return_images", false);
         }
-
-        this.returnJobStatus = returnJobStatus;
-        this.returnHistory = returnHistory;
-        this.returnImages = returnImages;
-    }
-
-    private void fillInOptions() throws Exception {
-        try {
-            Boolean returnJobStatus = false;
-            Boolean returnHistory = false;
-            Boolean returnImages = false;
-
-            this.returnJobStatus = returnJobStatus;
-            this.returnHistory = returnHistory;
-            this.returnImages = returnImages;
-        } catch (Exception e) {
-            throw e;
-        }
+        return options;
     }
 
     private JSONObject fillInIdInfo() throws Exception {
@@ -273,7 +220,7 @@ public class WebApi {
         return obj;
     }
 
-    private String determineSecKey() throws Exception {
+    private String determineSecKey(Long timestamp) throws Exception {
         Signature connection = new Signature(partner_id, api_key);
         String secKey = "";
         JSONParser parser = new JSONParser();
@@ -290,14 +237,14 @@ public class WebApi {
         return secKey;
     }
 
-    private String setupRequests() throws Exception {
+    private String setupRequests(String secKey, Long timeStamp, JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception {
         String res = null;
         try {
             String prepUploadUrl = url + "/upload";
 
             HttpClient client = new DefaultHttpClient();
             HttpPost post = new HttpPost(prepUploadUrl.trim());
-            JSONObject uploadBody = configurePrepUploadJson();
+            JSONObject uploadBody = configurePrepUploadJson(secKey, timeStamp, partnerParams);
             StringEntity entityForPost = new StringEntity(uploadBody.toString());
             post.setHeader("content-type", "application/json");
             post.setEntity(entityForPost);
@@ -316,16 +263,15 @@ public class WebApi {
                 String uploadUrl = responseJson.get("upload_url").toString();
                 String smileJobId = responseJson.get("smile_job_id").toString();
 
-                JSONObject infoJson = configureInfoJson(uploadUrl);
-                ByteArrayOutputStream baos = zipUpFile(infoJson);
+                JSONObject infoJson = configureInfoJson(uploadUrl, secKey, timeStamp, partnerParams, idInfo, images);
+                ByteArrayOutputStream baos = zipUpFile(infoJson, images);
                 uploadFile(uploadUrl, baos);
-
-                if (returnJobStatus == true) {
+                if ((Boolean) options.get("return_job_status") == true) {
                     Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server);
                     this.utilitiesConnection = utilitiesConnection;
 
                     Integer counter = 0;
-                    JSONObject jsonJobStatusResponse = pollJobStatus(counter);
+                    JSONObject jsonJobStatusResponse = pollJobStatus(counter, partnerParams, options);
                     jsonJobStatusResponse.put("success", true);
                     jsonJobStatusResponse.put("smile_job_id", smileJobId);
 
@@ -345,7 +291,7 @@ public class WebApi {
         return res;
     }
 
-    private JSONObject configurePrepUploadJson() throws Exception {
+    private JSONObject configurePrepUploadJson(String sec_key, Long timestamp, JSONObject partnerParams) throws Exception {
         JSONObject body = new JSONObject();
         try {
             body.put("file_name", "selfie.zip");
@@ -376,7 +322,7 @@ public class WebApi {
         }
     }
 
-    private JSONObject configureInfoJson(String uploadUrl) {
+    private JSONObject configureInfoJson(String uploadUrl, String sec_key, Long timestamp, JSONObject partnerParams, JSONObject idInfo, JSONArray images) {
         JSONObject json = new JSONObject();
         try {
             JSONObject api_version = new JSONObject();
@@ -448,7 +394,7 @@ public class WebApi {
         return imagePayload;
     }
 
-    private ByteArrayOutputStream zipUpFile(JSONObject infoJson) throws Exception {
+    private ByteArrayOutputStream zipUpFile(JSONObject infoJson, JSONArray images) throws Exception {
         // http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
         // https://stackoverflow.com/questions/23612864/create-a-zip-file-in-memory
         ByteArrayOutputStream baos = null;
@@ -514,7 +460,7 @@ public class WebApi {
         }
     }
 
-    private JSONObject pollJobStatus(Integer counter) throws Exception {
+    private JSONObject pollJobStatus(int counter, JSONObject partnerParams, JSONObject options) throws Exception {
         Boolean job_complete = false;
         JSONObject responseJson = null;
         String responseStr = null;
@@ -529,6 +475,8 @@ public class WebApi {
 
             String user_id = (String) partnerParams.get("user_id");
             String job_id = (String) partnerParams.get("job_id");
+            boolean returnHistory = (Boolean) options.get("return_history");
+            boolean returnImages = (Boolean) options.get("return_images");
 
             String jobStatusOptions = new Options(returnHistory, returnImages).get();
             responseStr = utilitiesConnection.get_job_status(user_id, job_id, jobStatusOptions);
@@ -537,8 +485,8 @@ public class WebApi {
             responseJson = (JSONObject) parser.parse(responseStr);
 
             job_complete = (Boolean) responseJson.get("job_complete");
-            if (job_complete == false && counter < 20) {
-                responseJson = pollJobStatus(counter);
+            if (!job_complete && counter < 20) {
+                responseJson = pollJobStatus(counter, partnerParams, options);
             }
         } catch (Exception e) {
             throw e;
