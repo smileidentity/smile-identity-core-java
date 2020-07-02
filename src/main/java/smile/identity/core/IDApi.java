@@ -1,40 +1,41 @@
 package smile.identity.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
-// json converter
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
-// apache http client
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+// json converter
+// apache http client
 
 public class IDApi {
     private String partner_id;
     private String api_key;
     private String url;
 
+    @Deprecated
     public IDApi(String partner_id, String api_key, Integer sid_server) throws Exception {
+        this(partner_id, api_key, String.valueOf(sid_server));
+    }
+
+
+    public IDApi(String partner_id, String api_key, String sid_server) throws Exception {
         try {
-            this.partner_id = partner_id.toString();
+            this.partner_id = partner_id;
             this.api_key = api_key;
 
-            if (sid_server == 0) {
+            if (sid_server.equals("0")) {
                 url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
-            } else if (sid_server == 1) {
+            } else if (sid_server.equals("1")) {
                 url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
+            } else {
+                url = sid_server;
             }
         } catch (Exception e) {
             throw e;

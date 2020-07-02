@@ -3,62 +3,57 @@ package smile.identity.core;
 //export package -tbd
 //package com.smileidentity.services.WebApi
 
-import java.util.HashMap;
-import java.util.Map;
-
-// json converter
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-
-// apache http client
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-
-// zip file
-import java.io.ByteArrayOutputStream;
-import java.util.regex.Pattern;
-import java.util.zip.ZipOutputStream;
-import java.util.zip.ZipEntry;
-
-import java.io.File;
-import java.io.FileInputStream;
-
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.*;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+// json converter
+// apache http client
+// zip file
 
 public class WebApi {
     private String partner_id;
     private String api_key;
 
     private String url;
-    private Integer sid_server;
+    private String sid_server;
     private String callbackUrl;
 
     private Utilities utilitiesConnection;
 
+    @Deprecated
     public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
+        this(partner_id, default_callback, api_key, String.valueOf(sid_server));
+    }
+
+    public WebApi(String partner_id, String default_callback, String api_key, String sid_server) {
         try {
             this.partner_id = partner_id;
             this.callbackUrl = default_callback.trim();
             this.api_key = api_key;
 
-            if (sid_server == 0) {
+            if (sid_server.equals("0")) {
                 url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
-            } else if (sid_server == 1) {
+            } else if (sid_server.equals("1")) {
                 url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
+            } else {
+                url = sid_server;
+                this.sid_server = sid_server;
             }
-
-            this.sid_server = sid_server;
 
         } catch (Exception e) {
             throw e;

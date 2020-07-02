@@ -2,21 +2,19 @@ package smile.identity.core;
 
 // json converter;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
-// apache http client
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 // apache http client
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+// apache http client
 
 public class Utilities {
 
@@ -24,18 +22,23 @@ public class Utilities {
     private String api_key;
     private String url;
 
+    @Deprecated
     public Utilities(String partner_id, String api_key, Integer sid_server) {
+        this(partner_id, api_key, String.valueOf(sid_server));
+    }
+
+    public Utilities(String partner_id, String api_key, String sid_server) {
         try {
             this.partner_id = partner_id;
             this.api_key = api_key;
 
-            if (sid_server == 0) {
+            if (sid_server.equals("0")) {
                 url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
-            } else if (sid_server == 1) {
+            } else if (sid_server.equals("1")) {
                 url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
+            } else {
+                this.url = sid_server;
             }
-
-            this.url = url;
         } catch (Exception e) {
             throw e;
         }
