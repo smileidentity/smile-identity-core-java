@@ -18,6 +18,7 @@ public class IDApi {
     private String partner_id;
     private String api_key;
     private String url;
+    private String sid_server;
 
     @Deprecated
     public IDApi(String partner_id, String api_key, Integer sid_server) throws Exception {
@@ -29,6 +30,7 @@ public class IDApi {
         try {
             this.partner_id = partner_id;
             this.api_key = api_key;
+            this.sid_server = sid_server;
 
             if (sid_server.equals("0")) {
                 url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
@@ -43,6 +45,10 @@ public class IDApi {
     }
 
     public String submit_job(String partner_params, String id_info_params) throws Exception {
+        return submit_job(partner_params, id_info_params, true);
+    }
+
+    public String submit_job(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
 
         String response = null;
         try {
@@ -54,6 +60,7 @@ public class IDApi {
             if (job_type != 5) {
                 throw new IllegalArgumentException("Please ensure that you are setting your job_type to 5 to query ID Api");
             }
+            new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
 
             Long timestamp = System.currentTimeMillis();
             String sec_key = determineSecKey(timestamp);

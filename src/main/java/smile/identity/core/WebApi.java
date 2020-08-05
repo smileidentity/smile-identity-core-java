@@ -45,6 +45,7 @@ public class WebApi {
             this.partner_id = partner_id;
             this.callbackUrl = default_callback.trim();
             this.api_key = api_key;
+            this.sid_server = sid_server;
 
             if (sid_server.equals("0")) {
                 url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
@@ -52,7 +53,6 @@ public class WebApi {
                 url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
             } else {
                 url = sid_server;
-                this.sid_server = sid_server;
             }
 
         } catch (Exception e) {
@@ -61,6 +61,10 @@ public class WebApi {
     }
 
     public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws Exception {
+        return submit_job(partner_params, images_params, id_info_params, options_params, true);
+    }
+
+    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean useValidationApi) throws Exception {
         try {
 
             JSONParser parser = new JSONParser();
@@ -75,6 +79,7 @@ public class WebApi {
 
             Long job_type = (Long) partnerParams.get("job_type");
             if (job_type == 5) {
+                new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
                 return callIDApi(partnerParams, idInfo);
             }
 
@@ -84,6 +89,7 @@ public class WebApi {
             validateImages(images);
 
             if (job_type == 1) {
+                new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
                 validateEnrollWithId(images, idInfo);
             }
             validateReturnData((Boolean) options.get("return_job_status"));

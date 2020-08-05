@@ -4,14 +4,20 @@ package smile.identity.core;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.TextUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 // apache http client
 // apache http client
@@ -57,6 +63,86 @@ public class Utilities {
         }
 
         return queryJobStatus(user_id, job_id, optionsJson).toString();
+    }
+
+    public void validateIdParams(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
+        JSONParser parser = new JSONParser();
+        JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
+        JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
+        if (!idInfo.containsKey("entered") || !((Boolean) idInfo.get("entered"))) {
+            return;
+        }
+        JSONObject combined = idInfo;
+        for (Object key : partnerParams.keySet()) {
+            combined.put(key, partnerParams.get(key));
+        }
+
+        List<String> generalRequire = new ArrayList<String>() {
+            {
+                add("country");
+                add("id_type");
+                add("id_number");
+            }
+        };
+        if (combined.containsKey("entered")) {
+            for (String key : generalRequire) {
+                if (!combined.containsKey(key)) {
+                    throw new IllegalArgumentException("key " + key + " cannot be empty");
+                }
+            }
+        }
+        if (!useValidationApi) {
+            return;
+        }
+        JSONObject smileServices = querySmieServices();
+        JSONArray idTypes = ((JSONArray) smileServices.get("id_types"));
+        for (int i = 0; i < idTypes.size(); i++) {
+            JSONObject idType = (JSONObject) idTypes.get(i);
+            if (!idType.containsKey(combined.get("country").toString())) {
+                throw new IllegalArgumentException("Invalid value for key country");
+            }
+            JSONObject country = (JSONObject) idType.get(combined.get("country").toString());
+            if (!country.containsKey(combined.get("id_type").toString())) {
+                throw new IllegalArgumentException("Invalid value for key id_type");
+            }
+            JSONArray params = (JSONArray) country.get(combined.get("id_type").toString());
+            for (int k = 0; k < params.size(); k++) {
+                String param = (String) params.get(k);
+                if (!combined.containsKey(param) ||
+                        (combined.get(param) == null && TextUtils.isEmpty(combined.get(param).toString()))) {
+                    throw new IllegalArgumentException("Invalid value for key " + param);
+                }
+            }
+        }
+    }
+
+    public JSONObject querySmieServices() throws Exception {
+        JSONObject responseJson = null;
+
+        String smileServicesUrl = (url + "/services").toString();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(smileServicesUrl);
+
+        try {
+
+            httpGet.setHeader("content-type", "application/json");
+
+            HttpResponse response = client.execute(httpGet);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            String strResult = readHttpResponse(response);
+
+            if (statusCode != 200) {
+                final String msg = String.format("Failed to get entity frm %s, response=%d:%s - %s",
+                        smileServicesUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+                throw new RuntimeException(msg);
+            } else {
+                JSONParser parser = new JSONParser();
+                responseJson = (JSONObject) parser.parse(strResult);
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return responseJson;
     }
 
     private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws Exception {
