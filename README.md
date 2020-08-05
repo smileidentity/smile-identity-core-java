@@ -73,6 +73,11 @@ Your call to the library will be similar to the below code snippet:
     throw e;
   }
 ```
+This will first perform validation of id params and partner params if the id params information has been entered
+and job type us 5 or 1 to remove this validation please use 
+```java
+String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get(),False);
+```
 
 Please note that if you do not need to pass through IDParameters or Options, you may omit calling those class and send through null in submit_job, as follows:
 ```
@@ -332,6 +337,12 @@ Your call to the library will be similar to the below code snippet:
   String response = connection.submit_job(partnerParameters.get(), idInfo.get());  
 ```
 
+This will first perform validation of id params and partner params if the id params information has been entered
+and job type us 5 or 1 to remove this validation please use 
+```java
+String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get(),False);
+```
+
 **Response**
 
 Your response will return a JSON String containing the below:
@@ -427,6 +438,20 @@ System.out.println(job_status);
 ```
 
 This returns the job status as stringified json data.
+
+```java
+import smile.identity.core.Utilities;
+try{
+
+new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).querySmieServices();
+
+}catch(Exception e){
+e.printStackTrace();
+}
+
+```
+
+used to retreive all smile services from the smile services endpoint
 
 ## Development
 
