@@ -2,22 +2,14 @@ package smile.identity.core;
 
 import org.json.simple.JSONObject;
 
-import java.util.Base64;
-import java.security.spec.X509EncodedKeySpec;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.MessageDigest;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchProviderException;
-
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.BadPaddingException;
 import javax.crypto.NoSuchPaddingException;
-
 import java.io.IOException;
+import java.security.*;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 public class Signature {
     private Integer partnerId;

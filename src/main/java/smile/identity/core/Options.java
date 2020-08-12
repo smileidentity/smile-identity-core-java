@@ -25,6 +25,14 @@ public class Options implements Parameters {
     }
 
     public void add(String key, String value) {
+        if (options == null) {
+            options = new JSONObject();
+        }
+        try {
+            options.put(key, value);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public String get() {
