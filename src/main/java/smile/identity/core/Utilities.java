@@ -64,7 +64,7 @@ public class Utilities {
         return queryJobStatus(user_id, job_id, optionsJson).toString();
     }
 
-    public void validateIdParams(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
+    public void validate_id_params(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
         JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
@@ -93,7 +93,7 @@ public class Utilities {
         if (!useValidationApi) {
             return;
         }
-        JSONObject smileServices = querySmieServices();
+        JSONObject smileServices = query_smile_id_services();
         JSONArray idTypes = ((JSONArray) smileServices.get("id_types"));
         for (int i = 0; i < idTypes.size(); i++) {
             JSONObject idType = (JSONObject) idTypes.get(i);
@@ -115,7 +115,7 @@ public class Utilities {
         }
     }
 
-    public JSONObject querySmieServices() throws Exception {
+    public JSONObject query_smile_id_services() throws Exception {
         JSONObject responseJson = null;
 
         String smileServicesUrl = (url + "/services").toString();

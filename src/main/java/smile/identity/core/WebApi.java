@@ -79,7 +79,7 @@ public class WebApi {
 
             Long job_type = (Long) partnerParams.get("job_type");
             if (job_type == 5) {
-                new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
+                new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
                 return callIDApi(partnerParams, idInfo);
             }
 
@@ -89,7 +89,7 @@ public class WebApi {
             validateImages(images);
 
             if (job_type == 1) {
-                new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
+                new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
                 validateEnrollWithId(images, idInfo);
             }
             validateReturnData((Boolean) options.get("return_job_status"));

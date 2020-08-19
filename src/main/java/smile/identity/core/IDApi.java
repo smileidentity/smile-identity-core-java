@@ -60,7 +60,7 @@ public class IDApi {
             if (job_type != 5) {
                 throw new IllegalArgumentException("Please ensure that you are setting your job_type to 5 to query ID Api");
             }
-            new Utilities(partner_id, api_key, sid_server).validateIdParams(partner_params, id_info_params, useValidationApi);
+            new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
 
             Long timestamp = System.currentTimeMillis();
             String sec_key = determineSecKey(timestamp);

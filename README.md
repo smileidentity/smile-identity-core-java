@@ -1,6 +1,8 @@
 # SmileIdentityCore
 
-The official Smile Identity gem exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
+The official Smile Identity library exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
+
+Please see [changelog,md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md). for release versions and changes
 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
@@ -15,6 +17,9 @@ The **Signature Class** allows you as the Partner to generate a sec key to inter
 
 The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
 - get_job_status
+- validate_id_params
+- validate_id_params
+- query_smile_id_services
 
 ## Documentation
 
@@ -55,16 +60,16 @@ Your call to the library will be similar to the below code snippet:
     partnerParameters.add("optional_info", "some optional info");
 
     // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-    IDParameters idInfo = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>, <String entered>);
+    IDParameters idParameters = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>, <String entered>);
 
     ImageParameters imageParameters = new ImageParameters();
     imageParameters.add(0, "../download.png");
 
     Options options = new Options("optional_callback.com", true, false, false);
 
-    WebApi connection = new WebApi("125", "default_callback.com", "<the decoded-version of-your-api-key>", 0);
+    WebApi connection = new WebApi("partner_id", "default_callback.com", "<the decoded-version of-your-api-key>", 0);
 
-    String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get());
+    String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get());
 
     System.out.println("\n Response" + response);
 
@@ -73,38 +78,38 @@ Your call to the library will be similar to the below code snippet:
     throw e;
   }
 ```
-This will first perform validation of id params and partner params if the id params information has been entered
+This will first perform validation of IDParameters and PartnerParameters if the IDParameters information has been entered
 and job type us 5 or 1 to remove this validation please use 
 ```java
-String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get(),False);
+String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(),False);
 ```
 
 Please note that if you do not need to pass through IDParameters or Options, you may omit calling those class and send through null in submit_job, as follows:
-```
+```java
 String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), null, null);
 ```
 
 In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
 
-```
-$ response = connection.submit_job(partner_params, null, id_info, null);
+```java
+$ response = connection.submit_job(partnerParameters.get(), null, idParameters.get(), null);
 ```
 
 or, you can omit the two null parameters:
-```
-$ response = connection.submit_job(partner_params, id_info);
+```java
+$ response = connection.submit_job(partnerParameters.get(), idParameters.get());
 ```
 
 
 **Response:**
 
 Should you choose to *set return_job_status to false*, the response will be a JSON String containing:
-```
+```json
 {success: true, smile_job_id: smile_job_id}
 ```
 
 However, if you have *set return_job_status to true (with image_links and history)* then you will receive JSON Object response like below:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -182,7 +187,7 @@ However, if you have *set return_job_status to true (with image_links and histor
 ```
 
 You can also *view your response asynchronously at the callback* that you have set, it will look as follows:
-```
+```json
 {
    "job_success":true,
    "result":{
@@ -258,7 +263,7 @@ You can also *view your response asynchronously at the callback* that you have s
 ```
 
 If you have queried a job type 5, your response be a JSON String that will contain the following:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -307,7 +312,7 @@ Thereafter, simply call get_job_status with the correct parameters using the cla
 ```
 
 Please note that if you do not need to pass through Options if you will not be using them, you may omit calling those class and send through null instead:
-```
+```java
 String response = connection.get_job_status(partnerParameters.get(), null);
 ```
 
@@ -330,23 +335,24 @@ Your call to the library will be similar to the below code snippet:
   PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer 5>);
 
   // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-  IDParameters idInfo = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>);
+  IDParameters idParameters = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>);
   // Note that entered is not required for ID API
 
   IDApi connection = new IDApi(<String partner_id>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
-  String response = connection.submit_job(partnerParameters.get(), idInfo.get());  
+  String response = connection.submit_job(partnerParameters.get(), idParameters.get());  
 ```
 
-This will first perform validation of id params and partner params if the id params information has been entered
-and job type us 5 or 1 to remove this validation please use 
+This will first perform validation of IDParameters and PartnerParameters if the IDParameters information has been entered
+and for job type 1 or 5 to disable validation from using the SmileID services endpoint pass a boolean set to false.
+This will still perform the basic validation for country, id type and id number for IDParameters 
 ```java
-String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idInfo.get(), options.get(),False);
+String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(),false);
 ```
 
 **Response**
 
 Your response will return a JSON String containing the below:
-```
+```json
 {
    "JSONVersion":"1.0.0",
    "SmileJobID":"0000001105",
@@ -365,12 +371,12 @@ Your response will return a JSON String containing the below:
    },
    "Country":"NG",
    "IDType":"PASSPORT",
-   "IDNumber":"A04150107",
+   "IDNumber":"A12345",
    "ExpirationDate":"2017-10-28",
-   "FullName":"ADEYEMI KEHINDE ADUNOLA",
-   "DOB":"1989-09-20",
+   "FullName":"John Doe",
+   "DOB":"1900-09-20",
    "Photo":"SomeBase64Image",
-   "sec_key":"pjxsxEY69zEHjSPFvPEQTqu17vpZbw+zTNqaFxRWpYDiO+7wzKc9zvPU2lRGiKg7rff6nGPBvQ6rA7/wYkcLrlD2SuR2Q8hOcDFgni3PJHutij7j6ThRdpTwJRO2GjLXN5HHDB52NjAvKPyclSDANHrG1qb/tloO7x4bFJ7tKYE=|8faebe00b317654548f8b739dc631431b67d2d4e6ab65c6d53539aaad1600ac7",
+   "sec_key":"pjxsx...",
    "timestamp":1570698930193
 }
 ```
@@ -443,7 +449,8 @@ This returns the job status as stringified json data.
 import smile.identity.core.Utilities;
 try{
 
-new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).querySmieServices();
+Utilities utilities = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>);
+utilities.query_smile_id_services();
 
 }catch(Exception e){
 e.printStackTrace();
@@ -451,7 +458,22 @@ e.printStackTrace();
 
 ```
 
-used to retreive all smile services from the smile services endpoint
+This will return the smile services endpoint as a json object and can then be used for validation as per requirement
+
+```java
+import smile.identity.core.Utilities;
+try{
+
+Utilities utilities = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>);
+utilities.validate_id_params(partnerParameters.get(), idParameters.get(),true)
+
+}catch(Exception e){
+e.printStackTrace();
+}
+
+```
+
+This will validate id parameters using the smile services endpoint which checks the provided user id and partner params. If use_validation_api is False it will only do a local validation to check for country, id type and id number but by default this is True and will check against the smile services endpoint and if any key is missing will throw an exception
 
 ## Development
 
