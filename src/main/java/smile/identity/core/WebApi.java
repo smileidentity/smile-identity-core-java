@@ -43,7 +43,8 @@ public class WebApi {
     public WebApi(String partner_id, String default_callback, String api_key, String sid_server) {
         try {
             this.partner_id = partner_id;
-            this.callbackUrl = default_callback.trim();
+            //TODO:
+            this.callbackUrl = (default_callback != null) ? default_callback.trim() : "";
             this.api_key = api_key;
             this.sid_server = sid_server;
 

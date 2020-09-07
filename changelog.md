@@ -51,5 +51,6 @@ Allow more image_type_id specifically 4 and 6 for more information on this pleas
 Also removed validations on id or selfie images
 
 ## [1.0.5] - 2020-08-05
-Fixed jobs to make sure all job information is related to one thread and instance of all the classes
-Added smile services endpoint to assist with validation  
+* Fixed jobs to make sure all job information is related to one thread and instance of all the classes
+* Added smile services endpoint to assist with validation
+* Fixed possible crash when  passing null callback_url to WebApi  class  
