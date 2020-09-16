@@ -24,15 +24,17 @@ public class Options implements Parameters {
         this.options = obj;
     }
 
-    public void add(String key, String value) {
-        if (options == null) {
-            options = new JSONObject();
+    public void add(String key, String value)  {
+        if (this.options == null) {
+            this.options = new JSONObject();
         }
-        try {
-            options.put(key, value);
-        } catch (Exception e) {
-            throw e;
+        if (checkNullAndEmpty(key)) {
+            throw new IllegalArgumentException("key cannot be null or empty");
         }
+        if (checkNullAndEmpty(value)) {
+            throw new IllegalArgumentException(key + " cannot be null or empty");
+        }
+        this.options.put(key, value);
     }
 
     public String get() {
