@@ -33,7 +33,7 @@ public class PartnerParameters implements Parameters {
         this.partnerParams = obj;
     }
 
-    public void add(String key, String value) {
+    public void add(String key, String value) throws IllegalArgumentException {
         if (this.partnerParams == null) {
             this.partnerParams = new JSONObject();
         }

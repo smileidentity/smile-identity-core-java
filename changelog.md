@@ -53,4 +53,7 @@ Also removed validations on id or selfie images
 ## [1.0.5] - 2020-08-05
 * Fixed jobs to make sure all job information is related to one thread and instance of all the classes
 * Added smile services endpoint to assist with validation
-* Fixed possible crash when  passing null callback_url to WebApi  class  
+* Fixed possible crash when  passing null callback_url to WebApi  class
+
+## [1.0.6] - 2020-09-16
+* Fixed the empty  add methods on parameters to the server, should be able to handle empty cases and throw errors if empty or  null  

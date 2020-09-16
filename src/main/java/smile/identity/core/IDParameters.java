@@ -62,7 +62,7 @@ public class IDParameters implements Parameters {
         this.idInfo = obj;
     }
 
-    public void add(String key, String value) {
+    public void add(String key, String value) throws IllegalArgumentException {
         if (this.idInfo == null) {
             this.idInfo = new JSONObject();
         }

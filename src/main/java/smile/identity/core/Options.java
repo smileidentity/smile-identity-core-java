@@ -24,7 +24,7 @@ public class Options implements Parameters {
         this.options = obj;
     }
 
-    public void add(String key, String value)  {
+    public void add(String key, String value) throws IllegalArgumentException  {
         if (this.options == null) {
             this.options = new JSONObject();
         }

@@ -11,7 +11,7 @@ public class ImageParameters {
         this.images = images;
     }
 
-    public void add(Integer image_type_id, String image) {
+    public void add(Integer image_type_id, String image) throws IllegalArgumentException {
         if (this.images == null) {
             this.images = new JSONArray();
         }
