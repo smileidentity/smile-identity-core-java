@@ -76,6 +76,7 @@ public class Signature {
     }
 
     private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
+        apiKey = apiKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "").replace("\n", "").replace("\r", "").trim();
         byte[] data = Base64.getDecoder().decode((apiKey.getBytes()));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
         KeyFactory factObj = KeyFactory.getInstance("RSA");
