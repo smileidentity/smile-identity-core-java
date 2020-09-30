@@ -56,4 +56,7 @@ Also removed validations on id or selfie images
 * Fixed possible crash when  passing null callback_url to WebApi  class
 
 ## [1.0.6] - 2020-09-16
-* Fixed the empty  add methods on parameters to the server, should be able to handle empty cases and throw errors if empty or  null  
+* Fixed the empty  add methods on parameters to the server, should be able to handle empty cases and throw errors if empty or  null
+
+## [1.0.7] - 2020-09-30
+* Fixed the public key issue now can use one line, or multi line or exact copy from portal  
