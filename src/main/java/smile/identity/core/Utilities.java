@@ -15,8 +15,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 // apache http client
 // apache http client
@@ -68,7 +67,7 @@ public class Utilities {
         JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
-        if (!idInfo.containsKey("entered") || !((Boolean) idInfo.get("entered"))) {
+        if (!idInfo.containsKey("entered") || !Boolean.parseBoolean(String.valueOf(idInfo.get("entered")))) {
             return;
         }
         JSONObject combined = idInfo;
@@ -94,22 +93,23 @@ public class Utilities {
             return;
         }
         JSONObject smileServices = query_smile_id_services();
-        JSONArray idTypes = ((JSONArray) smileServices.get("id_types"));
-        for (int i = 0; i < idTypes.size(); i++) {
-            JSONObject idType = (JSONObject) idTypes.get(i);
-            if (!idType.containsKey(combined.get("country").toString())) {
+        JSONObject idTypes = ((JSONObject) smileServices.get("id_types"));
+        if (idTypes != null) {
+            if (!idTypes.containsKey(combined.get("country").toString())) {
                 throw new IllegalArgumentException("Invalid value for key country");
             }
-            JSONObject country = (JSONObject) idType.get(combined.get("country").toString());
+
+            JSONObject country = (JSONObject) idTypes.get(combined.get("country").toString());
             if (!country.containsKey(combined.get("id_type").toString())) {
                 throw new IllegalArgumentException("Invalid value for key id_type");
             }
+
             JSONArray params = (JSONArray) country.get(combined.get("id_type").toString());
             for (int k = 0; k < params.size(); k++) {
                 String param = (String) params.get(k);
                 if (!combined.containsKey(param) ||
                         (combined.get(param) == null && TextUtils.isEmpty(combined.get(param).toString()))) {
-                    throw new IllegalArgumentException("Invalid value for key " + param);
+                    throw new IllegalArgumentException("Invalid or missing value for key " + param);
                 }
             }
         }

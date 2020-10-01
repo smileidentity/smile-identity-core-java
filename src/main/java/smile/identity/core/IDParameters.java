@@ -5,6 +5,10 @@ import org.json.simple.JSONObject;
 public class IDParameters implements Parameters {
     JSONObject idInfo;
 
+    public IDParameters(String country, String id_type, String id_number, String entered) {
+        this("", "", "", country, id_type, id_number, "", "", entered);
+    }
+
     public IDParameters(String first_name, String middle_name, String last_name, String country, String id_type, String id_number, String dob, String phone_number, String entered) {
         JSONObject obj = new JSONObject();
 
