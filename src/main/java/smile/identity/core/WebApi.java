@@ -35,6 +35,9 @@ public class WebApi {
 
     private Utilities utilitiesConnection;
 
+    private int connectionTimeout = -1;
+    private int readTimeout = -1;
+
     @Deprecated
     public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
         this(partner_id, default_callback, api_key, String.valueOf(sid_server));
@@ -61,6 +64,12 @@ public class WebApi {
         }
     }
 
+    public WebApi(String partner_id, String default_callback, String api_key, String sid_server, int connectionTimeout, int readTimeout) {
+        this(partner_id, default_callback, api_key, sid_server);
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
+    }
+
     public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws Exception {
         return submit_job(partner_params, images_params, id_info_params, options_params, true);
     }
@@ -80,7 +89,7 @@ public class WebApi {
 
             Long job_type = (Long) partnerParams.get("job_type");
             if (job_type == 5) {
-                new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
+                new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
                 return callIDApi(partnerParams, idInfo);
             }
 
@@ -90,7 +99,7 @@ public class WebApi {
             validateImages(images);
 
             if (job_type == 1) {
-                new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
+                new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
                 validateEnrollWithId(images, idInfo);
             }
             validateReturnData((Boolean) options.get("return_job_status"));
@@ -140,7 +149,7 @@ public class WebApi {
             String user_id = (String) partnerParams.get("user_id");
             String job_id = (String) partnerParams.get("job_id");
 
-            Utilities utilities = new Utilities(partner_id, api_key, sid_server);
+            Utilities utilities = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
             response = utilities.get_job_status(user_id, job_id, options);
         } catch (Exception e) {
             throw e;
@@ -152,7 +161,7 @@ public class WebApi {
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo) throws Exception {
         String response = null;
         try {
-            IDApi connection = new IDApi(partner_id, api_key, sid_server);
+            IDApi connection = new IDApi(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
             response = connection.submit_job(partnerParams.toString(), idInfo.toString());
         } catch (Exception e) {
             throw e;
@@ -244,7 +253,7 @@ public class WebApi {
         try {
             String prepUploadUrl = url + "/upload";
 
-            HttpClient client = new DefaultHttpClient();
+            HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
             HttpPost post = new HttpPost(prepUploadUrl.trim());
             JSONObject uploadBody = configurePrepUploadJson(secKey, timeStamp, partnerParams);
             StringEntity entityForPost = new StringEntity(uploadBody.toString());
@@ -269,7 +278,7 @@ public class WebApi {
                 ByteArrayOutputStream baos = zipUpFile(infoJson, images);
                 uploadFile(uploadUrl, baos);
                 if ((Boolean) options.get("return_job_status") == true) {
-                    Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server);
+                    Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
                     this.utilitiesConnection = utilitiesConnection;
 
                     Integer counter = 0;

@@ -4,10 +4,11 @@ package smile.identity.core;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.TextUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,7 +16,8 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // apache http client
 // apache http client
@@ -25,6 +27,8 @@ public class Utilities {
     private String partner_id;
     private String api_key;
     private String url;
+    private int connectionTimeout = -1;
+    private int readTimeout = -1;
 
     @Deprecated
     public Utilities(String partner_id, String api_key, Integer sid_server) {
@@ -46,6 +50,12 @@ public class Utilities {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public Utilities(String partner_id, String api_key, String sid_server, int connectionTimeout, int readTimeout) {
+        this(partner_id, api_key, sid_server);
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
     }
 
     public String get_job_status(String user_id, String job_id, String options) throws Exception {
@@ -119,7 +129,7 @@ public class Utilities {
         JSONObject responseJson = null;
 
         String smileServicesUrl = (url + "/services").toString();
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
         HttpGet httpGet = new HttpGet(smileServicesUrl);
 
         try {
@@ -149,7 +159,7 @@ public class Utilities {
         JSONObject responseJson = null;
 
         String jobStatusUrl = (url + "/job_status").toString();
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
         HttpPost post = new HttpPost(jobStatusUrl);
 
         try {
@@ -244,5 +254,18 @@ public class Utilities {
         }
 
         return obj;
+    }
+
+    static HttpClient buildHttpClient(int connectionTimeout, int readTimeout) {
+
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout)
+                .setConnectionRequestTimeout(connectionTimeout)
+                .setSocketTimeout(readTimeout)
+                .build();
+
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(config)
+                .build();
     }
 }

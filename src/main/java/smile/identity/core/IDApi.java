@@ -4,7 +4,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -19,6 +18,9 @@ public class IDApi {
     private String api_key;
     private String url;
     private String sid_server;
+
+    private int connectionTimeout = -1;
+    private int readTimeout = -1;
 
     @Deprecated
     public IDApi(String partner_id, String api_key, Integer sid_server) throws Exception {
@@ -44,6 +46,12 @@ public class IDApi {
         }
     }
 
+    public IDApi(String partner_id, String api_key, String sid_server, int connectionTimeout, int readTimeout) throws Exception {
+        this(partner_id, api_key, sid_server);
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
+    }
+
     public String submit_job(String partner_params, String id_info_params) throws Exception {
         return submit_job(partner_params, id_info_params, true);
     }
@@ -60,7 +68,7 @@ public class IDApi {
             if (job_type != 5) {
                 throw new IllegalArgumentException("Please ensure that you are setting your job_type to 5 to query ID Api");
             }
-            new Utilities(partner_id, api_key, sid_server).validate_id_params(partner_params, id_info_params, useValidationApi);
+            new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
 
             Long timestamp = System.currentTimeMillis();
             String sec_key = determineSecKey(timestamp);
@@ -78,7 +86,7 @@ public class IDApi {
         try {
             String idApiUrl = url + "/id_verification";
 
-            HttpClient client = new DefaultHttpClient();
+            HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
             HttpPost post = new HttpPost(idApiUrl.trim());
             JSONObject uploadBody = configureJson(sec_key, timestamp, partnerParams, idInfo);
             StringEntity entityForPost = new StringEntity(uploadBody.toString());
