@@ -17,7 +17,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,6 +27,9 @@ import java.util.zip.ZipOutputStream;
 // zip file
 
 public class WebApi {
+
+    private static final List<String> SUPPORTED_IMAGE_TYPES = Arrays.asList(".png", ".jpg", ".jpeg");
+
     private String partner_id;
     private String api_key;
 
@@ -378,10 +382,9 @@ public class WebApi {
                 Long image_type_id = (Long) ((JSONObject) o).get("image_type_id");
                 imageObject.put("image_type_id", ((JSONObject) o).get("image_type_id"));
 
-                Pattern pattern = Pattern.compile("(?=.*.png)(?=.*.jpg)(?=.*.jpeg)");
                 String imageType = (String) ((JSONObject) o).get("image");
 
-                if (pattern.matcher(imageType).find()) {
+                if (SUPPORTED_IMAGE_TYPES.stream().anyMatch(imageType::endsWith)) {
                     imageObject.put("image", "");
                     String filePath = ((JSONObject) o).get("image").toString();
                     String fileName = new File(filePath).getName();
@@ -411,9 +414,8 @@ public class WebApi {
 
             for (Object o : images) {
                 if (o instanceof JSONObject) {
-                    Pattern pattern = Pattern.compile("(?=.*.png)(?=.*.jpg)(?=.*.jpeg)");
                     String imageType = (String) ((JSONObject) o).get("image");
-                    if (pattern.matcher(imageType).find()) {
+                    if (SUPPORTED_IMAGE_TYPES.stream().anyMatch(imageType::endsWith)) {
                         String fileName = ((JSONObject) o).get("image").toString();
                         File file = new File(fileName);
                         FileInputStream fis = new FileInputStream(file);
