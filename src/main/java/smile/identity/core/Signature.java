@@ -40,10 +40,11 @@ public class Signature {
      *  Will generate a signature for the provided timestamp
      * @param timestamp the timestamp to generate the signature from
      * @return the JSON Object containing both the signature and related timestamp
-     * @throws Exception
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeyException
      */
     @SuppressWarnings({ "unchecked" })
-	public JSONObject generateSignature(Long timestamp) throws Exception {
+	public JSONObject generateSignature(Long timestamp) throws NoSuchAlgorithmException, InvalidKeyException {
         JSONObject signatureObj = new JSONObject();
     	signatureObj.put(TIME_STAMP_KEY, timestamp);
     	
@@ -70,7 +71,7 @@ public class Signature {
     public Boolean confirmSignature(Long timestamp, String signature) {
 	    try {
 			return signature.equalsIgnoreCase((String) generateSignature(timestamp).get(SIGNATURE_KEY));
-		} catch (Exception e) {
+		} catch (NoSuchAlgorithmException|InvalidKeyException e) {
 			return false;
 		}
     }
