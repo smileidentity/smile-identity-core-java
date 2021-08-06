@@ -427,7 +427,7 @@ try {
   // If it is valid then use the response, else throw an error
 } catch (Exception e) {
   e.printStackTrace();
-  throw e;
+  return false;
 }
 ```
 
@@ -470,14 +470,8 @@ You can also confirm the signature that you receive when you interacting with ou
 ```java
 import smile.identity.core.Signature;
 
-try {
-  Signature connection = new Signature(partnerId, apiKey);
-  String signatureJsonStr = connection.confirmSignature(signature, timestamp);
-  // If it is valid then use the response, else throw an error
-} catch (Exception e) {
-  e.printStackTrace();
-  throw e;
-}
+Signature connection = new Signature(partnerId, apiKey);
+boolean signatureConfirmed = connection.confirmSignature(signature, timestamp);
 ```
 
 
