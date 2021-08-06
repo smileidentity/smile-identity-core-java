@@ -16,86 +16,108 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 public class Signature {
-    private Integer partnerId;
-    private String api_key;
 
-    public Signature(String partner_id, String api_key) {
+    private static final String SHA_256 = "SHA-256";
+    private static final String HMAC_SHA_256 = "HmacSHA256";
+    public static final String SEC_KEY = "sec_key";
+    public static final String TIME_STAMP_KEY = "timestamp";
+    public static final String SIGNATURE_KEY = "signature";
+	
+    private Integer partnerId;
+    private String apiKey;
+
+    public Signature(String partner_id, String apiKey) {
         int partnerId = Integer.parseInt(partner_id);
         this.partnerId = partnerId;
-        this.api_key = api_key;
+        this.apiKey = apiKey;
     }
     
-    @SuppressWarnings({ "unchecked", "finally" })
-	public JSONObject generateSignature(Long timestamp) {
+	public JSONObject generateSignature() throws Exception {
+    	return generateSignature(System.currentTimeMillis());
+    }
+    
+	/***
+     *  Will generate a signature for the provided timestamp
+     * @param timestamp the timestamp to generate the signature from
+     * @return the JSON Object containing both the signature and related timestamp
+     * @throws Exception
+     */
+    @SuppressWarnings({ "unchecked" })
+	public JSONObject generateSignature(Long timestamp) throws Exception {
         JSONObject signatureObj = new JSONObject();
-    	signatureObj.put("timestamp", timestamp);
+    	signatureObj.put(TIME_STAMP_KEY, timestamp);
     	
-    	try {
-    		SecretKeySpec secretKeySpec = new SecretKeySpec(api_key.getBytes(), "SHA-256");
-            Mac mac = Mac.getInstance("SHA-256");
-            mac.init(secretKeySpec);
-    		mac.update(timestamp.toString().getBytes(StandardCharsets.UTF_8));
-    		mac.update(partnerId.toString().getBytes(StandardCharsets.UTF_8));
-    		mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
-    		String signature = Base64.getEncoder().encodeToString(mac.doFinal());
-    		signatureObj.put("signature", signature);
-        } catch (Exception e) {
-		} finally {
-			return signatureObj;
-		}
+    	SecretKeySpec secretKeySpec = new SecretKeySpec(apiKey.getBytes(), HMAC_SHA_256);
+    	
+        Mac mac = Mac.getInstance(HMAC_SHA_256);
+        mac.init(secretKeySpec);
+		mac.update(timestamp.toString().getBytes(StandardCharsets.UTF_8));
+		mac.update(partnerId.toString().getBytes(StandardCharsets.UTF_8));
+		mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
+		
+		String signature = Base64.getEncoder().encodeToString(mac.doFinal());
+		signatureObj.put(SIGNATURE_KEY, signature);
+		
+		return signatureObj;
     }
     
+	/***
+     *  Will confirm the signature against a newly generated signature based on the same timestamp
+     * @param timestamp the timestamp to generate the signature from
+     * @param signature a previously signature, to be confirmed
+     * @return TRUE or FALSE
+     */
     public Boolean confirmSignature(Long timestamp, String signature) {
 	    try {
-			return signature.equalsIgnoreCase((String) generateSignature(timestamp).get("signature"));
+			return signature.equalsIgnoreCase((String) generateSignature(timestamp).get(SIGNATURE_KEY));
 		} catch (Exception e) {
 			return false;
 		}
     }
 
-    public String generate_sec_key(Long timestamp) throws Exception {
+    @SuppressWarnings("unchecked")
+	public String generateSecKey(Long timestamp) throws Exception {
         String toHash = partnerId + ":" + timestamp;
         String signature = "";
         JSONObject signatureObj = new JSONObject();
 
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance(SHA_256);
             md.update(toHash.getBytes());
             byte[] hashed = md.digest();
             String hashSignature = bytesToHexStr(hashed);
 
-            PublicKey publicKey = loadPublicKey(api_key);
+            PublicKey publicKey = loadPublicKey(apiKey);
             byte[] encSignature = encryptString(publicKey, hashSignature);
             signature = Base64.getEncoder().encodeToString(encSignature) + "|" + hashSignature;
         } catch (Exception e) {
             throw e;
         }
 
-        signatureObj.put("sec_key", signature);
-        signatureObj.put("timestamp", timestamp);
+        signatureObj.put(SEC_KEY, signature);
+        signatureObj.put(SIGNATURE_KEY, timestamp);
         return signatureObj.toString();
     }
 
     // we overload the method for the optional timestamp
-    public String generate_sec_key() throws Exception {
+    public String generateSecKey() throws Exception {
         Long timestamp = System.currentTimeMillis();
-        return generate_sec_key(timestamp);
+        return generateSecKey(timestamp);
     }
 
-    public Boolean confirm_sec_key(String timestamp, String sec_key) throws Exception {
+    public Boolean confirmSecKey(String timestamp, String secKey) throws Exception {
         String toHash = partnerId + ":" + timestamp;
-        Boolean valid = false;
-
+        
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance(SHA_256);
             md.update(toHash.getBytes());
             byte[] hashed = md.digest();
             String hashSignature = bytesToHexStr(hashed);
 
-            String[] arrOfStr = sec_key.split("\\|");
+            String[] arrOfStr = secKey.split("\\|");
             String encrypted = arrOfStr[0];
 
-            PublicKey publicKey = loadPublicKey(api_key);
+            PublicKey publicKey = loadPublicKey(apiKey);
 
             byte[] decodedBytes = Base64.getDecoder().decode(encrypted);
             String decrypted = decryptString(publicKey, decodedBytes);
@@ -104,7 +126,6 @@ public class Signature {
         } catch (Exception e) {
             throw e;
         }
-
     }
 
     private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
@@ -130,10 +151,11 @@ public class Signature {
 
     private static String bytesToHexStr(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
+        
         for (byte b : bytes) {
             sb.append(String.format("%02x", b));
         }
+        
         return sb.toString();
     }
-
 }

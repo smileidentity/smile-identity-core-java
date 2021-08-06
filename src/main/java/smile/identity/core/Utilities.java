@@ -183,7 +183,7 @@ public class Utilities {
                 String timestamp = (String) responseJson.get("timestamp");
                 String secKey = (String) responseJson.get("signature");
 
-                Boolean valid = new SignatureTest(partner_id, api_key).confirm_sec_key(timestamp, secKey);
+                Boolean valid = new SignatureTest(partner_id, api_key).confirmSecKey(timestamp, secKey);
                 if (!valid) {
                     throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
                 }
@@ -220,7 +220,7 @@ public class Utilities {
         JSONParser parser = new JSONParser();
 
         try {
-            String signatureJsonStr = connection.generate_sec_key(timestamp);
+            String signatureJsonStr = connection.generateSecKey(timestamp);
             JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
             secKey = (String) signature.get("sec_key");
         } catch (Exception e) {

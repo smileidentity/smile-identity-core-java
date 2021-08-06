@@ -241,7 +241,7 @@ public class WebApi {
         JSONParser parser = new JSONParser();
 
         try {
-            String signatureJsonStr = connection.generate_sec_key(timestamp);
+            String signatureJsonStr = connection.generateSecKey(timestamp);
 
             JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
             secKey = (String) signature.get("sec_key");
