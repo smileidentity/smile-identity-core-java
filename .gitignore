@@ -141,3 +141,8 @@ gradle-app.setting
 gradle.properties
 # End of https://www.gitignore.io/api/macos,gradle,intellij
 /bin/
+
+# Avoid sending Eclipse-generated files
+.classpath
+.project
+.settings/
