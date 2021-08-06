@@ -236,7 +236,7 @@ public class WebApi {
     }
 
     private String determineSecKey(Long timestamp) throws Exception {
-        Signature connection = new Signature(partner_id, api_key);
+        SignatureTest connection = new SignatureTest(partner_id, api_key);
         String secKey = "";
         JSONParser parser = new JSONParser();
 

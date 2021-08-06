@@ -5,8 +5,12 @@ import org.json.simple.JSONObject;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -19,6 +23,34 @@ public class Signature {
         int partnerId = Integer.parseInt(partner_id);
         this.partnerId = partnerId;
         this.api_key = api_key;
+    }
+    
+    @SuppressWarnings({ "unchecked", "finally" })
+	public JSONObject generateSignature(Long timestamp) {
+        JSONObject signatureObj = new JSONObject();
+    	signatureObj.put("timestamp", timestamp);
+    	
+    	try {
+    		SecretKeySpec secretKeySpec = new SecretKeySpec(api_key.getBytes(), "SHA-256");
+            Mac mac = Mac.getInstance("SHA-256");
+            mac.init(secretKeySpec);
+    		mac.update(timestamp.toString().getBytes(StandardCharsets.UTF_8));
+    		mac.update(partnerId.toString().getBytes(StandardCharsets.UTF_8));
+    		mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
+    		String signature = Base64.getEncoder().encodeToString(mac.doFinal());
+    		signatureObj.put("signature", signature);
+        } catch (Exception e) {
+		} finally {
+			return signatureObj;
+		}
+    }
+    
+    public Boolean confirmSignature(Long timestamp, String signature) {
+	    try {
+			return signature.equalsIgnoreCase((String) generateSignature(timestamp).get("signature"));
+		} catch (Exception e) {
+			return false;
+		}
     }
 
     public String generate_sec_key(Long timestamp) throws Exception {

@@ -183,7 +183,7 @@ public class Utilities {
                 String timestamp = (String) responseJson.get("timestamp");
                 String secKey = (String) responseJson.get("signature");
 
-                Boolean valid = new Signature(partner_id, api_key).confirm_sec_key(timestamp, secKey);
+                Boolean valid = new SignatureTest(partner_id, api_key).confirm_sec_key(timestamp, secKey);
                 if (!valid) {
                     throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
                 }
@@ -215,7 +215,7 @@ public class Utilities {
 
     // these two methods are common across web api, we could put it in a helper class but it would mean that the functions are public
     private String determineSecKey(Long timestamp) throws Exception {
-        Signature connection = new Signature(partner_id, api_key);
+        SignatureTest connection = new SignatureTest(partner_id, api_key);
         String secKey = "";
         JSONParser parser = new JSONParser();
 
