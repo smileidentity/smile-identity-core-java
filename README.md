@@ -12,8 +12,10 @@ The **ID Api Class** lets you performs basic KYC Services including verifying an
 - submit_job
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
-- generate_sec_key
-- confirm_sec_key
+- generateSecKey
+- confirmSecKey
+- generateSignature
+- confirmSignature
 
 The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
 - get_job_status
