@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class SignatureTest {
     	Long dateTime = new Date().getTime();
     	
     	try {
-        	sigJsonObj = mSignature.generateSignature(dateTime);
+        	sigJsonObj = (JSONObject) new JSONParser().parse(mSignature.generate_signature(dateTime));
     	} catch (Exception e) {
     		System.out.println("EXCEPTION: " + e.getMessage());
     		assertTrue(false);
@@ -43,6 +44,6 @@ public class SignatureTest {
     	String signature = (String) sigJsonObj.get(Signature.SIGNATURE_KEY);
     	assertTrue(!signature.isBlank());
     	
-    	assertTrue(mSignature.confirmSignature(dateTime, signature));
+    	assertTrue(mSignature.confirm_signature(dateTime, signature));
     }
 }

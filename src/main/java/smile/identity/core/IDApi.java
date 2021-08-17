@@ -9,11 +9,13 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 
 // json converter
 // apache http client
 
 public class IDApi {
+	
     private String partner_id;
     private String api_key;
     private String url;
@@ -26,7 +28,6 @@ public class IDApi {
     public IDApi(String partner_id, String api_key, Integer sid_server) throws Exception {
         this(partner_id, api_key, String.valueOf(sid_server));
     }
-
 
     public IDApi(String partner_id, String api_key, String sid_server) throws Exception {
         try {
@@ -53,27 +54,35 @@ public class IDApi {
     }
 
     public String submit_job(String partner_params, String id_info_params) throws Exception {
-        return submit_job(partner_params, id_info_params, true);
+        return submit_job(partner_params, id_info_params, false);
     }
 
-    public String submit_job(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
+    public String submit_job(String partner_params, String id_info_params, Boolean useSignature) throws Exception {
+        return submit_job(partner_params, id_info_params, true, useSignature);
+    }
+
+    public String submit_job(String partner_params, String id_info_params, Boolean useValidationApi, Boolean useSignature) throws Exception {
 
         String response = null;
+        
         try {
             JSONParser parser = new JSONParser();
             JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
             JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
 
             Long job_type = (Long) partnerParams.get("job_type");
+            
             if (job_type != 5) {
                 throw new IllegalArgumentException("Please ensure that you are setting your job_type to 5 to query ID Api");
             }
+            
             new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
 
             Long timestamp = System.currentTimeMillis();
-            String sec_key = determineSecKey(timestamp);
-
-            response = setupRequests(sec_key, timestamp, partnerParams, idInfo);
+            Signature sigObj = new Signature(partner_id, api_key);
+            String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
+            
+            response = setupRequests(signature, timestamp, partnerParams, idInfo, useSignature);
         } catch (Exception e) {
             throw e;
         }
@@ -81,14 +90,15 @@ public class IDApi {
         return response;
     }
 
-    private String setupRequests(String sec_key, Long timestamp, JSONObject partnerParams, JSONObject idInfo) throws Exception {
+    private String setupRequests(String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, Boolean useSignature) throws Exception {
         String strResponse = null;
+        
         try {
             String idApiUrl = url + "/id_verification";
 
             HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
             HttpPost post = new HttpPost(idApiUrl.trim());
-            JSONObject uploadBody = configureJson(sec_key, timestamp, partnerParams, idInfo);
+            JSONObject uploadBody = configureJson(signature, timestamp, partnerParams, idInfo, useSignature);
             StringEntity entityForPost = new StringEntity(uploadBody.toString());
             post.setHeader("content-type", "application/json");
             post.setEntity(entityForPost);
@@ -105,39 +115,25 @@ public class IDApi {
         } catch (Exception e) {
             throw e;
         }
+        
         return strResponse;
     }
 
-    private JSONObject configureJson(String sec_key, Long timestamp, JSONObject partnerParams, JSONObject idInfo) throws Exception {
+    @SuppressWarnings("unchecked")
+	private JSONObject configureJson(String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, Boolean useSignature) throws Exception {
         JSONObject body = new JSONObject();
 
         try {
-            body.put("timestamp", timestamp);
-            body.put("sec_key", sec_key);
+            body.put(Signature.TIME_STAMP_KEY, (useSignature) ? new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp) : timestamp);
+            body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
             body.put("partner_id", partner_id);
             body.put("partner_params", partnerParams);
             body.putAll(idInfo);
         } catch (Exception e) {
             throw e;
         }
+        
         return body;
-    }
-
-    private String determineSecKey(Long timestamp) throws Exception {
-        SignatureTest connection = new SignatureTest(partner_id, api_key);
-        String secKey = "";
-        JSONParser parser = new JSONParser();
-
-        try {
-            String signatureJsonStr = connection.generateSecKey(timestamp);
-
-            JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
-            secKey = (String) signature.get("sec_key");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        return secKey;
     }
 
     private String readHttpResponse(HttpResponse response) throws Exception {
@@ -145,9 +141,11 @@ public class IDApi {
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuffer result = new StringBuffer();
             String line = "";
+            
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
+            
             return result.toString();
         } catch (Exception e) {
             throw e;

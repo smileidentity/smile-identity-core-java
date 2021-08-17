@@ -75,16 +75,19 @@ public class WebApi {
     }
 
     public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws Exception {
-        return submit_job(partner_params, images_params, id_info_params, options_params, true);
+        return submit_job(partner_params, images_params, id_info_params, options_params, true, false);
     }
 
-    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean useValidationApi) throws Exception {
-        try {
+    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean useSignature) throws Exception {
+        return submit_job(partner_params, images_params, id_info_params, options_params, true, false);
+    }
 
+    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean useValidationApi, Boolean useSignature) throws Exception {
+        try {
             JSONParser parser = new JSONParser();
             JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
-
             JSONObject idInfo;
+            
             if (id_info_params != null && !id_info_params.trim().isEmpty()) {
                 idInfo = (JSONObject) parser.parse(id_info_params);
             } else {
@@ -92,9 +95,10 @@ public class WebApi {
             }
 
             Long job_type = (Long) partnerParams.get("job_type");
+            
             if (job_type == 5) {
                 new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
-                return callIDApi(partnerParams, idInfo);
+                return callIDApi(partnerParams, idInfo, useSignature);
             }
 
             JSONArray images = (JSONArray) parser.parse(images_params);
@@ -106,24 +110,30 @@ public class WebApi {
                 new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
                 validateEnrollWithId(images, idInfo);
             }
+            
             validateReturnData((Boolean) options.get("return_job_status"));
             Long timestamp = System.currentTimeMillis();
-            String sec_key = determineSecKey(timestamp);
+            Signature sigObj = new Signature(partner_id, api_key);
+            String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
 
-            return setupRequests(sec_key, timestamp, partnerParams, options, idInfo, images);
+            return setupRequests(signature, timestamp, partnerParams, options, idInfo, images, useSignature);
         } catch (Exception e) {
             throw e;
         }
     }
 
     public String submit_job(String partner_params, String id_info_params) throws Exception {
-        String response = null;
-        try {
+    	return submit_job(partner_params, id_info_params, false);
+    }
 
+    public String submit_job(String partner_params, String id_info_params, Boolean useSignature) throws Exception {
+        String response = null;
+        
+        try {
             JSONParser parser = new JSONParser();
             JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
-
             JSONObject idInfo;
+            
             if (id_info_params == null && id_info_params.trim().isEmpty()) {
                 throw new IllegalArgumentException("You need to send through a vaild ID Information payload");
             } else {
@@ -131,19 +141,24 @@ public class WebApi {
             }
 
             Long job_type = (Long) partnerParams.get("job_type");
+            
             if (job_type == 5) {
-                response = callIDApi(partnerParams, idInfo);
+                response = callIDApi(partnerParams, idInfo, useSignature);
             } else {
                 throw new IllegalArgumentException("You need to send through more parameters");
             }
-
         } catch (Exception e) {
             throw e;
         }
+        
         return response;
     }
 
     public String get_job_status(String partner_params, String options) throws Exception {
+    	return get_job_status(partner_params, options, false);
+    }
+
+    public String get_job_status(String partner_params, String options, Boolean useSignature) throws Exception {
         String response = null;
 
         try {
@@ -154,7 +169,7 @@ public class WebApi {
             String job_id = (String) partnerParams.get("job_id");
 
             Utilities utilities = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
-            response = utilities.get_job_status(user_id, job_id, options);
+            response = utilities.get_job_status(user_id, job_id, options, useSignature);
         } catch (Exception e) {
             throw e;
         }
@@ -162,11 +177,12 @@ public class WebApi {
         return response;
     }
 
-    private String callIDApi(JSONObject partnerParams, JSONObject idInfo) throws Exception {
+    private String callIDApi(JSONObject partnerParams, JSONObject idInfo, Boolean useSignature) throws Exception {
         String response = null;
+        
         try {
             IDApi connection = new IDApi(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
-            response = connection.submit_job(partnerParams.toString(), idInfo.toString());
+            response = connection.submit_job(partnerParams.toString(), idInfo.toString(), useSignature);
         } catch (Exception e) {
             throw e;
         }
@@ -182,8 +198,8 @@ public class WebApi {
 
     private void validateEnrollWithId(JSONArray images, JSONObject idInfo) throws Exception {
         String entered = (String) ((JSONObject) idInfo).get("entered");
-
         Integer counter = 0;
+        
         for (Object o : images) {
             Long image_type_id = (Long) ((JSONObject) o).get("image_type_id");
 
@@ -207,10 +223,13 @@ public class WebApi {
 
         JSONObject options;
         String optionalCallback;
+        
         if (options_params != null && !options_params.trim().isEmpty()) {
             options = (JSONObject) parser.parse(options_params);
+            
             if (options.containsKey("optional_callback")) {
                 String optionalCallBack = (String) options.get("optional_callback");
+                
                 if (optionalCallBack != null && optionalCallBack.trim().isEmpty()) {
                     options.put("optional_callback", options.containsKey("optional_callback"));
                 }
@@ -221,11 +240,13 @@ public class WebApi {
             options.put("return_history", false);
             options.put("return_images", false);
         }
+        
         return options;
     }
 
     private JSONObject fillInIdInfo() throws Exception {
         JSONObject obj = new JSONObject();
+        
         try {
             obj.put("entered", "false");
         } catch (Exception e) {
@@ -235,31 +256,15 @@ public class WebApi {
         return obj;
     }
 
-    private String determineSecKey(Long timestamp) throws Exception {
-        SignatureTest connection = new SignatureTest(partner_id, api_key);
-        String secKey = "";
-        JSONParser parser = new JSONParser();
-
-        try {
-            String signatureJsonStr = connection.generateSecKey(timestamp);
-
-            JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
-            secKey = (String) signature.get("sec_key");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        return secKey;
-    }
-
-    private String setupRequests(String secKey, Long timeStamp, JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception {
+    private String setupRequests(String signature, Long timeStamp, JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images, Boolean useSignature) throws Exception {
         String res = null;
+        
         try {
             String prepUploadUrl = url + "/upload";
 
             HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
             HttpPost post = new HttpPost(prepUploadUrl.trim());
-            JSONObject uploadBody = configurePrepUploadJson(secKey, timeStamp, partnerParams);
+            JSONObject uploadBody = configurePrepUploadJson(signature, timeStamp, partnerParams, useSignature);
             StringEntity entityForPost = new StringEntity(uploadBody.toString());
             post.setHeader("content-type", "application/json");
             post.setEntity(entityForPost);
@@ -278,15 +283,16 @@ public class WebApi {
                 String uploadUrl = responseJson.get("upload_url").toString();
                 String smileJobId = responseJson.get("smile_job_id").toString();
 
-                JSONObject infoJson = configureInfoJson(uploadUrl, secKey, timeStamp, partnerParams, idInfo, images);
+                JSONObject infoJson = configureInfoJson(uploadUrl, signature, timeStamp, partnerParams, idInfo, images, useSignature);
                 ByteArrayOutputStream baos = zipUpFile(infoJson, images);
                 uploadFile(uploadUrl, baos);
+                
                 if ((Boolean) options.get("return_job_status") == true) {
                     Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
                     this.utilitiesConnection = utilitiesConnection;
 
                     Integer counter = 0;
-                    JSONObject jsonJobStatusResponse = pollJobStatus(counter, partnerParams, options);
+                    JSONObject jsonJobStatusResponse = pollJobStatus(counter, partnerParams, options, useSignature);
                     jsonJobStatusResponse.put("success", true);
                     jsonJobStatusResponse.put("smile_job_id", smileJobId);
 
@@ -303,15 +309,17 @@ public class WebApi {
         } catch (Exception e) {
             throw e;
         }
+        
         return res;
     }
 
-    private JSONObject configurePrepUploadJson(String sec_key, Long timestamp, JSONObject partnerParams) throws Exception {
+    private JSONObject configurePrepUploadJson(String signature, Long timestamp, JSONObject partnerParams, Boolean useSignature) throws Exception {
         JSONObject body = new JSONObject();
+        
         try {
             body.put("file_name", "selfie.zip");
             body.put("timestamp", timestamp);
-            body.put("sec_key", sec_key);
+            body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
             body.put("smile_client_id", partner_id);
             body.put("partner_params", partnerParams);
             body.put("model_parameters", new JSONObject());
@@ -328,17 +336,20 @@ public class WebApi {
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuffer result = new StringBuffer();
             String line = "";
+            
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
+            
             return result.toString();
         } catch (Exception e) {
             throw e;
         }
     }
 
-    private JSONObject configureInfoJson(String uploadUrl, String sec_key, Long timestamp, JSONObject partnerParams, JSONObject idInfo, JSONArray images) {
+    private JSONObject configureInfoJson(String uploadUrl, String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, JSONArray images, Boolean useSignature) {
         JSONObject json = new JSONObject();
+        
         try {
             JSONObject api_version = new JSONObject();
             api_version.put("buildNumber", new Integer(0));
@@ -362,7 +373,7 @@ public class WebApi {
             userData.put("countryName", "");
 
             JSONObject misc_information = new JSONObject();
-            misc_information.put("sec_key", sec_key);
+            misc_information.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
             misc_information.put("retry", "false");
             misc_information.put("partner_params", partnerParams);
             misc_information.put("timestamp", timestamp);
@@ -379,6 +390,7 @@ public class WebApi {
         } catch (Exception e) {
             throw e;
         }
+        
         return json;
     }
 
@@ -387,6 +399,7 @@ public class WebApi {
 
         for (Object o : images) {
             JSONObject imageObject = new JSONObject();
+            
             if (o instanceof JSONObject) {
                 Long image_type_id = (Long) ((JSONObject) o).get("image_type_id");
                 imageObject.put("image_type_id", ((JSONObject) o).get("image_type_id"));
@@ -403,8 +416,10 @@ public class WebApi {
                     imageObject.put("file_name", "");
                 }
             }
+            
             imagePayload.add(imageObject);
         }
+        
         return imagePayload;
     }
 
@@ -412,6 +427,7 @@ public class WebApi {
         // http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
         // https://stackoverflow.com/questions/23612864/create-a-zip-file-in-memory
         ByteArrayOutputStream baos = null;
+        
         try {
             baos = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(baos);
@@ -424,6 +440,7 @@ public class WebApi {
             for (Object o : images) {
                 if (o instanceof JSONObject) {
                     String imageType = (String) ((JSONObject) o).get("image");
+                    
                     if (SUPPORTED_IMAGE_TYPES.stream().anyMatch(imageType::endsWith)) {
                         String fileName = ((JSONObject) o).get("image").toString();
                         File file = new File(fileName);
@@ -434,6 +451,7 @@ public class WebApi {
 
                         byte[] bytes = new byte[1024];
                         int length;
+                        
                         while ((length = fis.read(bytes)) >= 0) {
                             zos.write(bytes, 0, length);
                         }
@@ -444,11 +462,13 @@ public class WebApi {
                     }
                 }
             }
+            
             zos.flush();
             zos.close();
         } catch (Exception e) {
             throw e;
         }
+        
         return baos;
     }
 
@@ -473,13 +493,14 @@ public class WebApi {
         }
     }
 
-    private JSONObject pollJobStatus(int counter, JSONObject partnerParams, JSONObject options) throws Exception {
+    private JSONObject pollJobStatus(int counter, JSONObject partnerParams, JSONObject options, Boolean useSignature) throws Exception {
         Boolean job_complete = false;
         JSONObject responseJson = null;
         String responseStr = null;
 
         try {
             counter = counter + 1;
+            
             if (counter < 4) {
                 Thread.sleep(2000);
             } else {
@@ -492,18 +513,20 @@ public class WebApi {
             boolean returnImages = (Boolean) options.get("return_images");
 
             String jobStatusOptions = new Options(returnHistory, returnImages).get();
-            responseStr = utilitiesConnection.get_job_status(user_id, job_id, jobStatusOptions);
+            responseStr = utilitiesConnection.get_job_status(user_id, job_id, jobStatusOptions, useSignature);
 
             JSONParser parser = new JSONParser();
             responseJson = (JSONObject) parser.parse(responseStr);
 
             job_complete = (Boolean) responseJson.get("job_complete");
+            
             if (!job_complete && counter < 20) {
-                responseJson = pollJobStatus(counter, partnerParams, options);
+                responseJson = pollJobStatus(counter, partnerParams, options, useSignature);
             }
         } catch (Exception e) {
             throw e;
         }
+        
         return responseJson;
     }
 }
