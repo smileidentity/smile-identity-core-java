@@ -12,10 +12,10 @@ The **ID Api Class** lets you performs basic KYC Services including verifying an
 - submit_job
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
-- generateSecKey
-- confirmSecKey
-- generateSignature
-- confirmSignature
+- generate_sec_key
+- confirm_sec_key
+- generate_signature
+- confirm_signature
 
 The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
 - get_job_status
@@ -390,7 +390,7 @@ To calculate your sec key first import the necessary class:
 import smile.identity.core.Signature;
 ```
 
-##### generateSecKey method
+##### generate_sec_key method
 
 Then call the Signature class as follows:
 
@@ -399,7 +399,7 @@ import smile.identity.core.Signature;
 
 try {
   Signature connection = new Signature(partnerId, apiKey);
-  String signatureJsonStr = connection.generateSecKey(timestamp); // where timestamp is optional
+  String signatureJsonStr = connection.generate_sec_key(timestamp); // where timestamp is optional
 
   // In order to utilise the signature you can then use a json parser and extract the signature
 } catch (Exception e) {
@@ -416,7 +416,7 @@ The response will be a stringified json object:
 }
 ```
 
-##### confirmSecKey method
+##### confirm_sec_key method
 
 You can also confirm the sec key that you receive when you interacting with our servers, simply use the confirm_sec_key method which returns a boolean:
 
@@ -425,7 +425,7 @@ import smile.identity.core.Signature;
 
 try {
   Signature connection = new Signature(partnerId, apiKey);
-  String signatureJsonStr = connection.confirmSecKey(secKey, timestamp);
+  String signatureJsonStr = connection.confirm_sec_key(secKey, timestamp);
   // If it is valid then use the response, else throw an error
 } catch (Exception e) {
   e.printStackTrace();
@@ -439,7 +439,7 @@ To calculate your signature first import the necessary class:
 import smile.identity.core.Signature;
 ```
 
-##### generateSignature method
+##### generate_signature method
 
 Then call the Signature class as follows:
 
@@ -448,7 +448,7 @@ import smile.identity.core.Signature;
 
 try {
   Signature connection = new Signature(partnerId, apiKey);
-  String signatureJsonStr = connection.generateSignature(timestamp); // where timestamp is optional
+  String signatureJsonStr = connection.generate_signature(timestamp); // where timestamp is optional
 
   // In order to utilise the signature you can then use a json parser and extract the signature
 } catch (Exception e) {
@@ -465,15 +465,15 @@ The response will be a stringified json object:
 }
 ```
 
-##### confirmSignature method
+##### confirm_signature method
 
-You can also confirm the signature that you receive when you interacting with our servers, simply use the confirmSignature method which returns a boolean:
+You can also confirm the signature that you receive when you interacting with our servers, simply use the confirm_signature method which returns a boolean:
 
 ```java
 import smile.identity.core.Signature;
 
 Signature connection = new Signature(partnerId, apiKey);
-boolean signatureConfirmed = connection.confirmSignature(signature, timestamp);
+boolean signatureConfirmed = connection.confirm_signature(signature, timestamp);
 ```
 
 
