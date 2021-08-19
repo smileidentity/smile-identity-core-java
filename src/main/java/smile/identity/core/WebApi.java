@@ -131,8 +131,6 @@ public class WebApi {
     }
 
     public String get_job_status(String partner_params, String options) throws Exception {
-        String response = null;
-
         JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
 
@@ -140,9 +138,7 @@ public class WebApi {
         String job_id = (String) partnerParams.get("job_id");
 
         Utilities utilities = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
-        response = utilities.get_job_status(user_id, job_id, options);
-
-        return response;
+        return utilities.get_job_status(user_id, job_id, options);
     }
 
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo, String options_params) throws Exception {
