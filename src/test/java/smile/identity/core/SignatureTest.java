@@ -30,7 +30,6 @@ public class SignatureTest {
     	try {
         	sigJsonObj = (JSONObject) new JSONParser().parse(mSignature.generate_signature(dateTime));
     	} catch (Exception e) {
-    		System.out.println("EXCEPTION: " + e.getMessage());
     		assertTrue(false);
 		}
     	
