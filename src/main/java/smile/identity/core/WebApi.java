@@ -4,7 +4,9 @@ package smile.identity.core;
 //package com.smileidentity.services.WebApi
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
@@ -139,6 +141,47 @@ public class WebApi {
 
         Utilities utilities = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
         return utilities.get_job_status(user_id, job_id, options);
+    }
+    
+    /***
+     *  Will query the backend for web session token with a specific timestamp
+     * @param timestamp the timestamp to generate the token from
+     * @param user_id
+     * @param job_id
+     * @param job_type
+     * @param product_type
+     * @param signature a previously generated signature
+     * @return TRUE or FALSE
+     */
+    @SuppressWarnings("unchecked")
+	public String get_hosted_web_session(Long timestamp, String user_id, String job_id, int job_type, String product_type, String signature) throws Exception {
+    	String url = "http://devapi.smileidentity.com/v1/token";
+    	HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
+    	HttpPost post = new HttpPost(url.trim());
+    	
+    	JSONObject uploadBody = new JSONObject();
+    	uploadBody.put(Signature.TIME_STAMP_KEY, timestamp);
+    	uploadBody.put("callback_url", callbackUrl);
+    	uploadBody.put("partner_id", partner_id);
+    	uploadBody.put("user_id", partner_id);
+    	uploadBody.put("job_id", job_id);
+    	uploadBody.put("job_type", job_type);
+    	uploadBody.put("product", product_type);
+    	uploadBody.put(Signature.SIGNATURE_KEY, signature);
+        
+        StringEntity entityForPost = new StringEntity(uploadBody.toString());
+        post.setHeader("content-type", "application/json");
+        post.setEntity(entityForPost);
+
+        HttpResponse response = client.execute(post);
+        
+        JSONObject successResponse = (JSONObject) new JSONParser().parse(readHttpResponse(response));
+        String token = (String) successResponse.get("token");
+        successResponse = new JSONObject();
+        successResponse.put("success", response.getStatusLine().getStatusCode() == 200);
+        successResponse.put("token", token);
+        
+        return successResponse.toJSONString();
     }
 
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo, String options_params) throws Exception {
