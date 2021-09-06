@@ -19,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -155,15 +156,15 @@ public class WebApi {
      */
     @SuppressWarnings("unchecked")
 	public String get_hosted_web_session(Long timestamp, String user_id, String job_id, int job_type, String product_type, String signature) throws Exception {
-    	String url = "http://devapi.smileidentity.com/v1/token";
+    	String url = this.url + "/token";
     	HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
     	HttpPost post = new HttpPost(url.trim());
     	
     	JSONObject uploadBody = new JSONObject();
-    	uploadBody.put(Signature.TIME_STAMP_KEY, timestamp);
+    	uploadBody.put(Signature.TIME_STAMP_KEY, new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
     	uploadBody.put("callback_url", callbackUrl);
     	uploadBody.put("partner_id", partner_id);
-    	uploadBody.put("user_id", partner_id);
+    	uploadBody.put("user_id", user_id);
     	uploadBody.put("job_id", job_id);
     	uploadBody.put("job_type", job_type);
     	uploadBody.put("product", product_type);
@@ -175,13 +176,7 @@ public class WebApi {
 
         HttpResponse response = client.execute(post);
         
-        JSONObject successResponse = (JSONObject) new JSONParser().parse(readHttpResponse(response));
-        String token = (String) successResponse.get("token");
-        successResponse = new JSONObject();
-        successResponse.put("success", response.getStatusLine().getStatusCode() == 200);
-        successResponse.put("token", token);
-        
-        return successResponse.toJSONString();
+        return ((JSONObject) new JSONParser().parse(readHttpResponse(response))).toString();
     }
 
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo, String options_params) throws Exception {
