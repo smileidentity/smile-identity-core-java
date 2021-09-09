@@ -334,6 +334,12 @@ Thereafter, simply call get_hosted_web_session with the correct parameters using
 
 Please note that this method requires a valid signature obtained by calling ```Signature.generate_signature()```
 
+**Response:**
+
+```json
+{"success":true,"token":"<token>"}
+```
+
 #### ID Api Class
 
 An API that lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information
