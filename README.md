@@ -7,6 +7,7 @@ Please see [changelog,md](https://github.com/smileidentity/smile-identity-core-j
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
 - get_job_status
+- get_hosted_web_session
 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
@@ -317,6 +318,21 @@ Please note that if you do not need to pass through Options if you will not be u
 ```java
 String response = connection.get_job_status(partnerParameters.get(), null);
 ```
+
+##### get_hosted_web_session method
+
+This function provides a wrapper around a hosted web session; it returns a stringified JSONObject containing an active web token
+
+You will already have your Web Api class initialised as follows:
+```java
+  WebApi connection = new WebApi(<String partner_id>, <String default_callback_url>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
+```
+Thereafter, simply call get_hosted_web_session with the correct parameters using the classes we have provided:
+```java
+  response = connection.get_hosted_web_session(<Long timestamp>, <String user_id>, <String job_id>, <int job_type>, <String product_type>, <String signature>);
+```
+
+Please note that this method requires a valid signature obtained by calling ```Signature.generate_signature()```
 
 #### ID Api Class
 
