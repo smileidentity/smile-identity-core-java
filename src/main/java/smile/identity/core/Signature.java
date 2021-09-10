@@ -27,11 +27,11 @@ public class Signature {
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String SIGNATURE_KEY = "signature";
 	
-    private Integer partnerId;
+    private String partnerId;
     private String apiKey;
 
     public Signature(String partnerId, String apiKey) {
-        this.partnerId = Integer.parseInt(partnerId);
+        this.partnerId = partnerId;
         this.apiKey = apiKey;
     }
     
@@ -54,7 +54,7 @@ public class Signature {
     	Mac mac = Mac.getInstance(HMAC_SHA_256);
         mac.init(new SecretKeySpec(apiKey.getBytes(), HMAC_SHA_256));
 		mac.update(new SimpleDateFormat(DATE_TIME_FORMAT).format(timestamp).getBytes(StandardCharsets.UTF_8));
-		mac.update(partnerId.toString().getBytes(StandardCharsets.UTF_8));
+		mac.update(partnerId.getBytes(StandardCharsets.UTF_8));
 		mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
 		
 		String signature = Base64.getEncoder().encodeToString(mac.doFinal());
@@ -85,7 +85,7 @@ public class Signature {
 
     @SuppressWarnings({ "unchecked" })
 	public String generate_sec_key(Long timestamp) throws Exception {
-        String toHash = partnerId + ":" + timestamp;
+        String toHash = Integer.parseInt(partnerId) + ":" + timestamp;
         String signature = "";
         JSONObject signatureObj = new JSONObject();
 
@@ -120,7 +120,7 @@ public class Signature {
     }
 
     public Boolean confirm_sec_key(String timestamp, String secKey) throws Exception {
-        String toHash = partnerId + ":" + timestamp;
+        String toHash = Integer.parseInt(partnerId) + ":" + timestamp;
         
         try {
             MessageDigest md = MessageDigest.getInstance(SHA_256);
@@ -145,12 +145,9 @@ public class Signature {
     private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
         apiKey = apiKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "").replace("\n", "").replace("\r", "").trim();
         apiKey = apiKey.replaceAll(" ", "");
-        System.out.println("API_KEY: " + apiKey);
         byte[] data = Base64.getDecoder().decode((apiKey.getBytes()));
         X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
-        KeyFactory factObj = KeyFactory.getInstance("RSA");
-        PublicKey lPKey = factObj.generatePublic(spec);
-        return lPKey;
+        return KeyFactory.getInstance("RSA").generatePublic(spec);
     }
 
     private static byte[] encryptString(PublicKey key, String plaintext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {

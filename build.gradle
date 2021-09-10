@@ -85,9 +85,9 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id = 'Arlon'
-                        name = 'Arlon Mukeba'
-                        email = 'arlon@smileidentity.com'
+                        id = 'smileidentity'
+                        name = 'Smile Identity'
+                        email = 'support@smileidentity.com'
                         organization = 'Smile Identity'
                         organizationUrl = 'https://www.smileidentity.com'
                     }

@@ -2,7 +2,7 @@
 
 The official Smile Identity library exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
 
-Please see [changelog,md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md). for release versions and changes
+Please see [changelog.md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md). for release versions and changes
 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
