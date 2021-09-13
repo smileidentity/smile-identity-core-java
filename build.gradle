@@ -12,7 +12,6 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     testImplementation 'junit:junit:4.12'
 
@@ -45,7 +44,7 @@ artifacts {
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
-version = "1.0.7"
+version = "1.0.10" //last used snapshot 1.0.5-SNAPSHOT
 
 // Build, sign, and upload
 uploadArchives {
@@ -86,13 +85,13 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id = 'Ridhwana'
-                        name = 'Ridhwana Khan'
-                        email = 'ridhwana@smileidentity.com'
+                        id = 'Support'
+                        name = 'Smile Identity'
+                        email = 'support@smileidentity.com'
                         organization = 'Smile Identity'
                         organizationUrl = 'https://www.smileidentity.com'
                     }
-                }
+                }	
             }
         }
     }

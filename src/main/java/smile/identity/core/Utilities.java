@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,19 +37,15 @@ public class Utilities {
     }
 
     public Utilities(String partner_id, String api_key, String sid_server) {
-        try {
-            this.partner_id = partner_id;
-            this.api_key = api_key;
+    	this.partner_id = partner_id;
+        this.api_key = api_key;
 
-            if (sid_server.equals("0")) {
-                url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
-            } else if (sid_server.equals("1")) {
-                url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
-            } else {
-                this.url = sid_server;
-            }
-        } catch (Exception e) {
-            throw e;
+        if (sid_server.equals("0")) {
+            url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
+        } else if (sid_server.equals("1")) {
+            url = "https://la7am6gdm8.execute-api.us-west-2.amazonaws.com/prod";
+        } else {
+            this.url = sid_server;
         }
     }
 
@@ -59,8 +56,6 @@ public class Utilities {
     }
 
     public String get_job_status(String user_id, String job_id, String options) throws Exception {
-        Long timestamp = System.currentTimeMillis();
-        String sec_key = determineSecKey(timestamp);
         JSONObject optionsJson = null;
 
         if (options != null && !options.trim().isEmpty()) {
@@ -77,10 +72,13 @@ public class Utilities {
         JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
+        
         if (!idInfo.containsKey("entered") || !Boolean.parseBoolean(String.valueOf(idInfo.get("entered")))) {
             return;
         }
+        
         JSONObject combined = idInfo;
+        
         for (Object key : partnerParams.keySet()) {
             combined.put(key, partnerParams.get(key));
         }
@@ -92,6 +90,7 @@ public class Utilities {
                 add("id_number");
             }
         };
+        
         if (combined.containsKey("entered")) {
             for (String key : generalRequire) {
                 if (!combined.containsKey(key)) {
@@ -99,24 +98,30 @@ public class Utilities {
                 }
             }
         }
+        
         if (!useValidationApi) {
             return;
         }
+        
         JSONObject smileServices = query_smile_id_services();
         JSONObject idTypes = ((JSONObject) smileServices.get("id_types"));
+        
         if (idTypes != null) {
             if (!idTypes.containsKey(combined.get("country").toString())) {
                 throw new IllegalArgumentException("Invalid value for key country");
             }
 
             JSONObject country = (JSONObject) idTypes.get(combined.get("country").toString());
+            
             if (!country.containsKey(combined.get("id_type").toString())) {
                 throw new IllegalArgumentException("Invalid value for key id_type");
             }
 
             JSONArray params = (JSONArray) country.get(combined.get("id_type").toString());
+            
             for (int k = 0; k < params.size(); k++) {
                 String param = (String) params.get(k);
+                
                 if (!combined.containsKey(param) ||
                         (combined.get(param) == null && TextUtils.isEmpty(combined.get(param).toString()))) {
                     throw new IllegalArgumentException("Invalid or missing value for key " + param);
@@ -132,127 +137,114 @@ public class Utilities {
         HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
         HttpGet httpGet = new HttpGet(smileServicesUrl);
 
-        try {
+        httpGet.setHeader("content-type", "application/json");
 
-            httpGet.setHeader("content-type", "application/json");
+        HttpResponse response = client.execute(httpGet);
+        final int statusCode = response.getStatusLine().getStatusCode();
+        String strResult = readHttpResponse(response);
 
-            HttpResponse response = client.execute(httpGet);
-            final int statusCode = response.getStatusLine().getStatusCode();
-            String strResult = readHttpResponse(response);
-
-            if (statusCode != 200) {
-                final String msg = String.format("Failed to get entity frm %s, response=%d:%s - %s",
-                        smileServicesUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
-                throw new RuntimeException(msg);
-            } else {
-                JSONParser parser = new JSONParser();
-                responseJson = (JSONObject) parser.parse(strResult);
-            }
-        } catch (Exception e) {
-            throw e;
+        if (statusCode != 200) {
+            final String msg = String.format("Failed to get entity frm %s, response=%d:%s - %s",
+                    smileServicesUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+            throw new RuntimeException(msg);
+        } else {
+            JSONParser parser = new JSONParser();
+            responseJson = (JSONObject) parser.parse(strResult);
         }
+        
         return responseJson;
     }
 
     private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws Exception {
-        Boolean job_complete = false;
         JSONObject responseJson = null;
 
         String jobStatusUrl = (url + "/job_status").toString();
         HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
         HttpPost post = new HttpPost(jobStatusUrl);
 
-        try {
-            StringEntity entityForPost = new StringEntity(configureJobQueryBody(user_id, job_id, options).toString());
+        String body = configureJobQueryBody(user_id, job_id, options).toString();
+        StringEntity entityForPost = new StringEntity(body);
 
-            post.setHeader("content-type", "application/json");
-            post.setEntity(entityForPost);
+        post.setHeader("content-type", "application/json");
+        post.setEntity(entityForPost);
 
-            HttpResponse response = client.execute(post);
-            final int statusCode = response.getStatusLine().getStatusCode();
-            String strResult = readHttpResponse(response);
+        HttpResponse response = client.execute(post);
+        final int statusCode = response.getStatusLine().getStatusCode();
+        String strResult = readHttpResponse(response);
 
-            if (statusCode != 200) {
-                final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
-                        jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
-                throw new RuntimeException(msg);
-            } else {
-                JSONParser parser = new JSONParser();
-                responseJson = (JSONObject) parser.parse(strResult);
+        if (statusCode != 200) {
+            final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
+                    jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+            throw new RuntimeException(msg);
+        } else {
+            JSONParser parser = new JSONParser();
+            responseJson = (JSONObject) parser.parse(strResult);
 
-                String timestamp = (String) responseJson.get("timestamp");
-                String secKey = (String) responseJson.get("signature");
-
-                Boolean valid = new Signature(partner_id, api_key).confirm_sec_key(timestamp, secKey);
-                if (!valid) {
-                    throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
-                }
+            String timestamp = (String) responseJson.get(Signature.TIME_STAMP_KEY);
+            String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
+            Signature sigObj = new Signature(partner_id, api_key);
+            Boolean valid = false;
+            Boolean useSignature = false;
+            
+            if (options.containsKey(Signature.SIGNATURE_KEY)) {
+            	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
             }
-        } catch (Exception e) {
-            throw e;
+            
+            if (useSignature) {
+            	Long tstmpLng = new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime();
+            	valid = sigObj.confirm_signature(tstmpLng, signature);
+            } else {
+            	valid = sigObj.confirm_sec_key(timestamp, signature);
+            }
+            
+            if (!valid) {
+                throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
+            }
         }
+        
         return responseJson;
     }
 
-    private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws Exception {
+    private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws Exception { 
+        Long timestamp = System.currentTimeMillis();
         JSONObject body = new JSONObject();
         Boolean returnImages = (Boolean) options.get("return_images");
         Boolean returnHistory = (Boolean) options.get("return_history");
-        Long timestamp = System.currentTimeMillis();
-        try {
-            body.put("sec_key", determineSecKey(timestamp));
-            body.put("timestamp", timestamp);
-            body.put("partner_id", partner_id);
-            body.put("user_id", user_id);
-            body.put("job_id", job_id);
-            body.put("image_links", returnImages);
-            body.put("history", returnHistory);
-        } catch (Exception e) {
-            throw e;
+        Boolean useSignature = false;
+        
+        if (options.containsKey(Signature.SIGNATURE_KEY)) {
+        	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
         }
+        
+        Signature sigObj = new Signature(partner_id, api_key);
+        body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp));
+        body.put(Signature.TIME_STAMP_KEY, (useSignature) ? new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp) : timestamp);
+        body.put("partner_id", partner_id);
+        body.put("user_id", user_id);
+        body.put("job_id", job_id);
+        body.put("image_links", returnImages);
+        body.put("history", returnHistory);
+        
         return body;
     }
 
-    // these two methods are common across web api, we could put it in a helper class but it would mean that the functions are public
-    private String determineSecKey(Long timestamp) throws Exception {
-        Signature connection = new Signature(partner_id, api_key);
-        String secKey = "";
-        JSONParser parser = new JSONParser();
-
-        try {
-            String signatureJsonStr = connection.generate_sec_key(timestamp);
-            JSONObject signature = (JSONObject) parser.parse(signatureJsonStr);
-            secKey = (String) signature.get("sec_key");
-        } catch (Exception e) {
-            throw e;
-        }
-
-        return secKey;
-    }
-
     private String readHttpResponse(HttpResponse response) throws Exception {
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            StringBuffer result = new StringBuffer();
-            String line = "";
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-            return result.toString();
-        } catch (Exception e) {
-            throw e;
+    	BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        StringBuffer result = new StringBuffer();
+        String line = "";
+        
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
         }
+        
+        return result.toString();
     }
 
-    private JSONObject fillInJobStatusOptions() throws Exception {
+    @SuppressWarnings("unchecked")
+	private JSONObject fillInJobStatusOptions() throws Exception {
         JSONObject obj = new JSONObject();
-        try {
-            obj.put("return_history", false);
-            obj.put("return_images", false);
-        } catch (Exception e) {
-            throw e;
-        }
-
+        obj.put("return_history", false);
+        obj.put("return_images", false);
         return obj;
     }
 
