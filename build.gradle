@@ -5,6 +5,7 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
 }
 
 apply plugin: 'java'
@@ -15,8 +16,11 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     implementation 'org.apache.httpcomponents:httpclient:4.5.9'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
 }
 
 // Signing
