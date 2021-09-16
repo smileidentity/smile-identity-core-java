@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,36 +21,44 @@ public class WebApiTest {
 	
 	private static final int PORT = 32100; //Random port number, arbitrarily chosen
 	private static final String TEST_BASE_URL = "http://localhost:" + PORT;
-    private String API_KEY = "<API_KEY>";
-    private String USER_ID = "<USER_ID>";
+	private String API_KEY = "<API_KEY>";
+	private String USER_ID = "<USER_ID>";
 	private String PARTNER_ID = "<PARTNER_ID>";
 	private String JOB_ID = "<JOB_ID>";
 	private int JOB_TYPE = 5;
 	private String PRODUCT_TYPE = "<PRODUCT_TYPE>";
 	private String SUCCESS_KEY = "success";
 	private String TOKEN_KEY = "token";
-    private WebApi mWebApi;
-    private MockWebServer mMockServer = null;
-    private MockResponse mMockResponse = null;
+	private WebApi mWebApi = null;
+	private MockWebServer mMockServer = null;
+	private MockResponse mMockResponse = null;
 	
-    @Before
-    public void setup() throws IOException {
-        mMockServer = new MockWebServer();
-        mMockServer.start(PORT);
-        mMockResponse = new MockResponse();
-    	mWebApi = new WebApi(PARTNER_ID, "", API_KEY, TEST_BASE_URL);
-    }
-
-    @Test
-    public void testWebToken() throws Exception {
-    	String tokenResponse = "{\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJ0bmVyX3BhcmFtcyI6eyJ1c2VyX2lkIjoiZTFkNDZkZTYtM2NjOS00MDMyLWI3ZjEtZDRlNGViZTNlMWFhIiwiam9iX2lkIjoiNDBmYjNlN2MtMjlmZS00YjRlLTlhNTAtOGE2MzI4YmU5OTY2Iiwiam9iX3R5cGUiOjJ9LCJjYWxsYmFja191cmwiOiJodHRwczovL3Rlc3Qtc21pbGVpZC5oZXJva3VhcHAuY29tL2FwaS92Mi8xMDQ2L3Bvc3RiYWNrL3VwZGF0ZV9zdGF0dXMvIiwiaWF0IjoxNjMwNjg2MTAxLCJleHAiOjE2MzIzMTY3ODB9.GBgrp8K0LsJor6lGPGZNdTVfC9KDXDsCDUAmOR3Hqgw\"}";
-    	
-    	mMockResponse.setResponseCode(200);
-        mMockResponse.setBody(tokenResponse);
-        mMockServer.enqueue(mMockResponse);
-
-    	JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, JOB_TYPE, PRODUCT_TYPE));
-    	assertTrue(response.containsKey(SUCCESS_KEY));
-    	assertTrue(response.containsKey(TOKEN_KEY));
-    }
+	@Before
+	public void setup() throws IOException {
+		mMockServer = new MockWebServer();
+		mMockServer.start(PORT);
+		mMockResponse = new MockResponse();
+		mWebApi = new WebApi(PARTNER_ID, "", API_KEY, TEST_BASE_URL);
+	}
+	
+	@Test
+	public void testWebToken() throws Exception {
+		String tokenResponse = "{\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"}";
+		
+		mMockResponse.setResponseCode(200);
+		mMockResponse.setBody(tokenResponse);
+		mMockServer.enqueue(mMockResponse);
+		
+		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, JOB_TYPE, PRODUCT_TYPE));
+		assertTrue(response.containsKey(SUCCESS_KEY));
+		assertTrue(response.containsKey(TOKEN_KEY));
+	}
+	
+	@After
+	public void reset() throws IOException {
+		mMockServer.shutdown();
+		mMockServer.close();
+		mMockResponse = null;
+		mWebApi = null;
+	}
 }
