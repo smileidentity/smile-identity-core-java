@@ -3,6 +3,7 @@
  */
 package smile.identity.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -16,11 +17,14 @@ import org.junit.Test;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 public class WebApiTest {
 	
-	private static final int PORT = 32100; //Random port number, arbitrarily chosen
+	private static final int PORT = 3200; //Random port number, arbitrarily chosen
 	private static final String TEST_BASE_URL = "http://localhost:" + PORT;
+	private String POST_REQUEST = "POST";
+	private String REQUEST_ENDPOINT = "/token";
 	private String API_KEY = "<API_KEY>";
 	private String USER_ID = "<USER_ID>";
 	private String PARTNER_ID = "<PARTNER_ID>";
@@ -50,6 +54,12 @@ public class WebApiTest {
 		mMockServer.enqueue(mMockResponse);
 		
 		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, JOB_TYPE, PRODUCT_TYPE));
+		
+		RecordedRequest request = mMockServer.takeRequest();
+		assertEquals(POST_REQUEST, request.getMethod());
+		assertEquals(REQUEST_ENDPOINT, request.getPath());
+		assertEquals((TEST_BASE_URL + REQUEST_ENDPOINT), request.getRequestUrl().toString());
+		
 		assertTrue(response.containsKey(SUCCESS_KEY));
 		assertTrue(response.containsKey(TOKEN_KEY));
 	}
