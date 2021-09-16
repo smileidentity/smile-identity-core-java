@@ -321,7 +321,7 @@ String response = connection.get_job_status(partnerParameters.get(), null);
 
 ##### get_web_token method
 
-This function provides a wrapper around a hosted web session; it returns a stringified JSONObject containing an active web token
+This function provides the token to be used for authentication when using our hosted web session; it returns a stringified JSONObject containing an active web token.
 
 You will already have your Web Api class initialised as follows:
 ```java
