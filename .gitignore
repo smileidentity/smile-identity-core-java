@@ -147,3 +147,5 @@ gradle.properties
 .project
 .settings/
 EntryPoint.java
+
+.gitattributes

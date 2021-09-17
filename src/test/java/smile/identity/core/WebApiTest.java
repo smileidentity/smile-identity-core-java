@@ -3,12 +3,72 @@
  */
 package smile.identity.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 public class WebApiTest {
-    @Test public void testSomeLibraryMethod() {
-        // WebApi classUnderTest = new WebApi();
-        // assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
-    }
+	
+	private static final int PORT = 3200; //Random port number, arbitrarily chosen
+	private static final String TEST_BASE_URL = "http://localhost:" + PORT;
+	private String POST_REQUEST = "POST";
+	private String REQUEST_ENDPOINT = "/token";
+	private String API_KEY = "<API_KEY>";
+	private String USER_ID = "<USER_ID>";
+	private String PARTNER_ID = "<PARTNER_ID>";
+	private String JOB_ID = "<JOB_ID>";
+	private int JOB_TYPE = 5;
+	private String PRODUCT_TYPE = "<PRODUCT_TYPE>";
+	private String SUCCESS_KEY = "success";
+	private String TOKEN_KEY = "token";
+	private WebApi mWebApi = null;
+	private MockWebServer mMockServer = null;
+	private MockResponse mMockResponse = null;
+	
+	@Before
+	public void setup() throws IOException {
+		mMockServer = new MockWebServer();
+		mMockServer.start(PORT);
+		mMockResponse = new MockResponse();
+		mWebApi = new WebApi(PARTNER_ID, "", API_KEY, TEST_BASE_URL);
+	}
+	
+	@Test
+	public void testWebToken() throws Exception {
+		String tokenResponse = "{\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"}";
+		
+		mMockResponse.setResponseCode(200);
+		mMockResponse.setBody(tokenResponse);
+		mMockServer.enqueue(mMockResponse);
+		
+		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, JOB_TYPE, PRODUCT_TYPE));
+		
+		RecordedRequest request = mMockServer.takeRequest();
+		assertEquals(POST_REQUEST, request.getMethod());
+		assertEquals(REQUEST_ENDPOINT, request.getPath());
+		assertEquals((TEST_BASE_URL + REQUEST_ENDPOINT), request.getRequestUrl().toString());
+		
+		assertTrue(response.containsKey(SUCCESS_KEY));
+		assertTrue(response.containsKey(TOKEN_KEY));
+	}
+	
+	@After
+	public void reset() throws IOException {
+		mMockServer.shutdown();
+		mMockServer.close();
+		mMockResponse = null;
+		mWebApi = null;
+	}
 }
