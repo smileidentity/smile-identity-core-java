@@ -14,6 +14,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.jetbrains.annotations.TestOnly;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -195,6 +196,16 @@ public class WebApi {
         HttpResponse response = client.execute(post);
         
         return ((JSONObject) new JSONParser().parse(readHttpResponse(response))).toString();
+    }
+    
+    @TestOnly
+    public String getCallbackUrl() {
+    	return callbackUrl;
+    }
+    
+    @TestOnly
+    public String getPartnerId() {
+    	return partnerId;
     }
 
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo, String options_params) throws Exception {

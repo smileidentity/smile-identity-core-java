@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,6 +30,7 @@ public class WebApiTest {
 	private String API_KEY = "<API_KEY>";
 	private String USER_ID = "<USER_ID>";
 	private String PARTNER_ID = "<PARTNER_ID>";
+	private String CALL_BACK_URL = "<CALL_BACK_URL>";
 	private String JOB_ID = "<JOB_ID>";
 	private String SUCCESS_KEY = "success";
 	private String TOKEN_KEY = "token";
@@ -41,7 +43,7 @@ public class WebApiTest {
 		mMockServer = new MockWebServer();
 		mMockServer.start(PORT);
 		mMockResponse = new MockResponse();
-		mWebApi = new WebApi(PARTNER_ID, "", API_KEY, TEST_BASE_URL);
+		mWebApi = new WebApi(PARTNER_ID, CALL_BACK_URL, API_KEY, TEST_BASE_URL);
 	}
 	
 	@Test
@@ -51,16 +53,40 @@ public class WebApiTest {
 		mMockResponse.setResponseCode(200);
 		mMockResponse.setBody(tokenResponse);
 		mMockServer.enqueue(mMockResponse);
-
 		
 		String productType = WEB_PRODUCT_TYPE.AUTHENTICATION.toString();
-		
-		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, productType));
+		Long timestamp = System.currentTimeMillis();
+		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(timestamp, USER_ID, JOB_ID, productType));
 		
 		RecordedRequest request = mMockServer.takeRequest();
 		assertEquals(POST_REQUEST, request.getMethod());
 		assertEquals(REQUEST_ENDPOINT, request.getPath());
 		assertEquals((TEST_BASE_URL + REQUEST_ENDPOINT), request.getRequestUrl().toString());
+		
+		JSONObject body = (JSONObject) new JSONParser().parse(request.getBody().readUtf8());
+		
+		assertTrue(body.containsKey("callback_url"));
+		assertEquals(body.get("callback_url"), CALL_BACK_URL);
+		assertEquals(body.get("callback_url"), mWebApi.getCallbackUrl());
+		
+		assertTrue(body.containsKey("product"));
+		assertEquals(body.get("product"), productType);
+		
+		assertTrue(body.containsKey("partner_id"));
+		assertEquals(body.get("partner_id"), PARTNER_ID);
+		assertEquals(body.get("partner_id"), mWebApi.getPartnerId());
+		
+		assertTrue(body.containsKey("user_id"));
+		assertEquals(body.get("user_id"), USER_ID);
+		
+		assertTrue(body.containsKey("signature"));
+		assertTrue(new Signature(PARTNER_ID, API_KEY).confirm_signature(timestamp, body.get("signature").toString()));
+		
+		assertTrue(body.containsKey("job_id"));
+		assertEquals(body.get("job_id"), JOB_ID);
+		
+		assertTrue(body.containsKey("timestamp"));
+		assertEquals(body.get("timestamp"), new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
 		
 		assertTrue(response.containsKey(SUCCESS_KEY));
 		assertTrue(response.containsKey(TOKEN_KEY));
