@@ -18,6 +18,7 @@ import org.junit.Test;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import smile.identity.core.WebApi.WEB_PRODUCT_TYPE;
 
 public class WebApiTest {
 	
@@ -29,8 +30,6 @@ public class WebApiTest {
 	private String USER_ID = "<USER_ID>";
 	private String PARTNER_ID = "<PARTNER_ID>";
 	private String JOB_ID = "<JOB_ID>";
-	private int JOB_TYPE = 5;
-	private String PRODUCT_TYPE = "<PRODUCT_TYPE>";
 	private String SUCCESS_KEY = "success";
 	private String TOKEN_KEY = "token";
 	private WebApi mWebApi = null;
@@ -52,8 +51,11 @@ public class WebApiTest {
 		mMockResponse.setResponseCode(200);
 		mMockResponse.setBody(tokenResponse);
 		mMockServer.enqueue(mMockResponse);
+
 		
-		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, JOB_TYPE, PRODUCT_TYPE));
+		String productType = WEB_PRODUCT_TYPE.AUTHENTICATION.toString();
+		
+		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(System.currentTimeMillis(), USER_ID, JOB_ID, productType));
 		
 		RecordedRequest request = mMockServer.takeRequest();
 		assertEquals(POST_REQUEST, request.getMethod());

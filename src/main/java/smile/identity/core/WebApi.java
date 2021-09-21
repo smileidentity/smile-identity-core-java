@@ -44,6 +44,27 @@ public class WebApi {
 
     private int connectionTimeout = -1;
     private int readTimeout = -1;
+    
+    public enum WEB_PRODUCT_TYPE {
+    	
+    	EKYC_SMART_SELFIE("ekyc_smartselfie"),
+    	DOC_VERIFICATION("doc_verification"),
+    	AUTHENTICATION("authentication"),
+    	SMART_SELFIE("smartselfie"),
+    	IDENTITY_VERIFICATION("identity_verification"),
+    	ENHANCED_KYC("enhanced_kyc");
+    	
+    	private String value = "";
+    	
+    	WEB_PRODUCT_TYPE(String value) {
+    		this.value = value;
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		return this.value;
+    	}
+    };
 
     @Deprecated
     public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
@@ -149,12 +170,11 @@ public class WebApi {
      * @param timestamp the timestamp to generate the token from
      * @param user_id
      * @param job_id
-     * @param job_type
-     * @param product_type
-     * @return TRUE or FALSE
+     * @param product_type - Literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
+     * @return A stringified JSONObject containing the returned token
      */
     @SuppressWarnings("unchecked")
-	public String get_web_token(Long timestamp, String user_id, String job_id, int job_type, String product_type) throws Exception {
+	public String get_web_token(Long timestamp, String user_id, String job_id, String product_type) throws Exception {
     	String url = this.url + "/token";
     	HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
     	HttpPost post = new HttpPost(url.trim());
@@ -165,7 +185,6 @@ public class WebApi {
     	uploadBody.put("partner_id", partnerId);
     	uploadBody.put("user_id", user_id);
     	uploadBody.put("job_id", job_id);
-    	uploadBody.put("job_type", job_type);
     	uploadBody.put("product", product_type);
     	uploadBody.put(Signature.SIGNATURE_KEY, new Signature(partnerId, apiKey).getSignature(timestamp));
         
