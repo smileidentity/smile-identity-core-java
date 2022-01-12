@@ -2,7 +2,7 @@
 
 The official Smile Identity library exposes four classes namely; the Web Api class, the ID Api class, the Signature class and the Utilities class.
 
-Please see [changelog,md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md). for release versions and changes
+Please see [changelog.md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md) for release versions and changes
 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
 - submit_job
@@ -81,23 +81,23 @@ Your call to the library will be similar to the below code snippet:
   }
 ```
 This will first perform validation of IDParameters and PartnerParameters if the IDParameters information has been entered
-and job type us 5 or 1 to remove this validation please use 
+and job type is 5 or 1. To remove this validation please use 
 ```java
 String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(),False);
 ```
 
-Please note that if you do not need to pass through IDParameters or Options, you may omit calling those class and send through null in submit_job, as follows:
+Note that you do not need to pass through IDParameters or Options, you may omit calling those classes and send through null in `submit_job`, as follows:
 ```java
 String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), null, null);
 ```
 
-In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
+In the case of a Job Type 5 you can simply omit the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment, so no images are required. The response for a job type 5 can be found in the response section below.
 
 ```java
 $ response = connection.submit_job(partnerParameters.get(), null, idParameters.get(), null);
 ```
 
-or, you can omit the two null parameters:
+Or, you can omit the two null parameters:
 ```java
 $ response = connection.submit_job(partnerParameters.get(), idParameters.get());
 ```
