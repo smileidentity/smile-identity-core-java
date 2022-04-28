@@ -1,6 +1,13 @@
 package smile.identity.core;
 
-// json converter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,29 +20,35 @@ import org.apache.http.util.TextUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-// apache http client
-// apache http client
+import org.json.simple.parser.ParseException;
 
 public class Utilities {
 
-    private String partner_id;
+    private static final String PARTNER_ID = "partner_id";
+    private static final String USER_ID = "user_id";
+    private static final String JOB_ID = "job_id";
+    private static final String IMAGE_LINKS = "image_links";
+    private static final String HISTORY = "history";
+    private static final String RETURN_HISTORY = "return_history";
+    private static final String RETURN_IMAGES = "return_images";
+    
+	private String partner_id;
     private String api_key;
     private String url;
     private int connectionTimeout = -1;
     private int readTimeout = -1;
 
-    @Deprecated
-    public Utilities(String partner_id, String api_key, Integer sid_server) {
-        this(partner_id, api_key, String.valueOf(sid_server));
-    }
-
+     /**
+     * Creates a Utilities object.
+     *
+     * @param partner_id the provided partner ID string
+     * 
+     * @param api_key the partner-provided API key 
+     * 
+     * @param sid_server an integer value corresponding to the chosen server
+     * 0 for test/sandbox
+     * 1 for production
+     */
     public Utilities(String partner_id, String api_key, String sid_server) {
     	this.partner_id = partner_id;
         this.api_key = api_key;
@@ -49,18 +62,62 @@ public class Utilities {
         }
     }
 
-    public Utilities(String partner_id, String api_key, String sid_server, int connectionTimeout, int readTimeout) {
+    /**
+     * Creates a Utilities object.
+     *
+     * @param partner_id the provided partner ID string
+     * 
+     * @param api_key the partner-provided API key
+     * 
+     * @param connection_timeout the connection timeout in milliseconds
+     * 
+     * @param read_timeout the read_timeout the read timeout in milliseconds
+     * 
+     * @param sid_server an integer value corresponding to the chosen server
+     * 0 for test/sandbox
+     * 1 for production
+     */
+    public Utilities(String partner_id, String api_key, String sid_server, int connection_timeout, int read_timeout) {
         this(partner_id, api_key, sid_server);
-        this.connectionTimeout = connectionTimeout;
-        this.readTimeout = readTimeout;
+        this.connectionTimeout = connection_timeout;
+        this.readTimeout = read_timeout;
+    }
+    
+    @Deprecated
+    public Utilities(String partner_id, String api_key, Integer sid_server) {
+        this(partner_id, api_key, String.valueOf(sid_server));
     }
 
-    public String get_job_status(String user_id, String job_id, String options) throws Exception {
+    /***
+     * Gets the status of a specific job
+     * 
+     * @param user_id the supplied user id
+     * 
+     * @param job_id the supplied id for this job
+     * 
+     * @return a JSON string containing custom options
+     * 
+     * @throws InvalidKeyException
+     * 
+     * @throws IllegalArgumentException
+     * 
+     * @throws UnsupportedOperationException
+     * 
+     * @throws NoSuchAlgorithmException
+     * 
+     * @throws RuntimeException
+     * 
+     * @throws ParseException
+     * 
+     * @throws java.text.ParseException
+     * 
+     * @throws IOException
+     */
+    public String get_job_status(String user_id, String job_id, String options) throws InvalidKeyException, IllegalArgumentException, UnsupportedOperationException, NoSuchAlgorithmException, RuntimeException, ParseException, java.text.ParseException, IOException {
         JSONObject optionsJson = null;
 
         if (options != null && !options.trim().isEmpty()) {
-            JSONParser parser = new JSONParser();
-            optionsJson = (JSONObject) parser.parse(options);
+            optionsJson = (JSONObject) new JSONParser().parse(options);
         } else {
             optionsJson = fillInJobStatusOptions();
         }
@@ -68,7 +125,25 @@ public class Utilities {
         return queryJobStatus(user_id, job_id, optionsJson).toString();
     }
 
-    public void validate_id_params(String partner_params, String id_info_params, Boolean useValidationApi) throws Exception {
+    /***
+     * Validates supplied ID parameters
+     * 
+     * @param partner_params a JSON string containing partner's specified parameters
+     * 
+     * @param id_info_params a JSON string containing user's specified ID information
+     * 
+     * @param use_validation_api a BOOLEAN specifying whether API validation is required
+     * 
+     * @throws IllegalArgumentException
+     * 
+     * @throws ParseException
+     * 
+     * @throws RuntimeException
+     * 
+     * @throws IOException
+     */
+    @SuppressWarnings({ "unchecked", "serial" })
+	public void validate_id_params(String partner_params, String id_info_params, Boolean use_validation_api) throws IllegalArgumentException, ParseException, RuntimeException, IOException {
         JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo = (JSONObject) parser.parse(id_info_params);
@@ -99,7 +174,7 @@ public class Utilities {
             }
         }
         
-        if (!useValidationApi) {
+        if (!use_validation_api) {
             return;
         }
         
@@ -130,10 +205,17 @@ public class Utilities {
         }
     }
 
-    public JSONObject query_smile_id_services() throws Exception {
-        JSONObject responseJson = null;
-
-        String smileServicesUrl = (url + "/services").toString();
+    /***
+     * Queries the list of Smile ID services
+     * 
+     * @throws RuntimeException
+     * 
+     * @throws ParseException
+     * 
+     * @throws IOException
+     */
+    public JSONObject query_smile_id_services() throws RuntimeException, ParseException, IOException {
+        String smileServicesUrl = url + "/services";
         HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
         HttpGet httpGet = new HttpGet(smileServicesUrl);
 
@@ -145,17 +227,15 @@ public class Utilities {
 
         if (statusCode != 200) {
             final String msg = String.format("Failed to get entity frm %s, response=%d:%s - %s",
-                    smileServicesUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+                smileServicesUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+            
             throw new RuntimeException(msg);
         } else {
-            JSONParser parser = new JSONParser();
-            responseJson = (JSONObject) parser.parse(strResult);
+            return (JSONObject) new JSONParser().parse(strResult);
         }
-        
-        return responseJson;
     }
 
-    private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws Exception {
+    private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws IllegalArgumentException, RuntimeException, ParseException, java.text.ParseException, UnsupportedOperationException, IOException, InvalidKeyException, NoSuchAlgorithmException {
         JSONObject responseJson = null;
 
         String jobStatusUrl = (url + "/job_status").toString();
@@ -174,61 +254,47 @@ public class Utilities {
 
         if (statusCode != 200) {
             final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
-                    jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+                jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+            
             throw new RuntimeException(msg);
-        } else {
-            JSONParser parser = new JSONParser();
-            responseJson = (JSONObject) parser.parse(strResult);
+        }
+        
+        responseJson = (JSONObject) new JSONParser().parse(strResult);
 
-            String timestamp = (String) responseJson.get(Signature.TIME_STAMP_KEY);
-            String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
-            Signature sigObj = new Signature(partner_id, api_key);
-            Boolean valid = false;
-            Boolean useSignature = false;
-            
-            if (options.containsKey(Signature.SIGNATURE_KEY)) {
-            	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-            }
-            
-            if (useSignature) {
-            	Long tstmpLng = new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime();
-            	valid = sigObj.confirm_signature(tstmpLng, signature);
-            } else {
-            	valid = sigObj.confirm_sec_key(timestamp, signature);
-            }
-            
-            if (!valid) {
-                throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
-            }
+        String timestamp = (String) responseJson.get(Signature.TIME_STAMP_KEY);
+        String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
+        Signature sigObj = new Signature(partner_id, api_key);
+        Boolean valid = sigObj.confirm_signature(new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime(), signature);
+        
+        if (!valid) {
+            throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
         }
         
         return responseJson;
     }
 
-    private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws Exception { 
+    @SuppressWarnings({ "unchecked", "serial" })
+	private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws InvalidKeyException, NoSuchAlgorithmException, ParseException { 
         Long timestamp = System.currentTimeMillis();
-        JSONObject body = new JSONObject();
-        Boolean returnImages = (Boolean) options.get("return_images");
-        Boolean returnHistory = (Boolean) options.get("return_history");
-        Boolean useSignature = false;
+        Boolean returnImages = (Boolean) options.get(RETURN_IMAGES);
+        Boolean returnHistory = (Boolean) options.get(RETURN_HISTORY);
         
-        if (options.containsKey(Signature.SIGNATURE_KEY)) {
-        	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-        }
-        
-        Signature sigObj = new Signature(partner_id, api_key);
-        body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp));
-        body.put(Signature.TIME_STAMP_KEY, (useSignature) ? new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp) : timestamp);
-        body.put("partner_id", partner_id);
-        body.put("user_id", user_id);
-        body.put("job_id", job_id);
-        body.put("image_links", returnImages);
-        body.put("history", returnHistory);
-        
-        return body;
+        return new JSONObject() {
+        	{
+        		put(Signature.SIGNATURE_KEY, new Signature(partner_id, api_key).getSignature(timestamp));
+        		put(Signature.TIME_STAMP_KEY, new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
+        		put(PARTNER_ID, partner_id);
+        		put(USER_ID, user_id);
+        		put(JOB_ID, job_id);
+        		put(IMAGE_LINKS, returnImages);
+        		put(HISTORY, returnHistory);
+        		put("source_sdk", "PHP");
+        		put("source_sdk_version", "2.0.0");
+        	}
+        };
     }
 
-    private String readHttpResponse(HttpResponse response) throws Exception {
+    private String readHttpResponse(HttpResponse response) throws UnsupportedOperationException, IOException {
     	BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         StringBuffer result = new StringBuffer();
         String line = "";
@@ -240,24 +306,26 @@ public class Utilities {
         return result.toString();
     }
 
-    @SuppressWarnings("unchecked")
-	private JSONObject fillInJobStatusOptions() throws Exception {
-        JSONObject obj = new JSONObject();
-        obj.put("return_history", false);
-        obj.put("return_images", false);
-        return obj;
+    @SuppressWarnings({ "unchecked", "serial" })
+	private JSONObject fillInJobStatusOptions() {
+        return new JSONObject() {
+        	{
+        		put(RETURN_HISTORY, false);
+        		put(RETURN_IMAGES, false);
+        	}
+        };
     }
 
     static HttpClient buildHttpClient(int connectionTimeout, int readTimeout) {
 
         RequestConfig config = RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout)
+            .setConnectTimeout(connectionTimeout)
                 .setConnectionRequestTimeout(connectionTimeout)
-                .setSocketTimeout(readTimeout)
-                .build();
+                	.setSocketTimeout(readTimeout)
+                		.build();
 
         return HttpClientBuilder.create()
-                .setDefaultRequestConfig(config)
+            .setDefaultRequestConfig(config)
                 .build();
     }
 }
