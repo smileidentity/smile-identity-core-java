@@ -329,7 +329,7 @@ You will already have your Web Api class initialised as follows:
 ```
 Thereafter, simply call get_web_token with the correct parameters using the classes we have provided:
 ```java
-  response = connection.get_web_token(<Long timestamp>, <String user_id>, <String job_id>, <int job_type>, <String product_type>);
+  response = connection.get_web_token(<Long timestamp>, <String user_id>, <String job_id>, <String product_type>);
 ```
 
 **Response:**
