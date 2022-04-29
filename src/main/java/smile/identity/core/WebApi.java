@@ -4,7 +4,9 @@ package smile.identity.core;
 //package com.smileidentity.services.WebApi
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
@@ -12,11 +14,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.jetbrains.annotations.TestOnly;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -30,17 +34,38 @@ public class WebApi {
 
     private static final List<String> SUPPORTED_IMAGE_TYPES = Arrays.asList(".png", ".jpg", ".jpeg");
 
-    private String partner_id;
-    private String api_key;
+    private String partnerId;
+    private String apiKey;
 
     private String url;
-    private String sid_server;
+    private String sidServer;
     private String callbackUrl;
 
     private Utilities utilitiesConnection;
 
     private int connectionTimeout = -1;
     private int readTimeout = -1;
+    
+    public enum WEB_PRODUCT_TYPE {
+    	
+    	EKYC_SMART_SELFIE("ekyc_smartselfie"),
+    	DOC_VERIFICATION("doc_verification"),
+    	AUTHENTICATION("authentication"),
+    	SMART_SELFIE("smartselfie"),
+    	IDENTITY_VERIFICATION("identity_verification"),
+    	ENHANCED_KYC("enhanced_kyc");
+    	
+    	private String value = "";
+    	
+    	WEB_PRODUCT_TYPE(String value) {
+    		this.value = value;
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		return this.value;
+    	}
+    };
 
     @Deprecated
     public WebApi(String partner_id, String default_callback, String api_key, Integer sid_server) {
@@ -48,11 +73,11 @@ public class WebApi {
     }
 
     public WebApi(String partner_id, String default_callback, String api_key, String sid_server) {
-    	this.partner_id = partner_id;
+    	this.partnerId = partner_id;
         //TODO:
         this.callbackUrl = (default_callback != null) ? default_callback.trim() : "";
-        this.api_key = api_key;
-        this.sid_server = sid_server;
+        this.apiKey = api_key;
+        this.sidServer = sid_server;
 
         if (sid_server.equals("0")) {
             url = "https://3eydmgh10d.execute-api.us-west-2.amazonaws.com/test";
@@ -87,7 +112,7 @@ public class WebApi {
         Long job_type = (Long) partnerParams.get("job_type"); 
         
         if (job_type == 5) {
-            new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
+            new Utilities(partnerId, apiKey, sidServer, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
             return callIDApi(partnerParams, idInfo, options_params);
         }
 
@@ -96,7 +121,7 @@ public class WebApi {
         validateImages(images);
 
         if (job_type == 1) {
-            new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
+            new Utilities(partnerId, apiKey, sidServer, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
             validateEnrollWithId(images, idInfo);
         }
 
@@ -137,12 +162,54 @@ public class WebApi {
         String user_id = (String) partnerParams.get("user_id");
         String job_id = (String) partnerParams.get("job_id");
 
-        Utilities utilities = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
+        Utilities utilities = new Utilities(partnerId, apiKey, sidServer, connectionTimeout, readTimeout);
         return utilities.get_job_status(user_id, job_id, options);
+    }
+    
+    /***
+     *  Will query the backend for web session token with a specific timestamp
+     * @param timestamp the timestamp to generate the token from
+     * @param user_id
+     * @param job_id
+     * @param product_type - Literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
+     * @return A stringified JSONObject containing the returned token
+     */
+    @SuppressWarnings("unchecked")
+	public String get_web_token(Long timestamp, String user_id, String job_id, String product_type) throws Exception {
+    	String url = this.url + "/token";
+    	HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
+    	HttpPost post = new HttpPost(url.trim());
+    	
+    	JSONObject uploadBody = new JSONObject();
+    	uploadBody.put(Signature.TIME_STAMP_KEY, new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
+    	uploadBody.put("callback_url", callbackUrl);
+    	uploadBody.put("partner_id", partnerId);
+    	uploadBody.put("user_id", user_id);
+    	uploadBody.put("job_id", job_id);
+    	uploadBody.put("product", product_type);
+    	uploadBody.put(Signature.SIGNATURE_KEY, new Signature(partnerId, apiKey).getSignature(timestamp));
+        
+        StringEntity entityForPost = new StringEntity(uploadBody.toString());
+        post.setHeader("content-type", "application/json");
+        post.setEntity(entityForPost);
+
+        HttpResponse response = client.execute(post);
+        
+        return ((JSONObject) new JSONParser().parse(readHttpResponse(response))).toString();
+    }
+    
+    @TestOnly
+    public String getCallbackUrl() {
+    	return callbackUrl;
+    }
+    
+    @TestOnly
+    public String getPartnerId() {
+    	return partnerId;
     }
 
     private String callIDApi(JSONObject partnerParams, JSONObject idInfo, String options_params) throws Exception {
-        IDApi connection = new IDApi(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
+        IDApi connection = new IDApi(partnerId, apiKey, sidServer, connectionTimeout, readTimeout);
         return connection.submit_job(partnerParams.toString(), idInfo.toString(), options_params);
     }
 
@@ -215,7 +282,7 @@ public class WebApi {
         String res = null;
         Long timestamp = System.currentTimeMillis();
         Boolean useSignature = false;
-        Signature sigObj = new Signature(partner_id, api_key);
+        Signature sigObj = new Signature(partnerId, apiKey);
         
         if (options.containsKey(Signature.SIGNATURE_KEY)) {
         	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
@@ -250,7 +317,7 @@ public class WebApi {
             uploadFile(uploadUrl, baos);
             
             if ((Boolean) options.get("return_job_status") == true) {
-                Utilities utilitiesConnection = new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout);
+                Utilities utilitiesConnection = new Utilities(partnerId, apiKey, sidServer, connectionTimeout, readTimeout);
                 this.utilitiesConnection = utilitiesConnection;
 
                 Integer counter = 0;
@@ -277,7 +344,7 @@ public class WebApi {
         body.put("file_name", "selfie.zip");
         body.put("timestamp", timestamp);
         body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
-        body.put("smile_client_id", partner_id);
+        body.put("smile_client_id", partnerId);
         body.put("partner_params", partnerParams);
         body.put("model_parameters", new JSONObject());
         body.put("callback_url", callbackUrl);
@@ -326,7 +393,7 @@ public class WebApi {
         misc_information.put("partner_params", partnerParams);
         misc_information.put("timestamp", timestamp);
         misc_information.put("file_name", "selfie.zip");
-        misc_information.put("smile_client_id", partner_id);
+        misc_information.put("smile_client_id", partnerId);
         misc_information.put("callback_url", callbackUrl);
         misc_information.put("userData", userData);
 

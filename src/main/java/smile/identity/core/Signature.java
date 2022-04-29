@@ -71,7 +71,7 @@ public class Signature {
 	/***
      *  Will confirm the signature against a newly generated signature based on the same timestamp
      * @param timestamp the timestamp to generate the signature from
-     * @param signature a previously signature, to be confirmed
+     * @param signature a previously generated signature, to be confirmed
      * @return TRUE or FALSE
      */
     public Boolean confirm_signature(Long timestamp, String signature) {
