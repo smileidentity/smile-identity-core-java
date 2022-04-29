@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -123,11 +124,70 @@ public class WebApi {
         this(partner_id, default_callback, api_key, String.valueOf(sid_server));
     }
 
-    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws Exception {
+    /***
+     * Submits a job with specified partner parameters and ID information
+     * 
+     * @param partner_params a JSON string containing partner's specified parameters
+     * 
+     * @param images_params a JSON string containing base_64 encode image data
+     * 
+     * @param id_info_params a JSON string containing user's specified ID information
+     * 
+     * @param options_params a JSON string containing additional optional parameters
+     * 
+     * @return a string-formatted JSON payload response
+     * 
+     * @throws ClientProtocolException
+     * 
+     * @throws IOException
+     * 
+     * @throws ParseException
+     * 
+     * @throws GeneralSecurityException
+     * 
+     * @throws IllegalArgumentException
+     * 
+     * @throws RuntimeException
+     * 
+     * @throws java.text.ParseException
+     *  
+     * @throws InterruptedException 
+     */
+    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params) throws IllegalArgumentException, ParseException, RuntimeException, IOException, GeneralSecurityException, InterruptedException, java.text.ParseException {
         return submit_job(partner_params, images_params, id_info_params, options_params, true);
     }
 
-    public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean use_validation_api) throws Exception {
+    /***
+     * Submits a job with specified partner parameters and ID information
+     * 
+     * @param partner_params a JSON string containing partner's specified parameters
+     * 
+     * @param id_info_params a JSON string containing user's specified ID information
+     * 
+     * @param use_validation_api boolean value whether special API validation is required
+     * 
+     * @param options_params a JSON string containing additional optional parameters
+     * 
+     * @return a string-formatted JSON payload response
+     * 
+     * @throws ClientProtocolException
+     * 
+     * @throws IOException
+     * 
+     * @throws ParseException
+     * 
+     * @throws GeneralSecurityException
+     * 
+     * @throws IllegalArgumentException
+     * 
+     * @throws RuntimeException
+     * 
+     * @throws java.text.ParseException
+     *  
+     * @throws InterruptedException 
+     */
+    @SuppressWarnings({ "unchecked", "serial" })
+	public String submit_job(String partner_params, String images_params, String id_info_params, String options_params, Boolean use_validation_api) throws IllegalArgumentException, ParseException, RuntimeException, IOException, GeneralSecurityException, InterruptedException, java.text.ParseException {
     	JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo;
@@ -135,7 +195,11 @@ public class WebApi {
         if (id_info_params != null && !id_info_params.trim().isEmpty()) {
             idInfo = (JSONObject) parser.parse(id_info_params);
         } else {
-            idInfo = fillInIdInfo();
+            idInfo = new JSONObject() {
+            	{
+            		put("entered", "false");
+            	}
+            };
         }
 
         Long job_type = (Long) partnerParams.get("job_type"); 
@@ -160,10 +224,29 @@ public class WebApi {
         return setupRequests(partnerParams, options, idInfo, images);
     }
 
+    /***
+     * Submits a job with specified partner parameters and ID information
+     * 
+     * @param partner_params a JSON string containing partner's specified parameters
+     * 
+     * @param id_info_params a JSON string containing user's specified ID information
+     * 
+     * @return a string-formatted JSON payload response
+     * 
+     * @throws IllegalArgumentException
+     * 
+     * @throws ClientProtocolException
+     * 
+     * @throws IOException
+     * 
+     * @throws ParseException
+     * 
+     * @throws GeneralSecurityException
+     * 
+     * @throws RuntimeException
+     */
     @SuppressWarnings("null")
-	public String submit_job(String partner_params, String id_info_params) throws Exception {
-    	String response = null;
-        
+	public String submit_job(String partner_params, String id_info_params) throws IllegalArgumentException, ParseException, ClientProtocolException, IOException, GeneralSecurityException, RuntimeException {
     	JSONParser parser = new JSONParser();
         JSONObject partnerParams = (JSONObject) parser.parse(partner_params);
         JSONObject idInfo;
@@ -177,12 +260,10 @@ public class WebApi {
         Long job_type = (Long) partnerParams.get("job_type");
         
         if (job_type == 5) {
-            response = callIDApi(partnerParams, idInfo, null);
+            return callIDApi(partnerParams, idInfo, null);
         } else {
             throw new IllegalArgumentException("You need to send through more parameters");
         }
-        
-        return response;
     }
 
     /***
@@ -222,14 +303,29 @@ public class WebApi {
     
     /***
      * Queries the backend for web session token with a specific timestamp
-     * @param timestamp the timestamp to generate the token from
-     * @param user_id
-     * @param job_id
-     * @param product_type - Literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
+     * 
+     * @param timestamp the timestamp to generate the token for
+     * 
+     * @param user_id the supplied user id
+     * 
+     * @param job_id the supplied id for this job
+     *  
+     * @param product_type literal value of any of the 6 options specified by the WEB_PRODUCT_TYPE enum
+     * 
      * @return A stringified JSONObject containing the returned token
+     * 
+     * @throws ParseException 
+     * 
+     * @throws NoSuchAlgorithmException
+     *  
+     * @throws InvalidKeyException
+     * 
+     * @throws IOException
+     *  
+     * @throws ClientProtocolException 
      */
     @SuppressWarnings({ "unchecked", "serial" })
-	public String get_web_token(Long timestamp, String user_id, String job_id, String product_type) throws Exception {
+	public String get_web_token(Long timestamp, String user_id, String job_id, String product_type) throws InvalidKeyException, NoSuchAlgorithmException, ParseException, ClientProtocolException, IOException {
     	String url = this.url + "/token";
     	HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
     	HttpPost post = new HttpPost(url.trim());
@@ -295,7 +391,7 @@ public class WebApi {
         }
     }
 
-    private void validateReturnData(boolean returnJobStatus) throws Exception {
+    private void validateReturnData(boolean returnJobStatus) throws IllegalArgumentException {
         if (this.callbackUrl.trim().isEmpty() && returnJobStatus == false) {
             throw new IllegalArgumentException("Please choose to either get your response via the callback or job status query");
         }
@@ -327,15 +423,6 @@ public class WebApi {
         }
         
         return options;
-    }
-
-    @SuppressWarnings({ "unchecked", "serial" })
-	private JSONObject fillInIdInfo() {
-        return new JSONObject() {
-        	{
-        		put("entered", "false");
-        	}
-        };
     }
 
     @SuppressWarnings({ "serial", "unchecked" })

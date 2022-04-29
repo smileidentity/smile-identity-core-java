@@ -59,4 +59,9 @@ Also removed validations on id or selfie images
 * Fixed the empty  add methods on parameters to the server, should be able to handle empty cases and throw errors if empty or  null
 
 ## [1.0.7] - 2020-09-30
-* Fixed the public key issue now can use one line, or multi line or exact copy from portal  
+* Fixed the public key issue now can use one line, or multi line or exact copy from portal
+
+## [2.0.0] - 2022-04-28
+* Deprecated the use of sec key
+* Enforced the use of signature on all calls
+* Added source and version of number to all requests

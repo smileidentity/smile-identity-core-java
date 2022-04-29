@@ -131,11 +131,11 @@ public class IDApi {
     /***
      * Submits a job with specified partner parameters and ID information
      * 
-     * @param partner_params partner's specified parameters
+     * @param partner_params a JSON string containing partner's specified parameters
      * 
-     * @param specified ID information
+     * @param id_info_params a JSON string containing user's specified ID information
      * 
-     * @param additional optional parameters
+     * @param options_params a JSON string containing additional optional parameters
      * 
      * @return a string-formatted JSON payload response
      * 
@@ -158,13 +158,13 @@ public class IDApi {
     /***
      * Submits a job with specified partner parameters and ID information
      * 
-     * @param partner_params partner's specified parameters
+     * @param partner_params a JSON string containing partner's specified parameters
      * 
-     * @param specified ID information
+     * @param id_info_params a JSON string containing user's specified ID information
      * 
      * @param use_validation_api boolean value whether special API validation is required
      * 
-     * @param additional optional parameters
+     * @param options_params a JSON string containing additional optional parameters
      * 
      * @return a string-formatted JSON payload response
      * 

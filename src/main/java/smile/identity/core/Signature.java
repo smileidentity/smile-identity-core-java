@@ -30,6 +30,13 @@ public class Signature {
     private String partnerId;
     private String apiKey;
 
+    /**
+     * Creates a Signature object.
+     *
+     * @param partner_id the provided partner ID string
+     * 
+     * @param api_key the partner-provided API key 
+     */
     public Signature(String partnerId, String apiKey) {
         this.partnerId = partnerId;
         this.apiKey = apiKey;
@@ -122,30 +129,26 @@ public class Signature {
 	 *  
 	 * @throws GeneralSecurityException
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "serial" })
     @Deprecated
-	public String generate_sec_key(Long timestamp) throws IOException, GeneralSecurityException {
+	public String generate_sec_key(Long timestamp) throws GeneralSecurityException, IOException {
         String toHash = Integer.parseInt(partnerId) + ":" + timestamp;
-        String signature = "";
-        JSONObject signatureObj = new JSONObject();
 
-        try {
-            MessageDigest md = MessageDigest.getInstance(SHA_256);
-            md.update(toHash.getBytes());
-            byte[] hashed = md.digest();
-            String hashSignature = bytesToHexStr(hashed);
+        MessageDigest md = MessageDigest.getInstance(SHA_256);
+        md.update(toHash.getBytes());
+        byte[] hashed = md.digest();
+        String hashSignature = bytesToHexStr(hashed);
 
-            PublicKey publicKey = loadPublicKey(apiKey);
-            byte[] encSignature = encryptString(publicKey, hashSignature);
-            signature = Base64.getEncoder().encodeToString(encSignature) + "|" + hashSignature;
-        } catch (IOException | GeneralSecurityException e) {
-            throw e;
-        }
+        PublicKey publicKey = loadPublicKey(apiKey);
+        byte[] encSignature = encryptString(publicKey, hashSignature);
+        final String signature = Base64.getEncoder().encodeToString(encSignature) + "|" + hashSignature;
 
-        signatureObj.put(SEC_KEY, signature);
-        signatureObj.put(TIME_STAMP_KEY, timestamp);
-        
-        return signatureObj.toString();
+        return new JSONObject() {
+        	{
+        		put(SEC_KEY, signature);
+        		put(TIME_STAMP_KEY, timestamp);
+        	}
+        }.toString();
     }
 
     /***
@@ -177,9 +180,13 @@ public class Signature {
      * @param sec-key a previously generated sec-key, to be confirmed
      * 
      * @return TRUE or FALSE
+     * 
+     * @throws GeneralSecurityException
+     * 
+     * @throws IOException
      */
     @Deprecated
-    public Boolean confirm_sec_key(String timestamp, String secKey) throws Exception {
+    public Boolean confirm_sec_key(String timestamp, String secKey) throws GeneralSecurityException, IOException {
         String toHash = Integer.parseInt(partnerId) + ":" + timestamp;
         
         try {
@@ -197,7 +204,7 @@ public class Signature {
             String decrypted = decryptString(publicKey, decodedBytes);
 
             return decrypted.equals(hashSignature);
-        } catch (Exception e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw e;
         }
     }

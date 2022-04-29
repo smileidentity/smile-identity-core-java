@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.TextUtils;
+import org.jetbrains.annotations.TestOnly;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,6 +32,8 @@ public class Utilities {
     private static final String HISTORY = "history";
     private static final String RETURN_HISTORY = "return_history";
     private static final String RETURN_IMAGES = "return_images";
+    private static final String SOURCE_SDK = "source_sdk";
+    private static final String SOURCE_SDK_VERSION = "source_sdk_version";
     
 	private String partner_id;
     private String api_key;
@@ -97,6 +100,8 @@ public class Utilities {
      * 
      * @return a JSON string containing custom options
      * 
+     * @throws ClassCastException
+     * 
      * @throws InvalidKeyException
      * 
      * @throws IllegalArgumentException
@@ -113,16 +118,63 @@ public class Utilities {
      * 
      * @throws IOException
      */
-    public String get_job_status(String user_id, String job_id, String options) throws InvalidKeyException, IllegalArgumentException, UnsupportedOperationException, NoSuchAlgorithmException, RuntimeException, ParseException, java.text.ParseException, IOException {
-        JSONObject optionsJson = null;
+    public String get_job_status(String user_id, String job_id, String options) throws ClassCastException, InvalidKeyException, IllegalArgumentException, UnsupportedOperationException, NoSuchAlgorithmException, RuntimeException, ParseException, java.text.ParseException, IOException {
+        JSONObject responseJson = getJobStatus(user_id, job_id, options);
+        
+        String timestamp = (String) responseJson.get(Signature.TIME_STAMP_KEY);
+        String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
+        Signature sigObj = new Signature(partner_id, api_key);
+        Boolean valid = sigObj.confirm_signature(new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime(), signature);
+        
+        if (!valid) {
+            throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
+        }
+        
+        return responseJson.toJSONString();
+    }
+
+    private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws RuntimeException, ParseException, java.text.ParseException, UnsupportedOperationException, IOException, InvalidKeyException, NoSuchAlgorithmException {
+        String jobStatusUrl = (url + "/job_status").toString();
+        HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
+        HttpPost post = new HttpPost(jobStatusUrl);
+
+        String body = configureJobQueryBody(user_id, job_id, options).toString();
+        StringEntity entityForPost = new StringEntity(body);
+
+        post.setHeader("content-type", "application/json");
+        post.setEntity(entityForPost);
+
+        HttpResponse response = client.execute(post);
+        final int statusCode = response.getStatusLine().getStatusCode();
+        String strResult = readHttpResponse(response);
+
+        if (statusCode != 200) {
+            final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
+                jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
+            
+            throw new RuntimeException(msg);
+        }
+        
+        return (JSONObject) new JSONParser().parse(strResult);
+    }
+    
+    @SuppressWarnings({ "unchecked", "serial" })
+	@TestOnly
+    public JSONObject getJobStatus(String user_id, String job_id, String options) throws ClassCastException, InvalidKeyException, IllegalArgumentException, UnsupportedOperationException, NoSuchAlgorithmException, RuntimeException, ParseException, java.text.ParseException, IOException {
+    	JSONObject optionsJson = null;
 
         if (options != null && !options.trim().isEmpty()) {
             optionsJson = (JSONObject) new JSONParser().parse(options);
         } else {
-            optionsJson = fillInJobStatusOptions();
+            optionsJson = new JSONObject() {
+            	{
+            		put(RETURN_HISTORY, false);
+            		put(RETURN_IMAGES, false);
+            	}
+            };
         }
 
-        return queryJobStatus(user_id, job_id, optionsJson).toString();
+        return queryJobStatus(user_id, job_id, optionsJson);
     }
 
     /***
@@ -235,44 +287,6 @@ public class Utilities {
         }
     }
 
-    private JSONObject queryJobStatus(String user_id, String job_id, JSONObject options) throws IllegalArgumentException, RuntimeException, ParseException, java.text.ParseException, UnsupportedOperationException, IOException, InvalidKeyException, NoSuchAlgorithmException {
-        JSONObject responseJson = null;
-
-        String jobStatusUrl = (url + "/job_status").toString();
-        HttpClient client = buildHttpClient(connectionTimeout, readTimeout);
-        HttpPost post = new HttpPost(jobStatusUrl);
-
-        String body = configureJobQueryBody(user_id, job_id, options).toString();
-        StringEntity entityForPost = new StringEntity(body);
-
-        post.setHeader("content-type", "application/json");
-        post.setEntity(entityForPost);
-
-        HttpResponse response = client.execute(post);
-        final int statusCode = response.getStatusLine().getStatusCode();
-        String strResult = readHttpResponse(response);
-
-        if (statusCode != 200) {
-            final String msg = String.format("Failed to post entity to %s, response=%d:%s - %s",
-                jobStatusUrl, statusCode, response.getStatusLine().getReasonPhrase(), strResult);
-            
-            throw new RuntimeException(msg);
-        }
-        
-        responseJson = (JSONObject) new JSONParser().parse(strResult);
-
-        String timestamp = (String) responseJson.get(Signature.TIME_STAMP_KEY);
-        String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
-        Signature sigObj = new Signature(partner_id, api_key);
-        Boolean valid = sigObj.confirm_signature(new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime(), signature);
-        
-        if (!valid) {
-            throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
-        }
-        
-        return responseJson;
-    }
-
     @SuppressWarnings({ "unchecked", "serial" })
 	private JSONObject configureJobQueryBody(String user_id, String job_id, JSONObject options) throws InvalidKeyException, NoSuchAlgorithmException, ParseException { 
         Long timestamp = System.currentTimeMillis();
@@ -288,8 +302,8 @@ public class Utilities {
         		put(JOB_ID, job_id);
         		put(IMAGE_LINKS, returnImages);
         		put(HISTORY, returnHistory);
-        		put("source_sdk", "PHP");
-        		put("source_sdk_version", "2.0.0");
+        		put(SOURCE_SDK, "PHP");
+        		put(SOURCE_SDK_VERSION, "2.0.0");
         	}
         };
     }
@@ -304,16 +318,6 @@ public class Utilities {
         }
         
         return result.toString();
-    }
-
-    @SuppressWarnings({ "unchecked", "serial" })
-	private JSONObject fillInJobStatusOptions() {
-        return new JSONObject() {
-        	{
-        		put(RETURN_HISTORY, false);
-        		put(RETURN_IMAGES, false);
-        	}
-        };
     }
 
     static HttpClient buildHttpClient(int connectionTimeout, int readTimeout) {
