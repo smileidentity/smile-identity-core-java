@@ -302,7 +302,7 @@ public class Utilities {
         		put(JOB_ID, job_id);
         		put(IMAGE_LINKS, returnImages);
         		put(HISTORY, returnHistory);
-        		put(SOURCE_SDK, "PHP");
+        		put(SOURCE_SDK, "JAVA");
         		put(SOURCE_SDK_VERSION, "2.0.0");
         	}
         };

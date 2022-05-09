@@ -235,7 +235,7 @@ public class IDApi {
         		put("partner_id", partner_id);
         		put("partner_params", partnerParams);
         		putAll(idInfo);
-        		put("source_sdk", "PHP");
+        		put("source_sdk", "JAVA");
         		put("source_sdk_version", "2.0.0");
         	}
         };

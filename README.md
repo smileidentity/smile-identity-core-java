@@ -1,11 +1,11 @@
-#Smile Identity PHP Server Side
+# Smile Identity JAVA Server Side
 
 Smile Identity provides the best solutions for real time Digital KYC, identity verification, user onboarding, and user authentication across Africa. Our server side libraries make it easy to integrate us on the server-side. Since the library is server-side, you will be required to pass the images (if required) to the library.
 If you haven’t already, sign up for a free Smile Identity account, which comes with Sandbox access.
 
 Please see [changelog.md](changelog.md) for release versions and changes
 
-##Features
+## Features
 
 The library exposes four classes namely; the WebApi class, the IDApi class, the Signature class, and the Utilities class.
 
@@ -24,18 +24,18 @@ The Utilities Class allows you as the Partner to have access to our general Util
 get_job_status - retrieve information & results of a job. Read more on job status in the Smile Identity documentation.
 get_smile_id_services - general information about different smile identity products such as required inputs for each supported id type.
 
-##Dependencies
+## Dependencies
 
 * Java 7 and above
 * Gradle/Maven build tool
 
-##Documentation
+## Documentation
 
 For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/java)
 
-##Installation
+## Installation
 
-View the package on [Maven](https://search.maven.org/search?q=a:smile-identity-core).
+View the package on [Maven Central](https://search.maven.org/search?q=a:smile-identity-core).
 
 Add the group, name and version to your application's build file, it will look similar based on your build tool:
 
@@ -43,19 +43,19 @@ Add the group, name and version to your application's build file, it will look s
 group: "com.smileidentity", name: "smile-identity-core", version: "<current-version>"
 ```
 
-##License
+## License
 
 MIT License
 
-##Documentation
+## Documentation
 
-For extensive instructions on usage of the library and sample codes, please refer to the official Smile Identity documentation <add hyperlink to the page in docs specific to library>.
+For extensive instructions on usage of the library and sample codes, please refer to the official Smile [Identity documentation](https://docs.smileidentity.com/server-to-server/java).
 
-##Getting Help
+## Getting Help
 
 For usage questions, the best resource is [our official documentation](docs.smileidentity.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.smileidentity.com/partner/support/tickets) or visit the [contact us page](https://portal.smileidentity.com/partner/support/tickets) on our website.
 
-##Contributing
+## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/smileidentity/smile-identity-core-java
 

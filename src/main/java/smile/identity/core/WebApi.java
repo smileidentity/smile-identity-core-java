@@ -338,7 +338,7 @@ public class WebApi {
     			put("job_id", job_id);
     			put("product", product_type);
     			put(Signature.SIGNATURE_KEY, new Signature(partnerId, apiKey).getSignature(timestamp));
-        		put("source_sdk", "PHP");
+        		put("source_sdk", "JAVA");
         		put("source_sdk_version", "2.0.0");
     		}
     	};
@@ -488,7 +488,7 @@ public class WebApi {
         		put("partner_params", partnerParams);
         		put("model_parameters", new JSONObject());
         		put("callback_url", callbackUrl);
-        		put("source_sdk", "PHP");
+        		put("source_sdk", "JAVA");
         		put("source_sdk_version", "2.0.0");
         	}
         };
