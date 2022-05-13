@@ -57,7 +57,7 @@ public class IDApi {
      * 
      * @param api_key the partner-provided API key
      * 
-     *  @param connection_timeout the connection timeout in milliseconds
+     * @param connection_timeout the connection timeout in milliseconds
      * 
      * @param read_timeout the read_timeout the read timeout in milliseconds
      * 
