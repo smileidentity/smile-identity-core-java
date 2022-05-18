@@ -33,14 +33,29 @@ get_smile_id_services - general information about different smile identity produ
 
 For extensive instructions on usage of the library and sample codes, please refer to the [official Smile Identity documentation](https://docs.smileidentity.com/server-to-server/java)
 
+
 ## Installation
 
-View the package on [Maven Central](https://search.maven.org/search?q=a:smile-identity-core).
+View the package on [Maven Central](https://search.maven.org/search?q=a:smile-identity-core) and the open source code on [Github](https://github.com/smileidentity/smile-identity-core-java).
 
-Add the group, name and version to your application's build file, it will look similar based on your build tool:
+### Maven Installation
 
-```java
-group: "com.smileidentity", name: "smile-identity-core", version: "<current-version>"
+Add the Smile-Identity Core as  a dependency to your project's pom file (`pom.xml`).
+
+```xml
+<dependency>
+  <groupId>com.smileidentity</groupId>
+  <artifactId>smile-identity-core</artifactId>
+  <version>2.0.0</version>
+</dependency>
+```
+
+### Gradle Installation
+
+Add the following line to your project's top build file (`build.gradle`), under dependencies.
+
+```gradle
+implementation("com.smileidentity:smile-identity-core:2.0.0")
 ```
 
 ## License
