@@ -119,6 +119,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# jenv
+.java-version
+
 ### Gradle ###
 .gradle
 build/
@@ -139,6 +142,7 @@ gradle-app.setting
 **/build/
 
 gradle.properties
+local.properties
 # End of https://www.gitignore.io/api/macos,gradle,intellij
 /bin/
 
