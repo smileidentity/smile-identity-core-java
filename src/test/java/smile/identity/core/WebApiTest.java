@@ -27,9 +27,9 @@ public class WebApiTest {
 	private static final String TEST_BASE_URL = "http://localhost:" + PORT;
 	private String POST_REQUEST = "POST";
 	private String REQUEST_ENDPOINT = "/token";
-	private String API_KEY = "<API_KEY>";
+	private String API_KEY = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	private String USER_ID = "<USER_ID>";
-	private String PARTNER_ID = "<PARTNER_ID>";
+	private String PARTNER_ID = "1";
 	private String CALL_BACK_URL = "<CALL_BACK_URL>";
 	private String JOB_ID = "<JOB_ID>";
 	private String SUCCESS_KEY = "success";
@@ -91,6 +91,46 @@ public class WebApiTest {
 		assertTrue(response.containsKey(SUCCESS_KEY));
 		assertTrue(response.containsKey(TOKEN_KEY));
 	}
+
+	// @Test
+	// public void testCallBackURL() throws Exception {
+	// 	String jobResponse = "{\"upload_url\":\""+TEST_BASE_URL+"\",\"smile_job_id\":\"smile job id\"}";
+
+	// 	mMockResponse.setResponseCode(200);
+	// 	mMockResponse.setBody(jobResponse);
+	// 	mMockServer.enqueue(mMockResponse);
+
+	// 	MockResponse mockUploadResponse = new MockResponse();
+	// 	mockUploadResponse.setResponseCode(200);
+	// 	mMockServer.enqueue(mockUploadResponse);
+
+	// 	String productType = WEB_PRODUCT_TYPE.AUTHENTICATION.toString();
+	// 	Long timestamp = System.currentTimeMillis();
+
+	// 	PartnerParameters partnerParameters = new PartnerParameters("1", "1", 2);
+	// 	partnerParameters.add("optional_info", "some optional info");
+
+	// 	// Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
+	// 	IDParameters idParameters = new IDParameters("<String firstName>", "<String middleName>", "<String lastName>", "<String country>", "<String idType>", "<String idNumber>", "<String dob>", "<String phoneNumber>", "<String entered>");
+
+	// 	ImageParameters imageParameters = new ImageParameters();
+	// 	imageParameters.add(1, "src/test/download.png");
+
+	// 	Options options = new Options("optional_callback.com", true, false, false);
+	// 	// options.add(Signature.SIGNATURE_KEY, "true");
+
+	// 	JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(), false));
+
+	// 	RecordedRequest request = mMockServer.takeRequest();
+	// 	assertEquals(POST_REQUEST, request.getMethod());
+	// 	assertEquals(REQUEST_ENDPOINT, request.getPath());
+	// 	assertEquals((TEST_BASE_URL + REQUEST_ENDPOINT), request.getRequestUrl().toString());
+
+	// 	JSONObject body = (JSONObject) new JSONParser().parse(request.getBody().readUtf8());
+
+	// 	assertTrue(body.containsKey("callback_url"));
+	// 	assertEquals(body.get("callback_url"), "optional_callback.com");
+	// }
 	
 	@After
 	public void reset() throws IOException {
