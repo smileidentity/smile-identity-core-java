@@ -184,11 +184,7 @@ public class Utilities {
             String signature = (String) responseJson.get(Signature.SIGNATURE_KEY);
             Signature sigObj = new Signature(partner_id, api_key);
             Boolean valid = false;
-            Boolean useSignature = false;
-            
-            if (options.containsKey(Signature.SIGNATURE_KEY)) {
-            	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-            }
+            Boolean useSignature = useSignature(options);
             
             if (useSignature) {
             	Long tstmpLng = new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime();
@@ -210,11 +206,7 @@ public class Utilities {
         JSONObject body = new JSONObject();
         Boolean returnImages = (Boolean) options.get("return_images");
         Boolean returnHistory = (Boolean) options.get("return_history");
-        Boolean useSignature = false;
-        
-        if (options.containsKey(Signature.SIGNATURE_KEY)) {
-        	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-        }
+        Boolean useSignature = useSignature(options);
         
         Signature sigObj = new Signature(partner_id, api_key);
         body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp));
@@ -259,5 +251,12 @@ public class Utilities {
         return HttpClientBuilder.create()
                 .setDefaultRequestConfig(config)
                 .build();
+    }
+
+    public static Boolean useSignature(JSONObject options){
+        if (options.containsKey(Signature.SIGNATURE_KEY)) {
+            return (Boolean) options.get(Signature.SIGNATURE_KEY);
+        }
+        return true;
     }
 }

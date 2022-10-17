@@ -4,15 +4,12 @@ package smile.identity.core;
 //package com.smileidentity.services.WebApi
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.TestOnly;
 import org.json.simple.JSONArray;
@@ -278,15 +275,11 @@ public class WebApi {
         return obj;
     }
 
-    private String setupRequests(JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception {
+    private String setupRequests(JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception  {
         String res = null;
         Long timestamp = System.currentTimeMillis();
-        Boolean useSignature = false;
+        Boolean useSignature = Utilities.useSignature(options);
         Signature sigObj = new Signature(partnerId, apiKey);
-        
-        if (options.containsKey(Signature.SIGNATURE_KEY)) {
-        	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-        }
         
         String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
         String prepUploadUrl = url + "/upload";
@@ -499,7 +492,6 @@ public class WebApi {
 
     private JSONObject pollJobStatus(int counter, JSONObject partnerParams, JSONObject options) throws Exception {
         Boolean job_complete = false;
-        Boolean useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
         JSONObject responseJson = null;
         String responseStr = null;
 
