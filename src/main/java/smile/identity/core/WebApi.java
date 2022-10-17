@@ -278,7 +278,7 @@ public class WebApi {
     private String setupRequests(JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception  {
         String res = null;
         Long timestamp = System.currentTimeMillis();
-        Boolean useSignature = Utilities.useSignature(options);
+        Boolean useSignature = Signature.useSignature(options);
         Signature sigObj = new Signature(partnerId, apiKey);
         
         String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);

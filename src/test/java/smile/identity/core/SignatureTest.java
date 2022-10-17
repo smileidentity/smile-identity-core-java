@@ -45,4 +45,27 @@ public class SignatureTest {
     	
     	assertTrue(mSignature.confirm_signature(dateTime, signature));
     }
+
+	@Test
+	public void testUseSignatureDefaultTrue(){
+		JSONObject options = new JSONObject();
+		Boolean useSignature = Signature.useSignature(options);
+		assert(useSignature).equals(true);
+	}
+
+	@Test
+	public void testUseSignatureUseOptionFalse(){
+		JSONObject options = new JSONObject();
+		options.put(Signature.SIGNATURE_KEY, false);
+		Boolean useSignature = Signature.useSignature(options);
+		assert(useSignature).equals(false);
+	}
+
+	@Test
+	public void testUseSignatureUseOptionTrue(){
+		JSONObject options = new JSONObject();
+		options.put(Signature.SIGNATURE_KEY, true);
+		Boolean useSignature = Signature.useSignature(options);
+		assert(useSignature).equals(true);
+	}
 }

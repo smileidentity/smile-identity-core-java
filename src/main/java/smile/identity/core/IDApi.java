@@ -81,7 +81,7 @@ public class IDApi {
         
         if (options_params != null && !options_params.trim().isEmpty()) {
             JSONObject options = (JSONObject) parser.parse(options_params);
-            useSignature = Utilities.useSignature(options);
+            useSignature = Signature.useSignature(options);
         }
         
         String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
