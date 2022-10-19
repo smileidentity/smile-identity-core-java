@@ -68,4 +68,14 @@ public class SignatureTest {
 		Boolean useSignature = Signature.useSignature(options);
 		assert(useSignature).equals(true);
 	}
+
+	@Test
+	public void testSignatureAndSecKeyPresent(){
+		JSONObject options = new JSONObject();
+		options.put(Signature.SIGNATURE_KEY, true);
+		options.put(Signature.SEC_KEY, true);
+		Boolean useSignature = Signature.useSignature(options);
+		assert(useSignature).equals(true);
+	}
+
 }
