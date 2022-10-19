@@ -60,3 +60,6 @@ Also removed validations on id or selfie images
 
 ## [1.0.7] - 2020-09-30
 * Fixed the public key issue now can use one line, or multi line or exact copy from portal  
+
+## [1.0.11] - 2022-10-19
+* Better handling of optional callback URLs
