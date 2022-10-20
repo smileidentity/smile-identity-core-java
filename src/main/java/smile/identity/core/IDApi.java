@@ -75,16 +75,13 @@ public class IDApi {
         
         new Utilities(partner_id, api_key, sid_server, connectionTimeout, readTimeout).validate_id_params(partner_params, id_info_params, useValidationApi);
 
-        Boolean useSignature = false;
+        Boolean useSignature = true;
         Long timestamp = System.currentTimeMillis();
         Signature sigObj = new Signature(partner_id, api_key);
         
         if (options_params != null && !options_params.trim().isEmpty()) {
             JSONObject options = (JSONObject) parser.parse(options_params);
-            
-            if (options.containsKey(Signature.SIGNATURE_KEY)) {
-            	useSignature = (Boolean) options.get(Signature.SIGNATURE_KEY);
-            }
+            useSignature = Signature.useSignature(options);
         }
         
         String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);

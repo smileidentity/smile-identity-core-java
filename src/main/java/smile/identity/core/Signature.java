@@ -142,6 +142,13 @@ public class Signature {
         }
     }
 
+    public static Boolean useSignature(JSONObject options) {
+        if (options.containsKey(Signature.SIGNATURE_KEY)) {
+            return (Boolean) options.get(Signature.SIGNATURE_KEY);
+        }
+        return true;
+    }
+
     private static PublicKey loadPublicKey(String apiKey) throws GeneralSecurityException, IOException {
         apiKey = apiKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "").replace("\n", "").replace("\r", "").trim();
         apiKey = apiKey.replaceAll(" ", "");
