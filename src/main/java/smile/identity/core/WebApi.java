@@ -286,7 +286,7 @@ public class WebApi {
 
         HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
         HttpPost post = new HttpPost(prepUploadUrl.trim());
-        JSONObject uploadBody = configurePrepUploadJson(signature, timestamp, partnerParams, useSignature);
+        JSONObject uploadBody = configurePrepUploadJson(signature, timestamp, partnerParams, useSignature, options);
         StringEntity entityForPost = new StringEntity(uploadBody.toString());
         post.setHeader("content-type", "application/json");
         post.setEntity(entityForPost);
@@ -332,7 +332,7 @@ public class WebApi {
         return res;
     }
 
-    private JSONObject configurePrepUploadJson(String signature, Long timestamp, JSONObject partnerParams, Boolean useSignature) throws Exception {
+    private JSONObject configurePrepUploadJson(String signature, Long timestamp, JSONObject partnerParams, Boolean useSignature, JSONObject options) throws Exception {
         JSONObject body = new JSONObject();
         body.put("file_name", "selfie.zip");
         body.put("timestamp", timestamp);
@@ -340,7 +340,7 @@ public class WebApi {
         body.put("smile_client_id", partnerId);
         body.put("partner_params", partnerParams);
         body.put("model_parameters", new JSONObject());
-        body.put("callback_url", callbackUrl);
+        body.put("callback_url", options.containsKey("optional_callback") ? options.get("optional_callback") : callbackUrl);
         return body;
     }
 
