@@ -48,7 +48,7 @@ artifacts {
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
-version = "2.0.0"
+version = "1.0.11"
 
 // Build, sign, and upload
 uploadArchives {
