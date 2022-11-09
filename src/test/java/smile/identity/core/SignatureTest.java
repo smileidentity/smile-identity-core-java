@@ -24,6 +24,6 @@ public class SignatureTest {
 	public void itConfirmsASignature(){
 		Signature signature = new Signature("partner", "apiKey");
 		SignatureKey original = signature.generateSignature();
-		assert(signature.validateSignature(original.getTimestamp(), original.getSignature()));
+		assert(signature.confirmSignature(original.getTimestamp(), original.getSignature()));
 	}
 }
