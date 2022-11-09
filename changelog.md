@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Changed 
+- Changed return object of getSignature method 
+- Updated documentation 
+
 ## [0.0.2] - 2019-08-12
 ### Added
 The first release version of Web Api.
