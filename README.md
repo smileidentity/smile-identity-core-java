@@ -430,7 +430,7 @@ You can also confirm the signature that you receive when you interacting with ou
 ```java
 import smile.identity.core.Signature;
 
-Signature connection = new Signature(partnerId, apiKey);
+Signature signature = new Signature(partnerId, apiKey);
 boolean signatureConfirmed = connection.confirmSignature(signature, timestamp);
 ```
 
