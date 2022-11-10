@@ -20,7 +20,7 @@ public class Signature {
         return new SignatureKey(timestamp, this.partnerId, this.apiKey);
     }
 
-    public Boolean confirmSignature(long timestamp, String signature){
+    public boolean confirmSignature(long timestamp, String signature){
         SignatureKey key = new SignatureKey(timestamp, this.partnerId, this.apiKey);
         return key.validSignature(signature);
     }
