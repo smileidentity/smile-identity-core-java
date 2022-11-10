@@ -16,7 +16,7 @@ public class Signature {
         return generateSignature(System.currentTimeMillis());
     }
 
-    public SignatureKey generateSignature(Long timestamp){
+    public SignatureKey generateSignature(long timestamp){
         return new SignatureKey(timestamp, this.partnerId, this.apiKey);
     }
 
