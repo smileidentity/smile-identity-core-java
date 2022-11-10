@@ -9,10 +9,10 @@ import java.util.Base64;
 
 public class SignatureKey {
 
-    private Long timestamp;
-    private String signature;
+    private final long timestamp;
+    private final String signature;
 
-    public SignatureKey(Long timestamp, String partnerId, String apiKey) {
+    public SignatureKey(long timestamp, String partnerId, String apiKey) {
         this.timestamp = timestamp;
         this.signature = generateKey(partnerId, apiKey);
     }
@@ -34,11 +34,11 @@ public class SignatureKey {
         return this.signature;
     }
 
-    public Long getTimestamp(){
+    public long getTimestamp(){
         return this.timestamp;
     }
 
-    public Boolean validSignature(String signature) {
+    public boolean validSignature(String signature) {
         return signature.equals(this.signature);
     }
 
