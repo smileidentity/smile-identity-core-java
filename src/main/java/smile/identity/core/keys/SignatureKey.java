@@ -14,17 +14,17 @@ public class SignatureKey {
 
     public SignatureKey(Long timestamp, String partnerId, String apiKey) {
         this.timestamp = timestamp;
-        generateKey(partnerId, apiKey);
+        this.signature = generateKey(partnerId, apiKey);
     }
 
-    private void generateKey(String partnerId, String apiKey) {
+    private String generateKey(String partnerId, String apiKey) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(apiKey.getBytes(), "HmacSHA256"));
             mac.update(formattedTimestamp().getBytes(StandardCharsets.UTF_8));
             mac.update(partnerId.getBytes(StandardCharsets.UTF_8));
             mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
-            this.signature = Base64.getEncoder().encodeToString(mac.doFinal());
+            return Base64.getEncoder().encodeToString(mac.doFinal());
         } catch (GeneralSecurityException e){
             throw new RuntimeException(e);
         }
