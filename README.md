@@ -416,11 +416,11 @@ Then call the Signature class as follows:
 ```java
 import smile.identity.core.Signature;
 
-  Signature connection = new Signature(partnerId, apiKey);
-  SignatureKey key = connection.generateSignature(timestamp); // where timestamp is optional
-  Long timestamp = key.getTimestamp();
+  Signature signature = new Signature(partnerId, apiKey);
+  SignatureKey key = signature.generateSignature(timestamp); // where timestamp is optional
+  long timestamp = key.getTimestamp();
   String signature = key.getSignature();
-  String timestampS = key.getformattedTimestamp();
+  String timestampString = key.getformattedTimestamp();
 ```
 
 ##### confirmSignature method
@@ -431,7 +431,7 @@ You can also confirm the signature that you receive when you interacting with ou
 import smile.identity.core.Signature;
 
 Signature signature = new Signature(partnerId, apiKey);
-boolean signatureConfirmed = connection.confirmSignature(signature, timestamp);
+boolean signatureConfirmed = signature.confirmSignature(timestamp, "signature string");
 ```
 
 
