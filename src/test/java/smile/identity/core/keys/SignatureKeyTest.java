@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import static org.junit.Assert.*;
+
 public class SignatureKeyTest {
 
     @Test
@@ -15,15 +17,15 @@ public class SignatureKeyTest {
         String signature = "KNDw4XBi92pINYzNu0Y4iXgXyTjDn2yoaoCg5z6pic0=";
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
 
-        Assert.assertEquals(signature, key.getSignature());
-        Assert.assertEquals(timestamp, key.getTimestamp());
+        assertEquals(signature, key.getSignature());
+        assertEquals(timestamp, key.getTimestamp());
     }
 
     @Test
     public void validateSignature() {
         long timestamp = System.currentTimeMillis();
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
-        assert (key.validSignature(key.getSignature()));
+        assertTrue(key.validSignature(key.getSignature()));
     }
 
     @Test
@@ -31,7 +33,7 @@ public class SignatureKeyTest {
         long timestamp = System.currentTimeMillis();
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
         String timestampString = key.formattedTimestamp();
-        assert (validFormat(timestampString));
+        assertTrue(validFormat(timestampString));
     }
 
     private boolean validFormat(String timestamp) {

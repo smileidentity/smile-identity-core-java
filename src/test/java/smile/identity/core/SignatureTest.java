@@ -1,8 +1,9 @@
 package smile.identity.core;
 
-import org.junit.Assert;
 import org.junit.Test;
 import smile.identity.core.keys.SignatureKey;
+
+import static org.junit.Assert.*;
 
 public class SignatureTest {
 
@@ -10,7 +11,7 @@ public class SignatureTest {
 	public void itGeneratesASignatureWhenNoTimestampProvided(){
 		Signature signature = new Signature("partner", "apiKey");
 		SignatureKey sk = signature.generateSignature();
-		Assert.assertFalse(sk.getSignature().isEmpty());
+		assertFalse(sk.getSignature().isEmpty());
 	}
 
 	@Test
@@ -18,13 +19,13 @@ public class SignatureTest {
 		Signature signature = new Signature("partner", "apiKey");
 		long timestamp = System.currentTimeMillis();
 		SignatureKey sk = signature.generateSignature();
-		Assert.assertEquals(sk.getTimestamp(), timestamp);
+		assertEquals(sk.getTimestamp(), timestamp);
 	}
 
 	@Test
 	public void itConfirmsASignature(){
 		Signature signature = new Signature("partner", "apiKey");
 		SignatureKey original = signature.generateSignature();
-		Assert.assertTrue(signature.confirmSignature(original.getTimestamp(), original.getSignature()));
+		assertTrue(signature.confirmSignature(original.getTimestamp(), original.getSignature()));
 	}
 }
