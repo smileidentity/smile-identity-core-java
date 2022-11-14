@@ -13,7 +13,7 @@ The **ID Api Class** lets you performs basic KYC Services including verifying an
 - submit_job
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
-- getSignature
+- getSignatureKey
 - confirmSignature
 
 The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
@@ -409,7 +409,7 @@ To calculate your signature first import the necessary class:
 import smile.identity.core.Signature;
 ```
 
-##### getSignature method
+##### getSignatureKey method
 
 Then call the Signature class as follows:
 
@@ -417,7 +417,7 @@ Then call the Signature class as follows:
 import smile.identity.core.Signature;
 
   Signature signature = new Signature(partnerId, apiKey);
-  SignatureKey key = signature.getSignature(timestamp); // where timestamp is optional
+  SignatureKey key = signature.getSignatureKey(timestamp); // where timestamp is optional
   long timestamp = key.getTimestamp();
   String signature = key.getSignature();
   String timestampString = key.getformattedTimestamp();
