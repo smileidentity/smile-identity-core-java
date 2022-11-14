@@ -37,6 +37,12 @@ public abstract class JobResponse {
 
     private String timestamp;
 
+    @Json(name = "ConfidenceValue")
+    private String confidence;
+
+    @Json(name = "Source")
+    private String source;
+
     @Json(name = "FullData")
     private Map<String, Object> fullData;
 
