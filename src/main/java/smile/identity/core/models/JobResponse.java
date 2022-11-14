@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.Map;
 
 @Getter @Setter @NoArgsConstructor
-public abstract class JobResponse {
+public class JobResponse {
     @Json(name = "JSONVersion")
     private String jsonVersion;
 
