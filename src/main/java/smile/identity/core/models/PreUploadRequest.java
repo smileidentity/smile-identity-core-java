@@ -12,8 +12,11 @@ import java.util.Map;
 public class PreUploadRequest {
     @Json(name = "file_name")
     private final String fileName = "selfie.zip";
+
     private String timestamp;
+
     private String signature;
+
     @Json(name = "smile_client_id")
     private String smileClientId;
 
@@ -22,6 +25,7 @@ public class PreUploadRequest {
 
     @Json(name = "model_parameters")
     private Map<String, String> modelParameters = new HashMap<>();
+
     @Json(name = "callback_url")
     private String callbackUrl;
 

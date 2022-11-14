@@ -18,9 +18,12 @@ public class IdInfo {
 
     @Json(name = "last_name")
     private String lastName;
+
     private String country;
+
     @Json(name = "id_type")
     private String idType;
+
     @Json(name = "id_number")
     private String idNumber;
 

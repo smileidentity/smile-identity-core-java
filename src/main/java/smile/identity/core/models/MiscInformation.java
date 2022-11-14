@@ -8,15 +8,20 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class MiscInformation {
     private final String retry = "false";
+
     @Json(name = "partner_params")
     private PartnerParams partnerParams;
+
     private String timestamp;
+
     private String signature;
 
     @Json(name = "file_name")
     private final String fileName = "selfie.zip";
+
     @Json(name = "smile_client_id")
     private String smileClientId;
+
     @Json(name = "callback_url")
     private String callbackUrl;
 

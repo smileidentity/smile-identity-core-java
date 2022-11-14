@@ -14,14 +14,20 @@ public class JobStatusRequest {
 
     @Json(name = "partner_id")
     private String partnerId;
+
     @Json(name = "user_id")
     private String userId;
+
     @Json(name = "job_id")
     private String jobId;
+
     @Json(name = "image_links")
     private boolean imageLinks;
+
     private boolean history;
+
     private String signature;
+
     private String timestamp;
 
 }

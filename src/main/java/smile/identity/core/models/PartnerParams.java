@@ -11,10 +11,13 @@ import smile.identity.core.enums.JobType;
 public class PartnerParams {
     @Json(name = "job_type")
     private JobType jobType;
+
     @Json(name = "optional_info")
     private String optionalInfo;
+
     @Json(name = "user_id")
     private String userId;
+
     @Json(name = "job_id")
     private String jobId;
 
