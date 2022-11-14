@@ -10,7 +10,7 @@ public class SignatureTest {
 	@Test
 	public void itGeneratesASignatureWhenNoTimestampProvided(){
 		Signature signature = new Signature("partner", "apiKey");
-		SignatureKey sk = signature.generateSignature();
+		SignatureKey sk = signature.getSignature();
 		assertFalse(sk.getSignature().isEmpty());
 	}
 
@@ -18,14 +18,14 @@ public class SignatureTest {
 	public void itGeneratesASignatureWhenTimestampProvided(){
 		Signature signature = new Signature("partner", "apiKey");
 		long timestamp = System.currentTimeMillis();
-		SignatureKey sk = signature.generateSignature();
+		SignatureKey sk = signature.getSignature(timestamp);
 		assertEquals(sk.getTimestamp(), timestamp);
 	}
 
 	@Test
 	public void itConfirmsASignature(){
 		Signature signature = new Signature("partner", "apiKey");
-		SignatureKey original = signature.generateSignature();
+		SignatureKey original = signature.getSignature();
 		assertTrue(signature.confirmSignature(original.getTimestamp(), original.getSignature()));
 	}
 }

@@ -12,11 +12,11 @@ public class Signature {
         this.apiKey = apiKey;
     }
 
-    public SignatureKey generateSignature() {
-        return generateSignature(System.currentTimeMillis());
+    public SignatureKey getSignature() {
+        return getSignature(System.currentTimeMillis());
     }
 
-    public SignatureKey generateSignature(long timestamp){
+    public SignatureKey getSignature(long timestamp){
         return new SignatureKey(timestamp, this.partnerId, this.apiKey);
     }
 

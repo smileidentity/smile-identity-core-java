@@ -14,10 +14,10 @@ public class SignatureKey {
 
     public SignatureKey(long timestamp, String partnerId, String apiKey) {
         this.timestamp = timestamp;
-        this.signature = generateKey(partnerId, apiKey);
+        this.signature = generate(partnerId, apiKey);
     }
 
-    private String generateKey(String partnerId, String apiKey) {
+    private String generate(String partnerId, String apiKey) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(apiKey.getBytes(), "HmacSHA256"));
