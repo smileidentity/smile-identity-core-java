@@ -17,8 +17,8 @@ public class PackageInformation {
 
     private Map<String, Integer> setApiVersion(){
         Map<String, Integer> map = new HashMap<>();
-        map.put("buildNumber", 3);
-        map.put("majorVersion", 0);
+        map.put("buildNumber", 0);
+        map.put("majorVersion", 2);
         map.put("minorVersion", 0);
         return map;
     }
