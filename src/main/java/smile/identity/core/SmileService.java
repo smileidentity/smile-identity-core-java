@@ -11,6 +11,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import smile.identity.core.adaptors.JobTypeAdaptor;
+import smile.identity.core.adaptors.PartnerParamsAdaptor;
 import smile.identity.core.exceptions.JobFailed;
 import smile.identity.core.models.*;
 
@@ -29,6 +30,7 @@ public class SmileService {
 
         Moshi moshi = new Moshi.Builder()
                 .add(factory)
+                .add(new PartnerParamsAdaptor())
                 .add(new JobTypeAdaptor())
                 .build();
 

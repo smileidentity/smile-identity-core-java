@@ -1,6 +1,9 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
+
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +16,7 @@ public class PartnerParams {
     private JobType jobType;
 
     @Json(name = "optional_info")
-    private String optionalInfo;
+    private Map<String, Object> optionalInfo;
 
     @Json(name = "user_id")
     private String userId;
