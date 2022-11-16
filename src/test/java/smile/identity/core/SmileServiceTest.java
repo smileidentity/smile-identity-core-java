@@ -22,7 +22,7 @@ public class SmileServiceTest {
     public void submitsIdVerificationJob() throws Exception {
         try(MockWebServer server = new MockWebServer()){
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
             JobResponse jobResponse = new JobResponse();
             jobResponse.setResultType("ID Verification");
@@ -45,7 +45,7 @@ public class SmileServiceTest {
     public void submitIdVerificationFails() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             server.enqueue(new MockResponse().setResponseCode(400));
 
             assertThrows(JobFailed.class, ()->  service.idVerification(new EnhancedKYCRequest()));
@@ -57,7 +57,7 @@ public class SmileServiceTest {
     public void submitsPreUpload() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String responseString = "{\"smile_job_id\": \"123232121\", \"upload_url\": \"photos.com\"}";
             server.enqueue(new MockResponse().setBody(responseString));
             PreUploadResponse response = service.preUpload(new PreUploadRequest());
@@ -72,7 +72,7 @@ public class SmileServiceTest {
     public void submitPreUploadFails() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             server.enqueue(new MockResponse().setResponseCode(400));
 
             assertThrows(JobFailed.class, () -> service.preUpload(new PreUploadRequest()));
@@ -85,7 +85,7 @@ public class SmileServiceTest {
     public void uploadImagesToCorrectUrl() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
             server.enqueue(new MockResponse());
             service.uploadImages("callback_url", new byte[1024]);
@@ -104,7 +104,7 @@ public class SmileServiceTest {
     public void getServices() throws Exception{
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String response = "{\"id_types\":{\"GH\":{\"SSNIT\":[\"name\"]}}}";
             server.enqueue(new MockResponse().setBody(response));
 
@@ -119,7 +119,7 @@ public class SmileServiceTest {
     public void getJobStatus() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
             JobStatusResponse statusResponse = new JobStatusResponse();
             statusResponse.setSignature("signature");
@@ -142,7 +142,7 @@ public class SmileServiceTest {
     public void getJobStatusEnhanced() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
             JobStatusResponse statusResponse = new JobStatusResponse();
             EnhancedResponse result = new EnhancedResponse();
@@ -165,7 +165,7 @@ public class SmileServiceTest {
     public void pollJobStatus() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String bad = "{\"job_complete\": false, \"signature\": \"tMPhsPdh3k3PejTNGG970gQSA41oO9/I3oERRlSSBUc=\", \"timestamp\": \"2022-11-10T19:05:42.775Z\"}";
             String success = "{\"job_complete\": true, \"signature\": \"tMPhsPdh3k3PejTNGG970gQSA41oO9/I3oERRlSSBUc=\", \"timestamp\": \"2022-11-10T19:05:42.775Z\"}";
 
@@ -183,7 +183,7 @@ public class SmileServiceTest {
     public void pollJobStatusReturnsUncompleted() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String bad = "{\"job_complete\": false, \"signature\": \"tMPhsPdh3k3PejTNGG970gQSA41oO9/I3oERRlSSBUc=\", \"timestamp\": \"2022-11-10T19:05:42.775Z\"}";
             for(int i = 0; i <= 10; i++){
                 server.enqueue(new MockResponse().setBody(bad));
@@ -199,7 +199,7 @@ public class SmileServiceTest {
     public void getsWebToken() throws Exception {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
-            SmileService service = new SmileService(baseUrl.toString());
+            SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             WebTokenResponse tokenResponse = new WebTokenResponse();
             tokenResponse.setToken("heresatoken");
             tokenResponse.setSuccess(true);

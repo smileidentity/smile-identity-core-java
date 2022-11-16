@@ -18,10 +18,10 @@ import smile.identity.core.models.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-public class SmileService {
-    private final SmileApi service;
+public class SmileIdentityService {
+    private final SmileIdentityApi smileIdentityApi;
 
-    public SmileService(String server){
+    public SmileIdentityService(String server) {
 
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(EnhancedResponse.class, "ID Verification")
@@ -39,12 +39,12 @@ public class SmileService {
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(httpClient.build())
                 .build();
-        this.service = retrofit.create(SmileApi.class);
+        this.smileIdentityApi = retrofit.create(SmileIdentityApi.class);
     }
 
 
     public String getServices() throws IOException, JobFailed {
-        Call<ResponseBody> call = service.getServices();
+        Call<ResponseBody> call = smileIdentityApi.getServices();
         Response<ResponseBody> response = call.execute();
 
         if (response.isSuccessful()){
@@ -55,7 +55,7 @@ public class SmileService {
     }
 
     public JobResponse idVerification(EnhancedKYCRequest idVerificationRequest) throws IOException, JobFailed {
-        Call<JobResponse> call = service.submitIdVerification(idVerificationRequest);
+        Call<JobResponse> call = smileIdentityApi.submitIdVerification(idVerificationRequest);
         Response<JobResponse> response = call.execute();
         if(response.isSuccessful()){
             return response.body();
@@ -65,7 +65,7 @@ public class SmileService {
     }
 
     public JobStatusResponse getJobStatus(JobStatusRequest request) throws Exception {
-        Call<JobStatusResponse> call = service.getJobStatus(request);
+        Call<JobStatusResponse> call = smileIdentityApi.getJobStatus(request);
 
         Response<JobStatusResponse> response = call.execute();
         if (response.isSuccessful()) {
@@ -92,7 +92,7 @@ public class SmileService {
 
 
     public PreUploadResponse preUpload(PreUploadRequest request) throws JobFailed, IOException{
-        Call<PreUploadResponse> call = service.prepUpload(request);
+        Call<PreUploadResponse> call = smileIdentityApi.prepUpload(request);
         Response<PreUploadResponse> response = call.execute();
         if (response.isSuccessful()) {
             return response.body();
@@ -103,7 +103,7 @@ public class SmileService {
 
     public void uploadImages(String url, byte[] data) throws JobFailed, IOException{
         RequestBody body = RequestBody.create(data, MediaType.parse("application/zip"));
-        Call<ResponseBody> call = service.uploadBinaryFile(url, body);
+        Call<ResponseBody> call = smileIdentityApi.uploadBinaryFile(url, body);
         Response<ResponseBody> response = call.execute();
         if(!response.isSuccessful()){
             throw new JobFailed(response.errorBody().toString());
@@ -111,7 +111,7 @@ public class SmileService {
     }
 
     public WebTokenResponse getWebToken(WebTokenRequest request) throws Exception{
-        Call<WebTokenResponse> call = service.getWebToken(request);
+        Call<WebTokenResponse> call = smileIdentityApi.getWebToken(request);
         Response<WebTokenResponse> response = call.execute();
         return response.body();
     }

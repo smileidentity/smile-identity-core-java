@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.*;
 import smile.identity.core.models.*;
 
-public interface SmileApi {
+public interface SmileIdentityApi {
 
     @GET("services")
     Call<ResponseBody> getServices();
