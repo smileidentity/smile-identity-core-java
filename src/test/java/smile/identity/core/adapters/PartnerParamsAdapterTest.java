@@ -23,7 +23,7 @@ public class PartnerParamsAdapterTest {
                 .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
 
         PartnerParams params = new PartnerParams();
-        params.setJobType(JobType.FIVE);
+        params.setJobType(JobType.BASIC_KYC);
         params.setUserId("user");
 
         Map<String, Object> optional = new HashMap<>();
@@ -47,7 +47,7 @@ public class PartnerParamsAdapterTest {
 
         assertEquals(partnerParams.getUserId(), "user");
         assertEquals(partnerParams.getJobId(), null);
-        assertEquals(partnerParams.getJobType(), JobType.FIVE);
+        assertEquals(partnerParams.getJobType(), JobType.BASIC_KYC);
         assertEquals(partnerParams.getOptionalInfo().get("random"), "key_1");
         assertEquals(partnerParams.getOptionalInfo().get("more"), 20.0);
 

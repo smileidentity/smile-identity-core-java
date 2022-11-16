@@ -4,7 +4,7 @@ import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
 import smile.identity.core.enums.JobType;
 
-public class JobTypeAdaptor {
+public class JobTypeAdapter {
     @ToJson int toJson(JobType jobType){
         return jobType.getValue();
     }

@@ -1,11 +1,13 @@
 package smile.identity.core.enums;
 
 public enum JobType {
-    ONE(1),
-    TWO(2),
-    FOUR(4),
-    FIVE(5),
-    SIX(6);
+    BIOMETRIC_KYC(1),
+    SMART_SELFIE_REGISTRATION(2),
+    SMART_SELFIE_AUTHENTICATION(4),
+    BASIC_KYC(5),
+    ENHANCED_KYC(5),
+    DOCUMENT_VERIFICATION(6),
+    BUSINESS_VERIFICATION(7);
 
     private final int value;
     JobType(int value){
