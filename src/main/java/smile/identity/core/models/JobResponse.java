@@ -4,6 +4,7 @@ import com.squareup.moshi.Json;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+import java.time.Instant;
 import java.util.Map;
 
 @Value
@@ -35,7 +36,7 @@ public class JobResponse {
 
     String signature;
 
-    String timestamp;
+    Instant timestamp;
 
     @Json(name = "ConfidenceValue")
     String confidence;

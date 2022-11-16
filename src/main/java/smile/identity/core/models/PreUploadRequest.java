@@ -5,6 +5,7 @@ import com.squareup.moshi.Json;
 import lombok.Value;
 import smile.identity.core.Utils;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class PreUploadRequest {
     @Json(name = "file_name")
     String fileName = "selfie.zip";
 
-    String timestamp;
+    Instant timestamp;
 
     String signature;
 
@@ -35,7 +36,7 @@ public class PreUploadRequest {
     @Json(name = "source_sdk_version")
     String sourceSdkVersion = Utils.getVersion();
 
-    public PreUploadRequest(String timestamp, String signature, String smileClientId, PartnerParams partnerParams, String callbackUrl) {
+    public PreUploadRequest(Instant timestamp, String signature, String smileClientId, PartnerParams partnerParams, String callbackUrl) {
         this.timestamp = timestamp;
         this.signature = signature;
         this.smileClientId = smileClientId;

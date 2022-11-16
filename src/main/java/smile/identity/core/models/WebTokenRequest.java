@@ -2,6 +2,8 @@ package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
 
+import java.time.Instant;
+
 import lombok.Value;
 import smile.identity.core.Utils;
 import smile.identity.core.enums.Product;
@@ -22,7 +24,7 @@ public class WebTokenRequest {
 
     String signature;
 
-    String timestamp;
+    Instant timestamp;
 
     @Json(name = "partner_id")
     String partnerId;

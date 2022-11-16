@@ -2,6 +2,7 @@ package smile.identity.core;
 
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -11,6 +12,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import smile.identity.core.adapters.JobTypeAdapter;
+import smile.identity.core.adapters.InstantAdapter;
 import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.exceptions.JobFailed;
 import smile.identity.core.models.*;
@@ -26,12 +28,13 @@ public class SmileIdentityService {
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(EnhancedResponse.class, "ID Verification")
                 .withSubtype(EnhancedResponse.class, "Document Verification")
-                .withFallbackJsonAdapter(new Moshi.Builder().build().adapter((Type) JobResponse.class));
+                .withFallbackJsonAdapter(new Moshi.Builder().add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
 
         Moshi moshi = new Moshi.Builder()
                 .add(factory)
                 .add(new PartnerParamsAdapter())
                 .add(new JobTypeAdapter())
+                .add(new InstantAdapter())
                 .build();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();

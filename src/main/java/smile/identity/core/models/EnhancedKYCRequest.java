@@ -2,6 +2,8 @@ package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
 
+import java.time.Instant;
+
 import lombok.Value;
 
 
@@ -11,7 +13,7 @@ public class EnhancedKYCRequest {
     @Json(name = "partner_id")
     String partnerId;
 
-    String timestamp;
+    Instant timestamp;
 
     String signature;
 

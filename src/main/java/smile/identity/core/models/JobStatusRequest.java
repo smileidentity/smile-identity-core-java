@@ -2,6 +2,8 @@ package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
 
+import java.time.Instant;
+
 import lombok.Value;
 
 @Value
@@ -23,6 +25,6 @@ public class JobStatusRequest {
 
     String signature;
 
-    String timestamp;
+    Instant timestamp;
 
 }

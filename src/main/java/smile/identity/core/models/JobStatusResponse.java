@@ -2,6 +2,7 @@ package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class JobStatusResponse {
 
     String signature;
 
-    String timestamp;
+    Instant timestamp;
 
     @Json(name = "image_links")
     Map<String, String> imageLinks;

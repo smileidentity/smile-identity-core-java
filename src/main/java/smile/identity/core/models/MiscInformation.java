@@ -2,6 +2,8 @@ package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
 
+import java.time.Instant;
+
 import lombok.Value;
 
 @Value
@@ -11,7 +13,7 @@ public class MiscInformation {
     @Json(name = "partner_params")
     PartnerParams partnerParams;
 
-    String timestamp;
+    Instant timestamp;
 
     String signature;
 
