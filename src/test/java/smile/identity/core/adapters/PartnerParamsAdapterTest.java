@@ -1,4 +1,4 @@
-package smile.identity.core.adaptors;
+package smile.identity.core.adapters;
 
 import static org.junit.Assert.*;
 
@@ -14,13 +14,13 @@ import java.util.Map;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.models.PartnerParams;
 
-public class PartnerParamsAdaptorTest {
+public class PartnerParamsAdapterTest {
 
 
     @Test
     public void toJson(){
         JsonAdapter<PartnerParams> adaptor = new Moshi.Builder()
-                .add(new PartnerParamsAdaptor()).build().adapter(PartnerParams.class);
+                .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
 
         PartnerParams params = new PartnerParams();
         params.setJobType(JobType.FIVE);
@@ -39,7 +39,7 @@ public class PartnerParamsAdaptorTest {
     @Test
     public void fromJson() throws IOException {
         JsonAdapter<PartnerParams> adaptor = new Moshi.Builder()
-                .add(new PartnerParamsAdaptor()).build().adapter(PartnerParams.class);
+                .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
 
         String json = "{\"job_type\":5,\"random\":\"key_1\",\"user_id\":\"user\",\"more\":20}";
 

@@ -14,7 +14,7 @@ import smile.identity.core.exceptions.JobFailed;
 
 import static org.junit.Assert.*;
 
-public class SmileServiceTest {
+public class SmileIdentityServiceTest {
 
     private final String BASE_PATH = "testing/";
 

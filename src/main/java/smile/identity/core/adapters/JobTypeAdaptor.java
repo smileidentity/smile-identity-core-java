@@ -1,4 +1,4 @@
-package smile.identity.core.adaptors;
+package smile.identity.core.adapters;
 
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;

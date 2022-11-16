@@ -17,7 +17,6 @@ public interface SmileIdentityApi {
     @POST("job_status")
     Call<JobStatusResponse> getJobStatus(@Body JobStatusRequest request);
 
-    @Headers("Content-Type: application/json")
     @POST("upload")
     Call<PreUploadResponse> prepUpload(@Body PreUploadRequest request);
 
