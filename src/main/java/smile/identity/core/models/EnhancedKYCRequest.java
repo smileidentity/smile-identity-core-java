@@ -1,46 +1,45 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+import lombok.Value;
+
+
+@Value
 public class EnhancedKYCRequest {
 
     @Json(name = "partner_id")
-    private String partnerId;
+    String partnerId;
 
-    private String timestamp;
+    String timestamp;
 
-    private String signature;
+    String signature;
 
     @Json(name = "partner_params")
-    private PartnerParams partnerParams;
+    PartnerParams partnerParams;
 
-    private String country;
+    String country;
 
     @Json(name = "first_name")
-    private String firstName;
+    String firstName;
 
     @Json(name = "last_name")
-    private String lastName;
+    String lastName;
 
     @Json(name = "id_type")
-    private String idType;
+    String idType;
 
     @Json(name = "id_number")
-    private String idNumber;
+    String idNumber;
 
-    private String dob;
+    String dob;
 
     @Json(name = "phone_number")
-    private String phoneNumber;
+    String phoneNumber;
 
     @Json(name = "image_links")
-    private boolean imageLinks;
+    boolean imageLinks;
 
-    private boolean history;
+    boolean history;
 
 }

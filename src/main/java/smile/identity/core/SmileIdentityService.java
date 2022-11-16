@@ -102,7 +102,7 @@ public class SmileIdentityService {
     }
 
     public void uploadImages(String url, byte[] data) throws JobFailed, IOException{
-        RequestBody body = RequestBody.create(data, MediaType.parse("application/zip"));
+        RequestBody body = RequestBody.create(MediaType.parse("application/zip"), data);
         Call<ResponseBody> call = smileIdentityApi.uploadBinaryFile(url, body);
         Response<ResponseBody> response = call.execute();
         if(!response.isSuccessful()){

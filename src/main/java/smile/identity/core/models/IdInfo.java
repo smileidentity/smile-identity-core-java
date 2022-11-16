@@ -2,13 +2,9 @@ package smile.identity.core.models;
 
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Value
 public class IdInfo {
     @Json(name = "first_name")
     private String firstName;

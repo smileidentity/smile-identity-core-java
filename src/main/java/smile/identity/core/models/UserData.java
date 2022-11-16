@@ -1,20 +1,18 @@
 package smile.identity.core.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter @Setter @NoArgsConstructor
+@Value
 public class UserData {
-    private final boolean isVerifiedProcess = false;
-    private String name;
-    private String fbUserID;
-    private final String firstName = "Bill";
-    private String lastName;
-    private String gender;
-    private String email;
-    private String phone;
-    private final String countryCode = "+";
-    private String countryName;
+    boolean isVerifiedProcess = false;
+    String name;
+    String fbUserID;
+    String firstName = "Bill";
+    String lastName;
+    String gender;
+    String email;
+    String phone;
+    String countryCode = "+";
+    String countryName;
 
 }

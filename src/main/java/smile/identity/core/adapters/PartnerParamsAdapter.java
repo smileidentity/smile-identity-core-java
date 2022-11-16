@@ -18,14 +18,11 @@ import smile.identity.core.models.PartnerParams;
 public class PartnerParamsAdapter {
 
     @FromJson PartnerParams fromJson(Map<String, Object> params){
-        PartnerParams partnerParams = new PartnerParams();
-        partnerParams.setJobId((String) params.remove("job_id"));
-        partnerParams.setUserId((String) params.remove("user_id"));
+        String jobId = (String) params.remove("job_id");
+        String userId = (String) params.remove("user_id");
         JobType jobType = getJobType((Double) params.remove("job_type"));
-        partnerParams.setJobType(jobType);
 
-        partnerParams.setOptionalInfo(params);
-        return partnerParams;
+        return new PartnerParams(jobType, params, userId, jobId);
     }
 
     @ToJson

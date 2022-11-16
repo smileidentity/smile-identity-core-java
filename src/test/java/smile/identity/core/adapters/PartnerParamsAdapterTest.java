@@ -22,15 +22,13 @@ public class PartnerParamsAdapterTest {
         JsonAdapter<PartnerParams> adaptor = new Moshi.Builder()
                 .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
 
-        PartnerParams params = new PartnerParams();
-        params.setJobType(JobType.BASIC_KYC);
-        params.setUserId("user");
-
         Map<String, Object> optional = new HashMap<>();
         optional.put("random", "key_1");
         optional.put("more", 20);
 
-        params.setOptionalInfo(optional);
+        PartnerParams params = new PartnerParams(
+                JobType.BASIC_KYC, optional, "user", null
+        );
 
         String json = adaptor.toJson(params);
         assertEquals("{\"job_type\":5,\"random\":\"key_1\",\"user_id\":\"user\",\"more\":20}", json);

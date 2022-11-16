@@ -4,24 +4,21 @@ import com.squareup.moshi.Json;
 
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 import smile.identity.core.enums.JobType;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Value
 public class PartnerParams {
     @Json(name = "job_type")
-    private JobType jobType;
+    JobType jobType;
 
     @Json(name = "optional_info")
-    private Map<String, Object> optionalInfo;
+    Map<String, Object> optionalInfo;
 
     @Json(name = "user_id")
-    private String userId;
+    String userId;
 
     @Json(name = "job_id")
-    private String jobId;
+    String jobId;
 
 }

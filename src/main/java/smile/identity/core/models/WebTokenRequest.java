@@ -1,35 +1,35 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.Value;
+import smile.identity.core.Utils;
 import smile.identity.core.enums.Product;
 
-@Getter @Setter @NoArgsConstructor
+@Value
 public class WebTokenRequest {
 
     @Json(name = "user_id")
-    private String userId;
+    String userId;
 
     @Json(name = "job_id")
-    private String jobId;
+    String jobId;
 
-    private Product product;
+    Product product;
 
     @Json(name = "callback_url")
-    private String callbackUrl;
+    String callbackUrl;
 
-    private String signature;
+    String signature;
 
-    private String timestamp;
+    String timestamp;
 
     @Json(name = "partner_id")
-    private String partnerId;
+    String partnerId;
 
     @Json(name = "source_sdk")
-    private final String sourceSdk = "java";
+    String sourceSdk = "java";
 
     @Json(name = "source_sdk_version")
-    private final String sourceSdkVersion = "3.0.0";
+    String sourceSdkVersion = Utils.getVersion();
 }

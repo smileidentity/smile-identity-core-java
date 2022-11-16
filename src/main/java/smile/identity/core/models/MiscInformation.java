@@ -1,37 +1,29 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter @Setter @NoArgsConstructor
+import lombok.Value;
+
+@Value
 public class MiscInformation {
-    private final String retry = "false";
+    String retry = "false";
 
     @Json(name = "partner_params")
-    private PartnerParams partnerParams;
+    PartnerParams partnerParams;
 
-    private String timestamp;
+    String timestamp;
 
-    private String signature;
+    String signature;
 
     @Json(name = "file_name")
-    private final String fileName = "selfie.zip";
+    String fileName = "selfie.zip";
 
     @Json(name = "smile_client_id")
-    private String smileClientId;
+    String smileClientId;
 
     @Json(name = "callback_url")
-    private String callbackUrl;
+    String callbackUrl;
 
-    private final UserData userData = new UserData();
+    UserData userData;
 
-    public MiscInformation(PartnerParams partnerParams, String timestamp, String signature, String smileClientId, String callbackUrl) {
-        this.partnerParams = partnerParams;
-        this.timestamp = timestamp;
-        this.signature = signature;
-        this.smileClientId = smileClientId;
-        this.callbackUrl = callbackUrl;
-    }
 }

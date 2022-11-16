@@ -1,16 +1,14 @@
 package smile.identity.core.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
 import java.util.List;
 
-@Getter @Setter @NoArgsConstructor
+@Value
 public class UploadRequest {
-    private PackageInformation packageInformation;
-    private MiscInformation miscInformation;
-    private IdInfo idInfo;
-    private List<ImageDetail> images;
-    private String serverInformation;
+    PackageInformation packageInformation;
+    MiscInformation miscInformation;
+    IdInfo idInfo;
+    List<ImageDetail> images;
+    String serverInformation;
 }

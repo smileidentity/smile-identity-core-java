@@ -7,16 +7,31 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import smile.identity.core.enums.Product;
 import smile.identity.core.models.*;
 import smile.identity.core.exceptions.JobFailed;
 ;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class SmileIdentityServiceTest {
 
     private final String BASE_PATH = "testing/";
+    private JobStatusRequest jobStatusRequest;
+    private PreUploadRequest preUploadRequest;
+
+    @Before
+    public void setup(){
+    preUploadRequest = new PreUploadRequest("", "", "", null, "");
+    jobStatusRequest = new JobStatusRequest("partner", "user-01", "10", false,
+            false, "signature", "");
+    }
 
     @Test
     public void submitsIdVerificationJob() throws Exception {
@@ -24,17 +39,19 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
-            JobResponse jobResponse = new JobResponse();
-            jobResponse.setResultType("ID Verification");
-            jobResponse.setSignature("signature");
-            jobResponse.setSmileJobId("jobid");
+            JobResponse jobResponse = new JobResponse("","smile-100",null,"ID Verification",
+                    "","","",null,"signature", "", "",
+                    "", null);
 
             JsonAdapter<JobResponse> adaptor = new Moshi.Builder().build().adapter(JobResponse.class);
 
             server.enqueue(new MockResponse().setBody(adaptor.toJson(jobResponse)));
-            JobResponse result = service.idVerification(new EnhancedKYCRequest());
+            EnhancedKYCRequest request = new EnhancedKYCRequest("partner", "",
+                    "signature", null, "", "", "",
+                    "", "", "", "", false, false);
+            JobResponse result = service.idVerification(request);
             assertEquals(result.getSignature(), "signature");
-            assertEquals(result.getSmileJobId(), "jobid");
+            assertEquals(result.getSmileJobId(), "smile-100");
             assertEquals(result.getClass(), EnhancedResponse.class);
             server.shutdown();
 
@@ -47,8 +64,10 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             server.enqueue(new MockResponse().setResponseCode(400));
-
-            assertThrows(JobFailed.class, ()->  service.idVerification(new EnhancedKYCRequest()));
+            EnhancedKYCRequest request = new EnhancedKYCRequest("partner", "",
+                    "signature", null, "", "", "",
+                    "", "", "", "", false, false);
+            assertThrows(JobFailed.class, ()->  service.idVerification(request));
             server.shutdown();
         }
     }
@@ -60,7 +79,7 @@ public class SmileIdentityServiceTest {
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String responseString = "{\"smile_job_id\": \"123232121\", \"upload_url\": \"photos.com\"}";
             server.enqueue(new MockResponse().setBody(responseString));
-            PreUploadResponse response = service.preUpload(new PreUploadRequest());
+            PreUploadResponse response = service.preUpload(preUploadRequest);
 
             assertEquals(response.getSmileJobId(), "123232121");
             assertEquals(response.getUploadUrl(), "photos.com");
@@ -75,7 +94,7 @@ public class SmileIdentityServiceTest {
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             server.enqueue(new MockResponse().setResponseCode(400));
 
-            assertThrows(JobFailed.class, () -> service.preUpload(new PreUploadRequest()));
+            assertThrows(JobFailed.class, () -> service.preUpload(preUploadRequest));
             server.shutdown();
         }
 
@@ -121,17 +140,19 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
-            JobStatusResponse statusResponse = new JobStatusResponse();
-            statusResponse.setSignature("signature");
-            JobResponse result = new JobResponse();
-            result.setResultType("Great Job");
-            result.setConfidence("99.999");
-            statusResponse.setResult(result);
+            JobResponse result = new JobResponse("", "", null, "Great Job",
+                    "", "", "done", null, "signature",
+                    "", "99.999", "", null);
+
+            JobStatusResponse statusResponse = new JobStatusResponse(
+                    "2020", true, true, result,
+                    "signature", "", null, null
+            );
 
             JsonAdapter<JobStatusResponse> adapter = new Moshi.Builder().build().adapter(JobStatusResponse.class);
 
             server.enqueue(new MockResponse().setBody(adapter.toJson(statusResponse)));
-            JobStatusResponse response = service.getJobStatus(new JobStatusRequest());
+            JobStatusResponse response = service.getJobStatus(this.jobStatusRequest);
 
             assertEquals(response.getResult().getClass(), JobResponse.class);
             server.shutdown();
@@ -144,16 +165,21 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
-            JobStatusResponse statusResponse = new JobStatusResponse();
-            EnhancedResponse result = new EnhancedResponse();
-            result.setSmileJobId("12345");
-            result.setResultType("ID Verification");
-            statusResponse.setResult(result);
+            JobResponse result = new EnhancedResponse("v1", "smile-100", null,
+                    "Document Verification", "Document Verified After Human Review", "0810",
+                    "yes", null, "signature",
+                    "", "99.0" ,"", null, "", "", "",
+                    "", "", "", "", "", "", "",
+                    "M", "");
+
+            JobStatusResponse statusResponse = new JobStatusResponse(
+                    "2010", true, true, result, "", "",
+                    new HashMap<>(), new ArrayList<>());
 
             JsonAdapter<JobStatusResponse> adapter = new Moshi.Builder().build().adapter(JobStatusResponse.class);
 
             server.enqueue(new MockResponse().setBody(adapter.toJson(statusResponse)));
-            JobStatusResponse response = service.getJobStatus(new JobStatusRequest());
+            JobStatusResponse response = service.getJobStatus(this.jobStatusRequest);
 
             assertEquals(response.getResult().getClass(), EnhancedResponse.class);
             server.shutdown();
@@ -173,7 +199,7 @@ public class SmileIdentityServiceTest {
             server.enqueue(new MockResponse().setBody(bad));
             server.enqueue(new MockResponse().setBody(bad));
             server.enqueue(new MockResponse().setBody(success));
-            JobStatusResponse response = service.pollJobStatus(new JobStatusRequest());
+            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest);
             assertTrue(response.isJobComplete());
             server.shutdown();
         }
@@ -189,7 +215,7 @@ public class SmileIdentityServiceTest {
                 server.enqueue(new MockResponse().setBody(bad));
             }
 
-            JobStatusResponse response = service.pollJobStatus(new JobStatusRequest());
+            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest);
             assertFalse(response.isJobComplete());
             server.shutdown();
         }
@@ -200,13 +226,13 @@ public class SmileIdentityServiceTest {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
-            WebTokenResponse tokenResponse = new WebTokenResponse();
-            tokenResponse.setToken("heresatoken");
-            tokenResponse.setSuccess(true);
+            WebTokenResponse tokenResponse = new WebTokenResponse(true, "heresatoken");
+
             JsonAdapter<WebTokenResponse> adapter = new Moshi.Builder().build().adapter(WebTokenResponse.class);
             server.enqueue(new MockResponse().setBody(adapter.toJson(tokenResponse)));
 
-            WebTokenResponse response = service.getWebToken(new WebTokenRequest());
+            WebTokenResponse response = service.getWebToken(new WebTokenRequest("", "", Product.BASIC_KYC,
+                    "", "", "", ""));
             assertTrue(response.isSuccess());
             assertEquals(response.getToken(), "heresatoken");
             server.shutdown();

@@ -1,33 +1,32 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
-@Getter @Setter @NoArgsConstructor
+import lombok.Value;
+
+@Value
 public class JobStatusResponse {
 
-    private String code;
+    String code;
 
     @Json(name = "job_complete")
-    private boolean jobComplete;
+    boolean jobComplete;
 
     @Json(name = "job_success")
-    private boolean jobSuccess;
+    boolean jobSuccess;
 
-    private JobResponse result;
+    JobResponse result;
 
-    private String signature;
+    String signature;
 
-    private String timestamp;
+    String timestamp;
 
     @Json(name = "image_links")
-    private Map<String, String> imageLinks;
+    Map<String, String> imageLinks;
 
-    private List<JobResponse> history;
+    List<JobResponse> history;
 
 }

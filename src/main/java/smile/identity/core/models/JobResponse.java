@@ -1,49 +1,49 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.util.Map;
 
-@Getter @Setter @NoArgsConstructor
+@Value
+@NonFinal
 public class JobResponse {
     @Json(name = "JSONVersion")
-    private String jsonVersion;
+    String jsonVersion;
 
     @Json(name = "SmileJobID")
-    private String smileJobId;
+    String smileJobId;
 
     @Json(name = "PartnerParams")
-    private PartnerParams partnerParams;
+    PartnerParams partnerParams;
 
     @Json(name = "ResultType")
-    private String resultType;
+    String resultType;
 
     @Json(name = "ResultText")
-    private String resultText;
+    String resultText;
 
     @Json(name = "ResultCode")
-    private String resultCode;
+    String resultCode;
 
     @Json(name = "IsFinalResult")
-    private String isFinalResult;
+    String isFinalResult;
 
     @Json(name = "Actions")
-    private Actions actions;
+    Actions actions;
 
-    private String signature;
+    String signature;
 
-    private String timestamp;
+    String timestamp;
 
     @Json(name = "ConfidenceValue")
-    private String confidence;
+    String confidence;
 
     @Json(name = "Source")
-    private String source;
+    String source;
 
     @Json(name = "FullData")
-    private Map<String, Object> fullData;
+    Map<String, Object> fullData;
 
 }

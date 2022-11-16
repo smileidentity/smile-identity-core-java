@@ -10,8 +10,8 @@ import java.util.Map;
 @Value
 public class PackageInformation {
 
-    private final Map<String, Integer> apiVersion = setApiVersion();
-    private final String language = "java";
+    Map<String, Integer> apiVersion = setApiVersion();
+    String language = "java";
 
 
     private Map<String, Integer> setApiVersion(){

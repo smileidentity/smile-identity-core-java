@@ -1,46 +1,42 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Value
 public class Actions {
 
     @Json(name = "Verify_ID_Number")
-    private String verifyIdNumber;
+    String verifyIdNumber;
 
     @Json(name = "Return_Personal_Info")
-    private String returnPersonalInfo;
+    String returnPersonalInfo;
 
     @Json(name = "Human_Review_Compare")
-    private String humanReviewCompare;
+    String humanReviewCompare;
 
     @Json(name = "Human_Review_Liveness_Check")
-    private String humanReviewLivenessCheck;
+    String humanReviewLivenessCheck;
 
     @Json(name = "Liveness_Check")
-    private String livenessCheck;
+    String livenessCheck;
 
     @Json(name = "Register_Selfie")
-    private String registerSelfie;
+    String registerSelfie;
 
     @Json(name = "Selfie_Provided")
-    private String selfieProvided;
+    String selfieProvided;
 
     @Json(name = "Selfie_To_ID_Authority_Compare")
-    private String selfieToIdAuthorityCompare;
+    String selfieToIdAuthorityCompare;
 
     @Json(name = "Selfie_To_ID_Card_Compare")
-    private String selfieToIdCardCompare;
+    String selfieToIdCardCompare;
 
     @Json(name = "Selfie_To_Registered_Selfie_Compare")
-    private String selfieToRegisteredSelfieCompare;
+    String selfieToRegisteredSelfieCompare;
 
     @Json(name = "Update_Registered_Selfie_On_File")
-    private String updateRegisteredSelfieOnFile;
+    String updateRegisteredSelfieOnFile;
 
 }

@@ -1,40 +1,39 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.Value;
 import smile.identity.core.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter @Setter @NoArgsConstructor
+@Value
 public class PreUploadRequest {
     @Json(name = "file_name")
-    private final String fileName = "selfie.zip";
+    String fileName = "selfie.zip";
 
-    private String timestamp;
+    String timestamp;
 
-    private String signature;
+    String signature;
 
     @Json(name = "smile_client_id")
-    private String smileClientId;
+    String smileClientId;
 
     @Json(name = "partner_params")
-    private PartnerParams partnerParams;
+    PartnerParams partnerParams;
 
     @Json(name = "model_parameters")
-    private Map<String, String> modelParameters = new HashMap<>();
+    Map<String, String> modelParameters = new HashMap<>();
 
     @Json(name = "callback_url")
-    private String callbackUrl;
+    String callbackUrl;
 
     @Json(name = "source_sdk")
-    private final String sourceSdk = "java";
+    String sourceSdk = "java";
 
     @Json(name = "source_sdk_version")
-    private final String sourceSdkVersion = Utils.getVersion();
+    String sourceSdkVersion = Utils.getVersion();
 
     public PreUploadRequest(String timestamp, String signature, String smileClientId, PartnerParams partnerParams, String callbackUrl) {
         this.timestamp = timestamp;
