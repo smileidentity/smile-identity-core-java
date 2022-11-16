@@ -26,7 +26,10 @@ public class SmileIdentityService {
     private final JsonAdapter<ErrorResponse> errorAdaptor = new Moshi.Builder().build().adapter(ErrorResponse.class);
 
     public SmileIdentityService(String server) {
+        this(server,  new OkHttpClient.Builder());
+    }
 
+    public SmileIdentityService(String server, OkHttpClient.Builder httpClient){
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(EnhancedResponse.class, "ID Verification")
                 .withSubtype(EnhancedResponse.class, "Document Verification")
@@ -39,7 +42,6 @@ public class SmileIdentityService {
                 .add(new InstantAdapter())
                 .build();
 
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(server)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(httpClient.build())
