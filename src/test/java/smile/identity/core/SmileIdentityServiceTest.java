@@ -209,7 +209,7 @@ public class SmileIdentityServiceTest {
             server.enqueue(new MockResponse().setBody(bad));
             server.enqueue(new MockResponse().setBody(bad));
             server.enqueue(new MockResponse().setBody(success));
-            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest);
+            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest, 4, 1);
             assertTrue(response.isJobComplete());
             server.shutdown();
         }
@@ -221,11 +221,11 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
             String bad = "{\"job_complete\": false, \"signature\": \"tMPhsPdh3k3PejTNGG970gQSA41oO9/I3oERRlSSBUc=\", \"timestamp\": \"2022-11-10T19:05:42.775Z\"}";
-            for(int i = 0; i <= 10; i++){
+            for(int i = 0; i <= 4; i++){
                 server.enqueue(new MockResponse().setBody(bad));
             }
 
-            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest);
+            JobStatusResponse response = service.pollJobStatus(this.jobStatusRequest, 3, 1);
             assertFalse(response.isJobComplete());
             server.shutdown();
         }

@@ -85,15 +85,12 @@ public class SmileIdentityService {
         }
     }
 
-    public JobStatusResponse pollJobStatus(JobStatusRequest request) throws Exception {
+    public JobStatusResponse pollJobStatus(JobStatusRequest request, int retryCount, long initialDelay) throws Exception {
         int count = 0;
         JobStatusResponse response = getJobStatus(request);
-        while(!response.isJobComplete() && count < 10 ){
-            if(count < 4){
-                Thread.sleep(2000);
-            }else {
-                Thread.sleep(4000);
-            }
+        while(!response.isJobComplete() && count <= retryCount ){
+            long waitTime = ((long) Math.pow(2, count) * initialDelay);
+            Thread.sleep(waitTime);
             response = getJobStatus(request);
             count++;
         }
