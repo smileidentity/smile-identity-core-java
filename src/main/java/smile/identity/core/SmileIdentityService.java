@@ -1,5 +1,6 @@
 package smile.identity.core;
 
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory;
 
@@ -22,6 +23,7 @@ import java.lang.reflect.Type;
 
 public class SmileIdentityService {
     private final SmileIdentityApi smileIdentityApi;
+    private final JsonAdapter<ErrorResponse> errorAdaptor = new Moshi.Builder().build().adapter(ErrorResponse.class);
 
     public SmileIdentityService(String server) {
 
@@ -53,7 +55,8 @@ public class SmileIdentityService {
         if (response.isSuccessful()){
             return response.body().string();
         } else {
-            throw new JobFailed(response.errorBody().string());
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
         }
     }
 
@@ -63,7 +66,8 @@ public class SmileIdentityService {
         if(response.isSuccessful()){
             return response.body();
         } else {
-            throw new JobFailed(response.errorBody().string());
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
         }
     }
 
@@ -74,7 +78,8 @@ public class SmileIdentityService {
         if (response.isSuccessful()) {
             return response.body();
         } else {
-            throw new JobFailed(response.errorBody().string());
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
         }
     }
 
@@ -100,7 +105,8 @@ public class SmileIdentityService {
         if (response.isSuccessful()) {
             return response.body();
         } else {
-            throw new JobFailed(response.errorBody().string());
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
         }
     }
 
@@ -109,7 +115,8 @@ public class SmileIdentityService {
         Call<ResponseBody> call = smileIdentityApi.uploadBinaryFile(url, body);
         Response<ResponseBody> response = call.execute();
         if(!response.isSuccessful()){
-            throw new JobFailed(response.errorBody().toString());
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
         }
     }
 

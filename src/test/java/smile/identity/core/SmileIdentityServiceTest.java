@@ -21,7 +21,6 @@ import smile.identity.core.exceptions.JobFailed;
 import static org.junit.Assert.*;
 
 import java.time.Instant;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -68,11 +67,13 @@ public class SmileIdentityServiceTest {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
-            server.enqueue(new MockResponse().setResponseCode(400));
+            server.enqueue(new MockResponse().setResponseCode(400).setBody(
+                    "{\"error\": \"Job already exists. Did you mean to set the retry flag to true\", \"code\": \"2215\"}"
+            ));
             EnhancedKYCRequest request = new EnhancedKYCRequest("partner", Instant.now(),
                     "signature", null, "", "", "",
                     "", "", "", "", false, false);
-            assertThrows(JobFailed.class, ()->  service.idVerification(request));
+            assertThrows("Job already exists. Did you mean to set the retry flag to true", JobFailed.class, ()->  service.idVerification(request));
             server.shutdown();
         }
     }
@@ -97,9 +98,11 @@ public class SmileIdentityServiceTest {
         try(MockWebServer server = new MockWebServer()) {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
-            server.enqueue(new MockResponse().setResponseCode(400));
+            server.enqueue(new MockResponse().setResponseCode(400).setBody(
+                    "{\"error\": \"Job already exists. Did you mean to set the retry flag to true\", \"code\": \"2215\"}"
+            ));
 
-            assertThrows(JobFailed.class, () -> service.preUpload(preUploadRequest));
+            assertThrows("Job already exists. Did you mean to set the retry flag to true", JobFailed.class, () -> service.preUpload(preUploadRequest));
             server.shutdown();
         }
 
