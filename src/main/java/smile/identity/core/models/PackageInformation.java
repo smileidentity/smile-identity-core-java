@@ -1,14 +1,13 @@
 package smile.identity.core.models;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
+import smile.identity.core.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
-@Getter @Setter @NoArgsConstructor
+
+@Value
 public class PackageInformation {
 
     private final Map<String, Integer> apiVersion = setApiVersion();
@@ -17,9 +16,10 @@ public class PackageInformation {
 
     private Map<String, Integer> setApiVersion(){
         Map<String, Integer> map = new HashMap<>();
-        map.put("buildNumber", 0);
-        map.put("majorVersion", 2);
-        map.put("minorVersion", 0);
+        String[] apiVersion = Utils.getApiVersion().split("\\.");
+        map.put("buildNumber", Integer.valueOf(apiVersion[0]));
+        map.put("majorVersion", Integer.valueOf(apiVersion[1]));
+        map.put("minorVersion", Integer.valueOf(apiVersion[2]));
         return map;
     }
 }
