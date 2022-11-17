@@ -56,7 +56,7 @@ public class SmileIdentityServiceTest {
             JobResponse result = service.idVerification(request);
             assertEquals(result.getSignature(), "signature");
             assertEquals(result.getSmileJobId(), "smile-100");
-            assertEquals(result.getClass(), EnhancedResponse.class);
+            assertEquals(result.getClass(), IDResponse.class);
             server.shutdown();
 
         }
@@ -175,7 +175,7 @@ public class SmileIdentityServiceTest {
             HttpUrl baseUrl = server.url(BASE_PATH);
             SmileIdentityService service = new SmileIdentityService(baseUrl.toString());
 
-            JobResponse result = new EnhancedResponse("v1", "smile-100", null,
+            JobResponse result = new IDResponse("v1", "smile-100", null,
                     "Document Verification", "Document Verified After Human Review", "0810",
                     "yes", null, "signature",
                     Instant.now(), "99.0" ,"", null, "", "", "",
@@ -191,7 +191,7 @@ public class SmileIdentityServiceTest {
             server.enqueue(new MockResponse().setBody(adapter.toJson(statusResponse)));
             JobStatusResponse response = service.getJobStatus(this.jobStatusRequest);
 
-            assertEquals(response.getResult().getClass(), EnhancedResponse.class);
+            assertEquals(response.getResult().getClass(), IDResponse.class);
             server.shutdown();
         }
     }

@@ -8,7 +8,7 @@ import java.util.Map;
 import lombok.Value;
 
 @Value
-public class EnhancedResponse extends JobResponse {
+public class IDResponse extends JobResponse {
     @Json(name = "Country")
     private String country;
 
@@ -45,7 +45,7 @@ public class EnhancedResponse extends JobResponse {
     @Json(name = "Address")
     private String address;
 
-    public EnhancedResponse(String jsonVersion, String smileJobId, PartnerParams partnerParams, String resultType, String resultText, String resultCode, String isFinalResult, Actions actions, String signature, Instant timestamp, String confidence, String source, Map<String, Object> fullData, String country, String idType, String idNumber, String expirationDate, String fullName, String dob, String photo, String phoneNumber, String phoneNumber2, String document, String gender, String address) {
+    public IDResponse(String jsonVersion, String smileJobId, PartnerParams partnerParams, String resultType, String resultText, String resultCode, String isFinalResult, Actions actions, String signature, Instant timestamp, String confidence, String source, Map<String, Object> fullData, String country, String idType, String idNumber, String expirationDate, String fullName, String dob, String photo, String phoneNumber, String phoneNumber2, String document, String gender, String address) {
         super(jsonVersion, smileJobId, partnerParams, resultType, resultText, resultCode, isFinalResult, actions, signature, timestamp, confidence, source, fullData);
         this.country = country;
         this.idType = idType;

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 public class SmileIdentityService {
-    private final SmileIdentityApi smileIdentityApi;
+    public final SmileIdentityApi smileIdentityApi;
     private final JsonAdapter<ErrorResponse> errorAdaptor = new Moshi.Builder().build().adapter(ErrorResponse.class);
 
     public SmileIdentityService(String server) {
@@ -31,8 +31,8 @@ public class SmileIdentityService {
 
     public SmileIdentityService(String server, OkHttpClient.Builder httpClient){
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
-                .withSubtype(EnhancedResponse.class, "ID Verification")
-                .withSubtype(EnhancedResponse.class, "Document Verification")
+                .withSubtype(IDResponse.class, "ID Verification")
+                .withSubtype(IDResponse.class, "Document Verification")
                 .withFallbackJsonAdapter(new Moshi.Builder().add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
 
         Moshi moshi = new Moshi.Builder()
