@@ -16,11 +16,19 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
 
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.moshi:moshi-adapters:1.14.0'
+    implementation 'com.squareup.moshi:moshi:1.14.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+
     implementation 'org.apache.httpcomponents:httpclient:4.5.9'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-    implementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
 }
 
 // Signing
@@ -49,6 +57,7 @@ artifacts {
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
 version = "1.0.11"
+def apiVersion = "0.2.0"
 
 // Build, sign, and upload
 uploadArchives {
@@ -99,4 +108,10 @@ uploadArchives {
             }
         }
     }
+}
+
+task createProperties(type: WriteProperties) {
+    outputFile = file("${buildDir}/project.properties")
+    property('version', project.version)
+    property('apiVersion', apiVersion)
 }

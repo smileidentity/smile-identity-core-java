@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Changed 
 - Changed return object of getSignature method 
-- Updated documentation 
+- Updated documentation
+- Added use of retrofit for api calls 
+- Added POJOs
 
 ## [0.0.2] - 2019-08-12
 ### Added
