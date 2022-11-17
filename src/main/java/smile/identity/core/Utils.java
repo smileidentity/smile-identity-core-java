@@ -3,7 +3,7 @@ package smile.identity.core;
 import java.util.Properties;
 
 public class Utils {
-    private static Properties properties = new Properties();
+    private final static Properties properties = new Properties();
 
     public static String getVersion(){
         return properties.getProperty("version");
