@@ -1,6 +1,7 @@
 package smile.identity.core.models;
 
 
+import com.google.common.base.Strings;
 import com.squareup.moshi.Json;
 import lombok.Value;
 
@@ -29,6 +30,6 @@ public class IdInfo {
     private String phoneNumber;
 
     public Boolean valid(){
-        return (this.country != null && this.idType != null && this.idNumber != null);
+        return (!Strings.isNullOrEmpty(country) && !Strings.isNullOrEmpty(this.idType) && !Strings.isNullOrEmpty(this.idNumber));
     }
 }
