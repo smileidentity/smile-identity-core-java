@@ -27,104 +27,96 @@ import smile.identity.core.models.PartnerParams;
 
 
 public class IDApi {
-	
+
     private final String partnerId;
     private final String apiKey;
 
     private final SmileIdentityService smileIdentityService;
 
 
-
     public IDApi(String partnerId, String apiKey, String sidServer) {
-    	this.partnerId = partnerId;
-        this.apiKey = partnerId;
+        this.partnerId = partnerId;
+        this.apiKey = apiKey;
         String url = Utils.getSidServer(sidServer);
         smileIdentityService = new SmileIdentityService(url);
     }
 
 
     public JobStatusResponse submitJob(PartnerParams partnerParams,
-                            IdInfo idInfo) throws Exception {
-        return submitJob(partnerParams, idInfo, false) ;
+                                       IdInfo idInfo) throws Exception {
+        return submitJob(partnerParams, idInfo, true);
     }
 
-    public JobStatusResponse submitJob(PartnerParams partnerParams, IdInfo idInfo,
-                            Options options) throws Exception {
-        return submitJob(partnerParams, idInfo, false, options);
+    public JobStatusResponse submitJob(PartnerParams partnerParams,
+                                       IdInfo idInfo, Options options) throws Exception {
+        return submitJob(partnerParams, idInfo, true, options);
     }
 
-    public JobStatusResponse submitJob(PartnerParams partnerParams, IdInfo idInfo, Boolean useValidationApi) throws Exception {
+    public JobStatusResponse submitJob(PartnerParams partnerParams,
+                                       IdInfo idInfo,
+                                       Boolean useValidationApi) throws Exception {
         Options options = new Options();
-    	return submitJob(partnerParams, idInfo, useValidationApi, options);
+        return submitJob(partnerParams, idInfo, useValidationApi, options);
     }
 
-    public JobStatusResponse submitJob(PartnerParams partnerParams, IdInfo idInfo,
-                                       boolean useValidationApi, Options options) throws Exception {
+    public JobStatusResponse submitJob(PartnerParams partnerParams,
+                                       IdInfo idInfo,
+                                       boolean useValidationApi,
+                                       Options options) throws Exception {
 
         if (!partnerParams.getJobType().equals(JobType.BASIC_KYC) && !partnerParams.getJobType().equals(JobType.ENHANCED_KYC)) {
             throw new IncorrectJobType(5, "ID Api");
         }
 
-        if(!idInfo.valid()) {
-          throw new MissingRequiredFields("idNumber, country, idType");
+        if (!idInfo.valid()) {
+            throw new MissingRequiredFields("idNumber, country, idType");
         }
 
         EnhancedKYCRequest request = setupRequests(partnerParams, idInfo,
                 options);
 
-        if(useValidationApi){
+        if (useValidationApi) {
             validateIdType(idInfo.getCountry(), idInfo.getIdType(), request);
         }
 
         JobResponse result = smileIdentityService.idVerification(request);
-        return new JobStatusResponse(
-                result.getResultCode(), true, true, result,
-                result.getSignature(),
-                result.getTimestamp(),
-                null, null
-        );
+        return new JobStatusResponse(result.getResultCode(), true, true,
+                result, result.getSignature(), result.getTimestamp(), null,
+                null);
     }
 
     private EnhancedKYCRequest setupRequests(PartnerParams partnerParams,
-                                             IdInfo idInfo, Options options) throws Exception {
+                                             IdInfo idInfo, Options options) {
 
         Signature signature = new Signature(this.partnerId, this.apiKey);
         SignatureKey key = signature.getSignatureKey();
-        return new EnhancedKYCRequest(
-                this.partnerId,
-                key.getInstant(),
-                key.getSignature(),
-                partnerParams,
-                idInfo.getCountry(),
-                idInfo.getFirstName(),
-                idInfo.getLastName(),
-                idInfo.getIdType(),
-                idInfo.getIdNumber(),
-                idInfo.getDob(),
-                idInfo.getPhoneNumber(),
-                options.isReturnImageLinks(),
-                options.isReturnHistory()
-        );
+        return new EnhancedKYCRequest(this.partnerId, key.getInstant(),
+                key.getSignature(), partnerParams, idInfo.getCountry(),
+                idInfo.getFirstName(), idInfo.getLastName(),
+                idInfo.getIdType(), idInfo.getIdNumber(), idInfo.getDob(),
+                idInfo.getPhoneNumber(), options.isReturnImageLinks(),
+                options.isReturnHistory());
     }
 
     private void validateIdType(String country, String idType,
                                 EnhancedKYCRequest idVerificationRequest) throws JobFailed, IOException, IdTypeNotSupported, MissingRequiredFields {
         String services = smileIdentityService.getServices();
-        Map<String, Object> flattened = new JsonFlattener(services).withFlattenMode(FlattenMode.KEEP_PRIMITIVE_ARRAYS).flattenAsMap();
+        Map<String, Object> flattened =
+                new JsonFlattener(services).withFlattenMode(FlattenMode.KEEP_PRIMITIVE_ARRAYS).flattenAsMap();
         String search = String.join(".", "id_types", country, idType);
-        List<String> requiredFields = (List<String>) flattened.getOrDefault(search, null);
+        List<String> requiredFields =
+                (List<String>) flattened.getOrDefault(search, null);
 
         if (requiredFields == null) {
             throw new IdTypeNotSupported(country, idType);
         }
 
-        Moshi moshi = new Moshi.Builder()
-                .add(new PartnerParamsAdapter())
-                .add(new JobTypeAdapter())
-                .add(new InstantAdapter())
-                .build();;
-        JsonAdapter<EnhancedKYCRequest> adapter = moshi.adapter(EnhancedKYCRequest.class);
-        Map<String, Object> jsonObject = JsonFlattener.flattenAsMap(adapter.toJson(idVerificationRequest));
+        Moshi moshi =
+                new Moshi.Builder().add(new PartnerParamsAdapter()).add(new JobTypeAdapter()).add(new InstantAdapter()).build();
+        JsonAdapter<EnhancedKYCRequest> adapter =
+                moshi.adapter(EnhancedKYCRequest.class);
+        Map<String, Object> jsonObject =
+                JsonFlattener.flattenAsMap(adapter.toJson(idVerificationRequest));
 
         for (String field : requiredFields) {
             if (jsonObject.get(field) == null && jsonObject.get(String.format("%s.partner_params", field)) == null) {
