@@ -38,18 +38,17 @@ public class UtilitiesTest {
     private MockWebServer server;
     private Utilities utilities;
 
+    private final Moshi moshi = new Moshi.Builder()
+            .add(new InstantAdapter())
+            .add(new PartnerParamsAdapter())
+            .add(new JobTypeAdapter())
+            .build();
 
     private final JsonAdapter<JobStatusResponse> jobStatusResponseAdapter =
-            new Moshi.Builder().add(new InstantAdapter())
-                    .add(new PartnerParamsAdapter())
-                    .add(new JobTypeAdapter())
-                    .build().adapter(JobStatusResponse.class);
+            moshi.adapter(JobStatusResponse.class);
 
     private final JsonAdapter<JobStatusRequest> jobStatusRequestAdapter =
-            new Moshi.Builder().add(new InstantAdapter())
-                    .add(new PartnerParamsAdapter())
-                    .add(new JobTypeAdapter())
-                    .build().adapter(JobStatusRequest.class);
+            moshi.adapter(JobStatusRequest.class);
 
 
     @Before
