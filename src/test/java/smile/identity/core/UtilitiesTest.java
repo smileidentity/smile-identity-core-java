@@ -11,10 +11,12 @@ import static org.mockito.Mockito.verify;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.reflect.Whitebox;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 
@@ -57,12 +59,17 @@ public class UtilitiesTest {
         utilities = new Utilities("partner", "apiKey", baseUrl.toString());
     }
 
+    @After
+    public void shutdown() throws IOException {
+        server.shutdown();
+    }
+
 
     @Test
     public void getJobStatus() throws Exception {
         Options options = new Options(false, false, true, true, "");
         server.enqueue(new MockResponse().setBody(jobStatusResponseAdapter.toJson(response())));
-        JobStatusResponse response = utilities.getJobStatus("user", "job-100"
+        utilities.getJobStatus("user", "job-100"
                 , options);
 
         // check request is correct
@@ -82,7 +89,7 @@ public class UtilitiesTest {
     public void getJobStatusDefaultOptions() throws Exception {
         Options options = new Options();
         server.enqueue(new MockResponse().setBody(jobStatusResponseAdapter.toJson(response())));
-        JobStatusResponse response = utilities.getJobStatus("user", "job-100");
+        utilities.getJobStatus("user", "job-100");
 
         // check request is correct
         RecordedRequest recordedRequest = server.takeRequest();
