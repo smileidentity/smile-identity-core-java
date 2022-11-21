@@ -186,12 +186,8 @@ public class Utilities {
             Boolean valid = false;
             Boolean useSignature = Signature.useSignature(options);
             
-            if (useSignature) {
-            	Long tstmpLng = new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime();
-            	valid = sigObj.confirm_signature(tstmpLng, signature);
-            } else {
-            	valid = sigObj.confirm_sec_key(timestamp, signature);
-            }
+            Long tstmpLng = new SimpleDateFormat(Signature.DATE_TIME_FORMAT).parse(timestamp).getTime();
+            valid = sigObj.confirm_signature(tstmpLng, signature);
             
             if (!valid) {
                 throw new IllegalArgumentException("Unable to confirm validity of the job_status response");
@@ -209,8 +205,8 @@ public class Utilities {
         Boolean useSignature = Signature.useSignature(options);
         
         Signature sigObj = new Signature(partner_id, api_key);
-        body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp));
-        body.put(Signature.TIME_STAMP_KEY, (useSignature) ? new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp) : timestamp);
+        body.put(Signature.SIGNATURE_KEY, sigObj.getSignature(timestamp));
+        body.put(Signature.TIME_STAMP_KEY, new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
         body.put("partner_id", partner_id);
         body.put("user_id", user_id);
         body.put("job_id", job_id);

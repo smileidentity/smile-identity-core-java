@@ -278,15 +278,14 @@ public class WebApi {
     private String setupRequests(JSONObject partnerParams, JSONObject options, JSONObject idInfo, JSONArray images) throws Exception  {
         String res = null;
         Long timestamp = System.currentTimeMillis();
-        Boolean useSignature = Signature.useSignature(options);
         Signature sigObj = new Signature(partnerId, apiKey);
         
-        String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
+        String signature = sigObj.getSignature(timestamp);
         String prepUploadUrl = url + "/upload";
 
         HttpClient client = Utilities.buildHttpClient(connectionTimeout, readTimeout);
         HttpPost post = new HttpPost(prepUploadUrl.trim());
-        JSONObject uploadBody = configurePrepUploadJson(signature, timestamp, partnerParams, useSignature, options);
+        JSONObject uploadBody = configurePrepUploadJson(signature, timestamp, partnerParams, options);
         StringEntity entityForPost = new StringEntity(uploadBody.toString());
         post.setHeader("content-type", "application/json");
         post.setEntity(entityForPost);
@@ -305,7 +304,7 @@ public class WebApi {
             String uploadUrl = responseJson.get("upload_url").toString();
             String smileJobId = responseJson.get("smile_job_id").toString();
 
-            JSONObject infoJson = configureInfoJson(uploadUrl, signature, timestamp, partnerParams, idInfo, images, useSignature);
+            JSONObject infoJson = configureInfoJson(uploadUrl, signature, timestamp, partnerParams, idInfo, images);
             ByteArrayOutputStream baos = zipUpFile(infoJson, images);
             uploadFile(uploadUrl, baos);
             
@@ -332,11 +331,11 @@ public class WebApi {
         return res;
     }
 
-    private JSONObject configurePrepUploadJson(String signature, Long timestamp, JSONObject partnerParams, Boolean useSignature, JSONObject options) throws Exception {
+    private JSONObject configurePrepUploadJson(String signature, Long timestamp, JSONObject partnerParams, JSONObject options) throws Exception {
         JSONObject body = new JSONObject();
         body.put("file_name", "selfie.zip");
         body.put("timestamp", timestamp);
-        body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
+        body.put(Signature.SIGNATURE_KEY, signature);
         body.put("smile_client_id", partnerId);
         body.put("partner_params", partnerParams);
         body.put("model_parameters", new JSONObject());
@@ -356,9 +355,9 @@ public class WebApi {
         return result.toString();
     }
 
-    private JSONObject configureInfoJson(String uploadUrl, String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, JSONArray images, Boolean useSignature) throws Exception {
+    private JSONObject configureInfoJson(String uploadUrl, String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, JSONArray images) throws Exception {
         JSONObject json = new JSONObject();
-        
+
         JSONObject api_version = new JSONObject();
         api_version.put("buildNumber", new Integer(0));
         api_version.put("majorVersion", new Integer(2));
@@ -381,7 +380,7 @@ public class WebApi {
         userData.put("countryName", "");
 
         JSONObject misc_information = new JSONObject();
-        misc_information.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
+        misc_information.put(Signature.SIGNATURE_KEY, signature);
         misc_information.put("retry", "false");
         misc_information.put("partner_params", partnerParams);
         misc_information.put("timestamp", timestamp);

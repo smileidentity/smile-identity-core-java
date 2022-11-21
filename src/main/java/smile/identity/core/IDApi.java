@@ -84,7 +84,7 @@ public class IDApi {
             useSignature = Signature.useSignature(options);
         }
         
-        String signature = (useSignature) ? sigObj.getSignature(timestamp) : sigObj.getSecKey(timestamp);
+        String signature = sigObj.getSignature(timestamp);
         
         return setupRequests(signature, timestamp, partnerParams, idInfo, useSignature);
     }
@@ -117,8 +117,8 @@ public class IDApi {
     @SuppressWarnings("unchecked")
 	private JSONObject configureJson(String signature, Long timestamp, JSONObject partnerParams, JSONObject idInfo, Boolean useSignature) throws Exception {
         JSONObject body = new JSONObject();
-        body.put(Signature.TIME_STAMP_KEY, (useSignature) ? new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp) : timestamp);
-        body.put((useSignature) ? Signature.SIGNATURE_KEY : Signature.SEC_KEY, signature);
+        body.put(Signature.TIME_STAMP_KEY, new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
+        body.put(Signature.SIGNATURE_KEY, signature);
         body.put("partner_id", partner_id);
         body.put("partner_params", partnerParams);
         body.putAll(idInfo);

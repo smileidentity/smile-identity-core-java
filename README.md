@@ -12,7 +12,7 @@ The **Web Api Class** allows you as the Partner to validate a user’s identity 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submit_job
 
-The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
+The **Signature Class** allows you as the Partner to generate a signature to interact with our servers. It has the following public methods:
 - getSignatureKey
 - confirmSignature
 
@@ -288,7 +288,7 @@ If you have queried a job type 5, your response be a JSON String that will conta
    "FullName":"John Doe",
    "DOB":"1993-10-21",
    "Photo":"SomeBase64Image",
-   "sec_key":"pjxsxEY69zEHjSPFvPEQTqu17vpZbw+zTNqaFxRWpYDiO+7wzKc9zvPU2lRGiKg7rff6nGPBvQ6rA7/wYkcLrlD2SuR2Q8hOcDFgni3PJHutij7j6ThRdpTwJRO2GjLXN5HHDB52NjAvKPyclSDANHrG1qb/tloO7x4bFJ7tKYE=|8faebe00b317654548f8b739dc631431b67d2d4e6ab65c6d53539aaad1600ac7",
+   "signature":"pjxsxEY69zEHjSPFvPEQTqu17vpZbw+zTNqaFxRWpYDiO+7wzKc9zvPU2lRGiKg7rff6nGPBvQ6rA7/wYkcLrlD2SuR2Q8hOcDFgni3PJHutij7j6ThRdpTwJRO2GjLXN5HHDB52NjAvKPyclSDANHrG1qb/tloO7x4bFJ7tKYE=|8faebe00b317654548f8b739dc631431b67d2d4e6ab65c6d53539aaad1600ac7",
    "timestamp":1570698930193
 }
 ```
@@ -396,7 +396,7 @@ Your response will return a JSON String containing the below:
    "FullName":"John Doe",
    "DOB":"1900-09-20",
    "Photo":"SomeBase64Image",
-   "sec_key":"pjxsx...",
+   "signature":"pjxsx...",
    "timestamp":1570698930193
 }
 ```
