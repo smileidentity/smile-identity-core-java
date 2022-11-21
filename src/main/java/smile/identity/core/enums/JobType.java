@@ -27,4 +27,8 @@ public enum JobType {
         return null;
     }
 
+    public boolean isKYC() {
+        return this.value == 5;
+    }
+
 }
