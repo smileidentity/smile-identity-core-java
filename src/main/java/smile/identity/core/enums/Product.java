@@ -14,5 +14,9 @@ public enum Product {
     @Json(name = "enhanced_kyc")
     ENHANCED_KYC,
     @Json(name = "doc_verification")
-    DOC_VERIFICATION
+    DOC_VERIFICATION,
+    @Json(name = "ekyc_smartselfie")
+    EKYC_SMART_SEFLIE,
+    @Json(name = "identity_verification")
+    IDENTITY_VERIFICATION,
 }
