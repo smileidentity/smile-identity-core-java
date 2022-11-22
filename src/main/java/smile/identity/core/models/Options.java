@@ -12,7 +12,7 @@ public class Options {
     boolean returnJobStatus;
     String callbackUrl;
 
-    public Options(){
+    public Options() {
         this(false, false, true, true, "");
     }
 
