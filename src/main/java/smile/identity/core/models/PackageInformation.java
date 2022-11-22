@@ -1,7 +1,7 @@
 package smile.identity.core.models;
 
 import lombok.Value;
-import smile.identity.core.Utils;
+import smile.identity.core.ConfigHelpers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class PackageInformation {
 
     private Map<String, Integer> setApiVersion(){
         Map<String, Integer> map = new HashMap<>();
-        String[] apiVersion = Utils.getApiVersion().split("\\.");
+        String[] apiVersion = ConfigHelpers.getApiVersion().split("\\.");
         map.put("buildNumber", Integer.valueOf(apiVersion[0]));
         map.put("majorVersion", Integer.valueOf(apiVersion[1]));
         map.put("minorVersion", Integer.valueOf(apiVersion[2]));

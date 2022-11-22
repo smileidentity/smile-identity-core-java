@@ -2,7 +2,7 @@ package smile.identity.core;
 
 import java.util.Properties;
 
-public class Utils {
+public class ConfigHelpers {
     private final static Properties properties = new Properties();
     private final static String TEST_ENV = "0";
     private final static String PROD_ENV = "1";

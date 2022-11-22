@@ -18,7 +18,7 @@ public class Utilities {
 
     public Utilities(String partnerId, String apiKey, String sidServer) {
     	this.partnerId = partnerId;
-        String url = Utils.getSidServer(sidServer);
+        String url = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(url);
         this.signature = new Signature(partnerId, apiKey);
     }
