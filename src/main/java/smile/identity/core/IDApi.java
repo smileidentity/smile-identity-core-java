@@ -88,7 +88,7 @@ public class IDApi {
     private EnhancedKYCRequest setupRequests(PartnerParams partnerParams,
                                              IdInfo idInfo, Options options) {
 
-        Signature signature = new Signature(this.partnerId, this.apiKey);
+        SignatureKey key = new Signature(this.partnerId, this.apiKey).getSignatureKey();
         SignatureKey key = signature.getSignatureKey();
         return new EnhancedKYCRequest(this.partnerId, key.getInstant(),
                 key.getSignature(), partnerParams, idInfo.getCountry(),
