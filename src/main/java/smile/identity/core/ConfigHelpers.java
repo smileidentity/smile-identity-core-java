@@ -6,10 +6,8 @@ public class ConfigHelpers {
     private final static Properties properties = new Properties();
     private final static String TEST_ENV = "0";
     private final static String PROD_ENV = "1";
-    private final static String TEST_SERVER = "https://3eydmgh10d.execute-api" +
-            ".us-west-2.amazonaws.com/test";
-    private final static String PROD_SERVER = "https://la7am6gdm8.execute-api" +
-            ".us-west-2.amazonaws.com/prod";
+    private final static String TEST_SERVER = "https://testapi.smileidentity.com";
+    private final static String PROD_SERVER = "https://api.smileidentity.com";
 
     public static String getVersion() {
         return properties.getProperty("version");
