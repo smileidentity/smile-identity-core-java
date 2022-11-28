@@ -89,7 +89,7 @@ public class IDApi {
                                              IdInfo idInfo, Options options) {
 
         SignatureKey key = new Signature(this.partnerId, this.apiKey).getSignatureKey();
-        SignatureKey key = signature.getSignatureKey();
+
         return new EnhancedKYCRequest(this.partnerId, key.getInstant(),
                 key.getSignature(), partnerParams, idInfo.getCountry(),
                 idInfo.getFirstName(), idInfo.getLastName(),
