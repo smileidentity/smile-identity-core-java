@@ -29,6 +29,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
+    testImplementation 'org.powermock:powermock-mockito-release-full:1.5.4'
 }
 
 // Signing
