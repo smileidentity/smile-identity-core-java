@@ -37,7 +37,7 @@ public class IDApi {
     public IDApi(String partnerId, String apiKey, String sidServer) {
         this.partnerId = partnerId;
         this.apiKey = apiKey;
-        String url = Utils.getSidServer(sidServer);
+        String url = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(url);
     }
 

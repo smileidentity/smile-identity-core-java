@@ -2,8 +2,12 @@ package smile.identity.core;
 
 import java.util.Properties;
 
-public class Utils {
+public class ConfigHelpers {
     private final static Properties properties = new Properties();
+    private final static String TEST_ENV = "0";
+    private final static String PROD_ENV = "1";
+    private final static String TEST_SERVER = "https://testapi.smileidentity.com";
+    private final static String PROD_SERVER = "https://api.smileidentity.com";
 
     public static String getVersion() {
         return properties.getProperty("version");
@@ -14,10 +18,10 @@ public class Utils {
     }
 
     public static String getSidServer(String sidServer) {
-        if (sidServer.equals("0")) {
-            return "https://testapi.smileidentity.com";
-        } else if (sidServer.equals("1")) {
-            return "https://api.smileidentity.com";
+        if (sidServer.equals(TEST_ENV)) {
+            return TEST_SERVER;
+        } else if (sidServer.equals(PROD_ENV)) {
+            return PROD_SERVER;
         } else {
             return sidServer;
         }

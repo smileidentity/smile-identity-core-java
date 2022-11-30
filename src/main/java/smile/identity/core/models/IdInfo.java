@@ -3,6 +3,7 @@ package smile.identity.core.models;
 
 import com.google.common.base.Strings;
 import com.squareup.moshi.Json;
+
 import lombok.Value;
 
 @Value
@@ -29,7 +30,7 @@ public class IdInfo {
     @Json(name = "phone_number")
     private String phoneNumber;
 
-    public Boolean valid(){
+    public Boolean valid() {
         return (!Strings.isNullOrEmpty(country) && !Strings.isNullOrEmpty(this.idType) && !Strings.isNullOrEmpty(this.idNumber));
     }
 }

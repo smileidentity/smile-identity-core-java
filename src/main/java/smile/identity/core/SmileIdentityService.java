@@ -33,7 +33,10 @@ public class SmileIdentityService {
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(IDResponse.class, "ID Verification")
                 .withSubtype(IDResponse.class, "Document Verification")
-                .withFallbackJsonAdapter(new Moshi.Builder().add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
+                .withFallbackJsonAdapter(new Moshi.Builder()
+                        .add(new JobTypeAdapter())
+                        .add(new PartnerParamsAdapter())
+                        .add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
 
         Moshi moshi = new Moshi.Builder()
                 .add(factory)

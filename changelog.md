@@ -7,7 +7,8 @@ All notable changes to this project will be documented in this file.
 - Updated documentation
 - Added use of retrofit for api calls 
 - Added POJOs
-- Updating IDApi class to use new SmileIdentityService
+- Updating Utilities class to use new SmileIdentityService
+- Updating IDApi to use SmileIdentityService
 
 ## [0.0.2] - 2019-08-12
 ### Added

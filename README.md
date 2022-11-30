@@ -17,10 +17,9 @@ The **Signature Class** allows you as the Partner to generate a sec key to inter
 - confirmSignature
 
 The **Utilities Class** allows you as the Partner to have access to our general Utility functions to gain access to your data. It has the following public methods:
-- get_job_status
-- validate_id_params
-- validate_id_params
-- query_smile_id_services
+- getJobStatus
+- pollJobStatus
+
 
 ## Documentation
 
@@ -410,42 +409,23 @@ You may want to receive more information about a job. This is built into Web Api
 ```java
 import smile.identity.core.Utilities;
 
-String job_status = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>).get_job_status(<user_id>, <job_id>, <return_image_links> , <return_history>);
+Utilities utilities = new Utilities(<partnerId>, <the decoded-version of-your-api-key>, <sidServer>);
+JobStatusResponse response = utilities.getJobStatus(<String userId>, <String jobId>, <Options options>);
 
-System.out.println(job_status);
 ```
+This returns the job status as JobStatusResponse
 
-This returns the job status as stringified json data.
-
+You can also use the pollJobStatus to poll for a job status. It will retry until it the job is completed or it reaches max retries
+The default retryCount = 3 and the default initialDelay = 2000L (milliseconds); 
 ```java
 import smile.identity.core.Utilities;
-try{
 
-Utilities utilities = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>);
-utilities.query_smile_id_services();
+Utilities utilities = new Utilities(<partnerId>, <the decoded-version of-your-api-key>, <sidServer>);
+JobStatusResponse response = utilities.pollJobStatus(<String userId>, <String jobId>, <Options options>, <int retryCount>, <long initialDelay>);
 
-}catch(Exception e){
-e.printStackTrace();
-}
 
 ```
 
-This will return the smile services endpoint as a json object and can then be used for validation as per requirement
-
-```java
-import smile.identity.core.Utilities;
-try{
-
-Utilities utilities = new Utilities(<partner_id>, <the decoded-version of-your-api-key>, <sid_server>);
-utilities.validate_id_params(partnerParameters.get(), idParameters.get(),true)
-
-}catch(Exception e){
-e.printStackTrace();
-}
-
-```
-
-This will validate id parameters using the smile services endpoint which checks the provided user id and partner params. If use_validation_api is False it will only do a local validation to check for country, id type and id number but by default this is True and will check against the smile services endpoint and if any key is missing will throw an exception
 
 ## Development
 

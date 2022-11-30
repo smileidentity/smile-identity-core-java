@@ -5,7 +5,7 @@ import com.squareup.moshi.Json;
 import java.time.Instant;
 
 import lombok.Value;
-import smile.identity.core.Utils;
+import smile.identity.core.ConfigHelpers;
 import smile.identity.core.enums.Product;
 
 @Value
@@ -33,5 +33,5 @@ public class WebTokenRequest {
     String sourceSdk = "java";
 
     @Json(name = "source_sdk_version")
-    String sourceSdkVersion = Utils.getVersion();
+    String sourceSdkVersion = ConfigHelpers.getVersion();
 }

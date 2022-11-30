@@ -1,11 +1,12 @@
 package smile.identity.core.keys;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 public class SignatureKey {
 
@@ -25,25 +26,25 @@ public class SignatureKey {
             mac.update(partnerId.getBytes(StandardCharsets.UTF_8));
             mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(mac.doFinal());
-        } catch (GeneralSecurityException e){
+        } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getSignature(){
+    public String getSignature() {
         return this.signature;
     }
 
-    public long getTimestamp(){
+    public long getTimestamp() {
         return this.timestamp;
+    }
+
+    public Instant getInstant() {
+        return Instant.ofEpochMilli(this.timestamp);
     }
 
     public boolean validSignature(String signature) {
         return signature.equals(this.signature);
-    }
-
-    public Instant getInstant(){
-        return Instant.ofEpochMilli(this.timestamp);
     }
 
 }
