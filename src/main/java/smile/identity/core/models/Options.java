@@ -13,6 +13,7 @@ public class Options {
     String callbackUrl;
 
     public Options() {
+
         this(false, false, true, true, "");
     }
 

@@ -10,7 +10,7 @@ The **Web Api Class** allows you as the Partner to validate a user’s identity 
 - get_web_token
 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
-- submit_job
+- submitJob
 
 The **Signature Class** allows you as the Partner to generate a sec key to interact with our servers. It has the following public methods:
 - getSignatureKey
@@ -347,57 +347,25 @@ import smile.identity.core.IDParameters;
 import smile.identity.core.IDApi;
 ```
 
-##### submit_job method
+##### submitJob method
 
 Your call to the library will be similar to the below code snippet:
 ```java
-  PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer 5>);
+  PartnerParams partnerParams = new PartnerParams(<JobType jobType>, <Map<String, Object> optionalInfo>, <String userId>, <String jobId>);
 
   // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-  IDParameters idParameters = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>);
-  // Note that entered is not required for ID API
+  IdInfo idInfo = new IdInfo(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>);
 
-  IDApi connection = new IDApi(<String partner_id>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
-  String response = connection.submit_job(partnerParameters.get(), idParameters.get());  
+  IDApi idApi = new IDApi(<String partner_id>, <String decoded_version_of_api_key>, <String 0 || 1 || sidserver >);
+  JobStatusResponse response = idApi.submitJob(partnerParams, idInfo);  
 ```
 
-This will first perform validation of IDParameters and PartnerParameters if the IDParameters information has been entered
-and for job type 1 or 5 to disable validation from using the SmileID services endpoint pass a boolean set to false.
-This will still perform the basic validation for country, id type and id number for IDParameters 
+This will first perform validation of IdInfo and PartnerParams.
+To disable validation against the SmileID services endpoint pass false for useValidationApi ( default is true).
+This will still perform the basic validation for country, id type and id number for IdInfo
+
 ```java
-String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(),false);
-```
-
-**Response**
-
-Your response will return a JSON String containing the below:
-```json
-{
-   "JSONVersion":"1.0.0",
-   "SmileJobID":"0000001105",
-   "PartnerParams":{
-      "user_id":"T6yzdOezucdsPrY0QG9LYNDGOrC",
-      "job_id":"FS1kd1dd15JUpd87gTBDapvFxv0",
-      "job_type":5
-   },
-   "ResultType":"ID Verification",
-   "ResultText":"ID Number Validated",
-   "ResultCode":"1012",
-   "IsFinalResult":"true",
-   "Actions":{
-      "Verify_ID_Number":"Verified",
-      "Return_Personal_Info":"Returned"
-   },
-   "Country":"NG",
-   "IDType":"PASSPORT",
-   "IDNumber":"A12345",
-   "ExpirationDate":"2017-10-28",
-   "FullName":"John Doe",
-   "DOB":"1900-09-20",
-   "Photo":"SomeBase64Image",
-   "sec_key":"pjxsx...",
-   "timestamp":1570698930193
-}
+JobStatusResponse response = idApi.submitJob(partnerParams, idInfo, false, options);
 ```
 
 #### Signature Class

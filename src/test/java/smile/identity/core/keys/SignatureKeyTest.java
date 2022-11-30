@@ -1,6 +1,5 @@
 package smile.identity.core.keys;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -33,8 +32,8 @@ public class SignatureKeyTest {
     public void formatTimestamp() {
         long timestamp = System.currentTimeMillis();
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
-        Instant timestampString = key.getInstant();
-        assertTrue(validFormat(timestampString.toString()));
+        String timestampString = key.getInstant().toString();
+        assertTrue(validFormat(timestampString));
     }
 
     private boolean validFormat(String timestamp) {
