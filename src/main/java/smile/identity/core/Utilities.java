@@ -12,8 +12,6 @@ public class Utilities {
     private final String partnerId;
     private final SmileIdentityService smileIdentityService;
     private final Signature signature;
-    private final int retryCount = 3;
-    private final long initialDelay = 2000L;
 
 
     public Utilities(String partnerId, String apiKey, String sidServer) {
@@ -49,7 +47,9 @@ public class Utilities {
 
     public JobStatusResponse pollJobStatus(String userId, String jobId,
                                            Options options) throws Exception {
-        return pollJobStatus(userId, jobId, options, this.retryCount, this.initialDelay);
+        int retryCount = 3;
+        long initialDelay = 2000L;
+        return pollJobStatus(userId, jobId, options, retryCount, initialDelay);
     }
 
     public JobStatusResponse pollJobStatus(String userId, String jobId) throws Exception {
