@@ -5,9 +5,8 @@ The official Smile Identity library exposes four classes namely; the Web Api cla
 Please see [changelog.md](https://github.com/smileidentity/smile-identity-core-java/blob/master/changelog.md). for release versions and changes
 
 The **Web Api Class** allows you as the Partner to validate a user’s identity against the relevant Identity Authorities/Third Party databases that Smile Identity has access to using ID information provided by your customer/user (including photo for compare). It has the following public methods:
-- submit_job
-- get_job_status
-- get_web_token
+- submitJob
+- getWebToken
 
 The **ID Api Class** lets you performs basic KYC Services including verifying an ID number as well as retrieve a user's Personal Information. It has the following public methods:
 - submitJob
@@ -23,7 +22,7 @@ The **Utilities Class** allows you as the Partner to have access to our general 
 
 ## Documentation
 
-This gem requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs.smileidentity.com/products/web-api/java).
+This library requires specific input parameters, for more detail on these parameters please refer to our [documentation for Web API](https://docs.smileidentity.com/products/web-api/java).
 
 Please note that you will have to be a Smile Identity Partner to be able to query our services. You can sign up on the [Portal](https://portal.smileidentity.com/signup).
 
@@ -44,71 +43,67 @@ You now may use the classes as follows:
 Import the necessary dependant classes for Web Api:
 
 ```java
-import smile.identity.core.PartnerParameters;
-import smile.identity.core.ImageParameters;
-import smile.identity.core.IDParameters;
-import smile.identity.core.Options;
 import smile.identity.core.WebApi;
 ```
 
-##### submit_job method
+##### submitJob method
 
 Your call to the library will be similar to the below code snippet:
 ```java
   try {
-    PartnerParameters partnerParameters = new PartnerParameters("1", "1", 1);
-    partnerParameters.add("optional_info", "some optional info");
+      
+      Map<String, Object> optionalParams = new HashMap<>(); // custom partner params 
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BASIC_KYC, "user", "job", optionalParams
+        );
 
     // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
-    IDParameters idParameters = new IDParameters(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>, <String entered>);
+      IdInfo idInfo = new IdInfo(
+               "firstName", "middleName", "lastName", "country",
+               "IdType", "idNumber", "dob", "phoneNumber"
+      );
 
-    ImageParameters imageParameters = new ImageParameters();
-    imageParameters.add(0, "../download.png");
+      // You can provide the image as a base encoded string or provide the path to the image
+      List<ImageDetail> imageDetails = new ArrayList<>();
+      ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64, "base64_encoded_image", null);
+      ImageDetail idCard = new ImageDetail(ImageType.ID_CARD, null, "pathToImage");  
+      imageDetails.add(selfie);
+      imageDetails.add(idCard);
 
-    Options options = new Options("optional_callback.com", true, false, false);
+      Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, "optionalCallback");
+      WebApi webApi = new WebApi("partnerId", "apiKey", "defaultCallback", "sidServer");
 
-    WebApi connection = new WebApi("partner_id", "default_callback.com", "<the decoded-version of-your-api-key>", 0);
-
-    String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get());
-
-    System.out.println("\n Response" + response);
+      JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails, idInfo, options);
 
   } catch (Exception e) {
-    e.printStackTrace();
-    throw e;
+      e.printStackTrace();
+      throw e;
   }
 ```
-This will first perform validation of IDParameters and PartnerParameters if the IDParameters information has been entered
-and job type us 5 or 1 to remove this validation please use 
+This will first perform validation of IdInfo and PartnerParams. If you would like to skip this validation proccess use: 
 ```java
-String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), idParameters.get(), options.get(),False);
-```
-
-Please note that if you do not need to pass through IDParameters or Options, you may omit calling those class and send through null in submit_job, as follows:
-```java
-String response = connection.submit_job(partnerParameters.get(), imageParameters.get(), null, null);
+JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails, idInfo, options, false);
 ```
 
 In the case of a Job Type 5 you can simply omit the the images and options keys. Remember that the response is immediate, so there is no need to query the job_status. There is also no enrollment so no images are required. The response for a job type 5 can be found in the response section below.
 
 ```java
-$ response = connection.submit_job(partnerParameters.get(), null, idParameters.get(), null);
-```
+JobStatusResponse job = webApi.submitJob(partnerParams, idInfo);
 
-or, you can omit the two null parameters:
-```java
-$ response = connection.submit_job(partnerParameters.get(), idParameters.get());
 ```
 
 
 **Response:**
 
-Should you choose to *set return_job_status to false*, the response will be a JSON String containing:
-```json
-{success: true, smile_job_id: smile_job_id}
+Should you choose to *set returnJobStatus to false*, the response will be a JobStatusResponse containing:
+```java
+job.getJobComplete() == false;
+job.getJobSuccess() == true;
+job.getResult().getSmileId() == "smileJobId";
+job.getResult().getPartnerParams()  == partnerParams; 
 ```
 
-However, if you have *set return_job_status to true (with image_links and history)* then you will receive JSON Object response like below:
+However, if you have *set returnJobStatus to true (with image_links and history)* then you will JobStatusResponse created from this json:
 ```json
 {
    "job_success":true,
@@ -292,48 +287,14 @@ If you have queried a job type 5, your response be a JSON String that will conta
 }
 ```
 
-##### get_job_status method
-
-Sometimes, you may want to get a particular job status at a later time. You may use the get_job_status function to do this:
-
-You will already have your Web Api class initialised as follows:
-```java
-  WebApi connection = new WebApi(<String partner_id>, <String default_callback_url>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
-```
-Thereafter, simply call get_job_status with the correct parameters using the classes we have provided:
-```java
-  // create the stringified json for the partner params using our class (i.e. user_id, job_id, and job_type that you would are querying)
-  PartnerParameters partnerParameters = new PartnerParameters(<String user_id>, <String job_id>, <Integer job_type>);
-
-  // create the options - whether you would like to return_history and return_image_links in the job status response
-  Options job_status_options = new Options(<Boolean return_history>, <Boolean return_image_links>);
-
-  response = connection.get_job_status(partnerParameters.get(), job_status_options.get());
-```
-
-Please note that if you do not need to pass through Options if you will not be using them, you may omit calling those class and send through null instead:
-```java
-String response = connection.get_job_status(partnerParameters.get(), null);
-```
-
-##### get_web_token method
+##### getWebToken method
 
 This function provides the token to be used for authentication when using our hosted web session; it returns a stringified JSONObject containing an active web token.
 
-You will already have your Web Api class initialised as follows:
 ```java
-  WebApi connection = new WebApi(<String partner_id>, <String default_callback_url>, <String decoded_version_of_api_key>, <Integer 0 || 1>);
-```
-Thereafter, simply call get_web_token with the correct parameters using the classes we have provided:
-```java
-  response = connection.get_web_token(<Long timestamp>, <String user_id>, <String job_id>, <String product_type>);
+  String token = webApi.get_web_token(<Long timestamp>, <String userId>, <String jobId>, <Product product>);
 ```
 
-**Response:**
-
-```json
-{"success":true,"token":"<token>"}
-```
 
 #### ID Api Class
 
@@ -342,8 +303,6 @@ An API that lets you performs basic KYC Services including verifying an ID numbe
 Import the necessary dependant classes for ID Api:
 
 ```java
-import smile.identity.core.PartnerParameters;
-import smile.identity.core.IDParameters;
 import smile.identity.core.IDApi;
 ```
 
@@ -351,7 +310,7 @@ import smile.identity.core.IDApi;
 
 Your call to the library will be similar to the below code snippet:
 ```java
-  PartnerParams partnerParams = new PartnerParams(<JobType jobType>, <Map<String, Object> optionalInfo>, <String userId>, <String jobId>);
+  PartnerParams partnerParams = new PartnerParams(<JobType jobType>, <String userId>, <String jobId>,  <Map<String, Object> optionalInfo>);
 
   // Note dob is only required for PASSPORT, VOTER_ID, DRIVERS_LICENSE, NATIONAL_ID, TIN, and CAC. For the rest of the id types you can send through dob as null or empty.
   IdInfo idInfo = new IdInfo(<String firstName>, <String middleName>, <String lastName>, <String country>, <String idType>, <String idNumber>, <String dob>, <String phoneNumber>);
