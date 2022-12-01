@@ -10,11 +10,11 @@ public class ConfigHelpers {
     private final static String PROD_SERVER = "https://api.smileidentity.com";
 
     public static String getVersion() {
-        return properties.getProperty("version");
+        return "2.0.0"; // properties.getProperty("version");
     }
 
     public static String getApiVersion() {
-        return properties.getProperty("apiVersion");
+        return "0.2.0"; //properties.getProperty("apiVersion");
     }
 
     public static String getSidServer(String sidServer) {
