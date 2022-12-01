@@ -8,13 +8,12 @@ import lombok.Value;
 public class Options {
     boolean returnHistory;
     boolean returnImageLinks;
-    boolean signature;
     boolean returnJobStatus;
     String callbackUrl;
 
     public Options() {
 
-        this(false, false, true, true, "");
+        this(false, false, true, "");
     }
 
 }

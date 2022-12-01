@@ -61,7 +61,7 @@ public class IDApiTest {
         server.enqueue(new MockResponse().setBody(response()));
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
 
         IdInfo idInfo = new IdInfo(
@@ -90,7 +90,7 @@ public class IDApiTest {
         server.enqueue(new MockResponse().setBody(response()));
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
 
         IdInfo idInfo = new IdInfo(
@@ -98,7 +98,7 @@ public class IDApiTest {
                 "PASSPORT", "1111111", "", ""
         );
 
-        idApi.submitJob(partnerParams, idInfo, new Options());
+        idApi.submitJob(partnerParams, idInfo, false, new Options());
 
         RecordedRequest idRequest = server.takeRequest();
         EnhancedKYCRequest kycRequest = moshi
@@ -116,9 +116,8 @@ public class IDApiTest {
     public void invalidJobType() {
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BIOMETRIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
         );
-
         IdInfo idInfo = new IdInfo(
                 "Tom", "", "Ford", "GH",
                 "PASSPORT", "1111111", "", ""
@@ -132,7 +131,7 @@ public class IDApiTest {
     public void invalidIdInfo() {
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
 
         IdInfo idInfo = new IdInfo(
@@ -151,7 +150,7 @@ public class IDApiTest {
         server.enqueue(new MockResponse().setBody(validResponse));
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
 
         IdInfo idInfo = new IdInfo(
@@ -170,7 +169,7 @@ public class IDApiTest {
         server.enqueue(new MockResponse().setBody(validResponse));
 
         PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, new HashMap<>(), "user", "job"
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
 
         IdInfo idInfo = new IdInfo(
