@@ -20,7 +20,7 @@ public class PartnerParamsAdapter {
     @FromJson PartnerParams fromJson(Map<String, Object> params){
         String jobId = (String) params.remove("job_id");
         String userId = (String) params.remove("user_id");
-        JobType jobType = getJobType((String) params.remove("job_type"));
+        JobType jobType = getJobType(params.remove("job_type"));
 
         return new PartnerParams(jobType, userId, jobId, params);
     }
@@ -38,7 +38,10 @@ public class PartnerParamsAdapter {
         return map;
     }
 
-    private JobType getJobType(String value){
-        return JobType.fromValue(Integer.parseInt(value));
+    private JobType getJobType(Object value){
+        if (value instanceof Double) {
+            return JobType.fromValue(((Double) value).intValue());
+        }
+        return JobType.fromValue(Integer.parseInt((String) value));
     }
 }

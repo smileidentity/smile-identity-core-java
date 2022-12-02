@@ -1,15 +1,14 @@
 package smile.identity.core;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.wnameless.json.flattener.FlattenMode;
-import com.github.wnameless.json.flattener.JsonFlattener;
+import com.google.common.base.CaseFormat;
 
-import org.apache.commons.text.CaseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import smile.identity.core.exceptions.IdTypeNotSupported;
 import smile.identity.core.exceptions.MissingRequiredFields;
@@ -18,6 +17,7 @@ import smile.identity.core.models.PartnerParams;
 
 public class IdValidator {
 
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Validates that the correct fields are provided for a id type based on
@@ -32,7 +32,6 @@ public class IdValidator {
     public static void validateIdType(SmileIdentityService service,
                                       IdInfo idInfo,
                                       PartnerParams partnerParams) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
         String country = idInfo.getCountry();
         String idType = idInfo.getIdType();
 
@@ -43,14 +42,17 @@ public class IdValidator {
             throw new IdTypeNotSupported(country, idType);
         }
 
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         JsonNode idInfoNode = mapper.convertValue(idInfo, JsonNode.class);
         JsonNode partnerParamsNode = mapper.convertValue(partnerParams,
                 JsonNode.class);
 
         for (String field : requiredFields) {
-            String camelCase = CaseUtils.toCamelCase(field, false, '_');
+            String camelCase =
+                    CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL,
+                            field);
 
-            if (idInfoNode.get(camelCase) == null && partnerParamsNode.get(camelCase) == null) {
+            if ((idInfoNode.get(camelCase) == null) && partnerParamsNode.get(camelCase) == null) {
                 throw new MissingRequiredFields(field);
             }
         }
@@ -70,11 +72,14 @@ public class IdValidator {
             , String idType, String country) throws Exception {
 
         String services = service.getServices();
-        Map<String, Object> flattened =
-                new JsonFlattener(services).withFlattenMode(FlattenMode.KEEP_PRIMITIVE_ARRAYS).flattenAsMap();
 
-        String search = String.join(".", "id_types", country, idType);
-        return (List<String>) flattened.getOrDefault(search, new ArrayList<>());
+        JsonNode rootNode = mapper.readTree(services);
+        JsonNode requiredFields =
+                rootNode.path("id_types").path(country).path(idType);
+        if ( requiredFields.isMissingNode()) {
+            return new ArrayList<>();
+        }
+        return mapper.reader(new TypeReference<List<String>>(){}).readValue(requiredFields);
     }
 
 }

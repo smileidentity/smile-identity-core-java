@@ -8,7 +8,6 @@ import com.google.common.io.Files;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -120,11 +119,10 @@ public class WebApi {
         if (options.isReturnJobStatus()) {
             return new Utilities(this.partnerId, this.apiKey, sidServer).pollJobStatus(partnerParams.getUserId(), partnerParams.getJobId());
         } else {
-            JobResponse result = new JobResponse("",
-                    uploadResponse.getSmileJobId(), partnerParams, "", "", ""
-                    , "", null, "", null, "", "", null);
-            return new JobStatusResponse("", false, true, result, "", null,
-                    null, null);
+            JobResponse result =
+                    new JobResponse(uploadResponse.getSmileJobId(),
+                            partnerParams);
+            return new JobStatusResponse(result);
         }
     }
 
@@ -170,14 +168,14 @@ public class WebApi {
         Optional<ImageDetail> idCard =
                 imageDetails.stream().parallel().filter(details -> details.getImageTypeId().equals(ImageType.ID_CARD) || details.getImageTypeId().equals(ImageType.ID_CARD_BASE64)).findAny();
         if (!idCard.isPresent() && (idInfo == null || !idInfo.valid())) {
-            throw new InvalidImageDetails("You are attempting to complete a " + "job type 1 without providing an id card image or id info");
+            throw new InvalidImageDetails("You are attempting to complete a job type 1 without providing an id card image or id info");
         }
     }
 
     private void verifyJobReturnMethod(String callbackUrl,
                                        boolean returnJobStatus) {
         if (Strings.isNullOrEmpty(callbackUrl) && !returnJobStatus) {
-            throw new IllegalArgumentException("Please choose to either get " + "your response via the callback or job status query");
+            throw new IllegalArgumentException("Please choose to either get your response via the callback or job status query");
         }
     }
 
@@ -199,7 +197,7 @@ public class WebApi {
 
         List<ImageDetail> updatedImageDetails = new ArrayList<>();
         for (ImageDetail imageDetail : imageDetails) {
-            if (!StringUtils.isEmpty(imageDetail.getFileName())) {
+            if (!Strings.isNullOrEmpty(imageDetail.getFileName())) {
                 Path path = Paths.get(imageDetail.getFileName());
                 updatedImageDetails.add(new ImageDetail(imageDetail.getImageTypeId(), "", path.getFileName().toString()));
             } else {

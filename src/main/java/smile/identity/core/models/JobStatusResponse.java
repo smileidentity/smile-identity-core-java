@@ -3,12 +3,16 @@ package smile.identity.core.models;
 import com.squareup.moshi.Json;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
+@AllArgsConstructor
 public class JobStatusResponse {
 
     String code;
@@ -29,5 +33,10 @@ public class JobStatusResponse {
     Map<String, String> imageLinks;
 
     List<JobResponse> history;
+
+    public JobStatusResponse(JobResponse result) {
+        this("", false, true, result, result.getSignature(),
+                result.getTimestamp(), new HashMap<>(), new ArrayList<>());
+    }
 
 }
