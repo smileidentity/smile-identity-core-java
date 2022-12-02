@@ -56,7 +56,7 @@ artifacts {
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
-version = "1.0.11"
+version = "2.0.0"
 def apiVersion = "0.2.0"
 
 // Build, sign, and upload

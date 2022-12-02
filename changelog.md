@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - Added POJOs
 - Updating Utilities class to use new SmileIdentityService
 - Updating IDApi to use SmileIdentityService
+- Updating WebAPi to use SmileIdentityService
+- Removed old Options, PartnerParameters, IDParameters, ImageParameters classes
 
 ## [0.0.2] - 2019-08-12
 ### Added
