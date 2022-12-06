@@ -127,7 +127,7 @@ public class WebApi {
     }
 
 
-    public String getWebToken(Long timestamp, String userId, String jobId,
+    public String getWebToken(long timestamp, String userId, String jobId,
                               Product product) throws Exception {
         return getWebToken(timestamp, userId, jobId, product,
                 this.defaultCallbackUrl);
