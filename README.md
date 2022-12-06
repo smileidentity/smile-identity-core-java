@@ -103,7 +103,7 @@ job.getResult().getSmileId() == "smileJobId";
 job.getResult().getPartnerParams()  == partnerParams; 
 ```
 
-However, if you have *set returnJobStatus to true (with image_links and history)* then you will JobStatusResponse created from this json:
+However, if you have *set returnJobStatus to true (with image_links and history)* then you will receive a JobStatusResponse created from this json:
 ```json
 {
    "job_success":true,
