@@ -8,7 +8,6 @@ import com.google.common.io.Files;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -57,6 +55,7 @@ public class WebApi {
     private final String sidServer;
     private final String defaultCallbackUrl;
     private final SmileIdentityService smileIdentityService;
+    private final JsonAdapter<UploadRequest> uploadRequestAdapter;
 
     public WebApi(String partnerId, String apiKey, String defaultCallback,
                   String sidServer) {
@@ -65,6 +64,9 @@ public class WebApi {
         this.apiKey = apiKey;
         this.sidServer = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(sidServer);
+        Moshi moshi =
+                new Moshi.Builder().add(new JobTypeAdapter()).add(new InstantAdapter()).add(new ImageTypeAdapter()).add(new PartnerParamsAdapter()).build();
+        uploadRequestAdapter = moshi.adapter(UploadRequest.class);
     }
 
 
@@ -134,7 +136,7 @@ public class WebApi {
 
     }
 
-    public String getWebToken(Long timestamp, String userId, String jobId,
+    public String getWebToken(long timestamp, String userId, String jobId,
                               Product product, String callbackUrl) throws Exception {
 
         SignatureKey key =
@@ -154,10 +156,7 @@ public class WebApi {
             throw new InvalidImageDetails("You need to send through at least "
                     + "one selfie image");
         }
-
-        Optional<ImageDetail> selfieDetail =
-                imageDetails.stream().parallel().filter(details -> details.getImageTypeId().equals(ImageType.SELFIE) || details.getImageTypeId().equals(ImageType.SELFIE_BASE64)).findAny();
-        if (!selfieDetail.isPresent()) {
+        if (imageDetails.stream().noneMatch((details -> details.getImageTypeId().equals(ImageType.SELFIE) || details.getImageTypeId().equals(ImageType.SELFIE_BASE64)))) {
             throw new InvalidImageDetails("You need to send through at least "
                     + "one selfie image");
         }
@@ -165,17 +164,17 @@ public class WebApi {
 
     private void verifyIdIsPresent(IdInfo idInfo,
                                    List<ImageDetail> imageDetails) throws Exception {
-        Optional<ImageDetail> idCard =
-                imageDetails.stream().parallel().filter(details -> details.getImageTypeId().equals(ImageType.ID_CARD) || details.getImageTypeId().equals(ImageType.ID_CARD_BASE64)).findAny();
-        if (!idCard.isPresent() && (idInfo == null || !idInfo.valid())) {
-            throw new InvalidImageDetails("You are attempting to complete a job type 1 without providing an id card image or id info");
+        if (imageDetails.stream().noneMatch(details -> details.getImageTypeId().equals(ImageType.ID_CARD) || details.getImageTypeId().equals(ImageType.ID_CARD_BASE64)) && (idInfo == null || !idInfo.valid())) {
+            throw new InvalidImageDetails("You are attempting to complete a " +
+                    "job type 1 without providing an id card image or id info");
         }
     }
 
     private void verifyJobReturnMethod(String callbackUrl,
                                        boolean returnJobStatus) {
         if (Strings.isNullOrEmpty(callbackUrl) && !returnJobStatus) {
-            throw new IllegalArgumentException("Please choose to either get your response via the callback or job status query");
+            throw new IllegalArgumentException("Please choose to either get " +
+                    "your response via the callback or job status query");
         }
     }
 
@@ -220,16 +219,11 @@ public class WebApi {
         // http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
         // https://stackoverflow.com/questions/23612864/create-a-zip-file-in-memory
 
-        Moshi moshi =
-                new Moshi.Builder().add(new JobTypeAdapter()).add(new InstantAdapter()).add(new ImageTypeAdapter()).add(new PartnerParamsAdapter()).build();
-
-        JsonAdapter<UploadRequest> jsonAdapter =
-                moshi.adapter(UploadRequest.class);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
 
         ZipEntry entry = new ZipEntry("info.json");
-        String infoJsonString = jsonAdapter.toJson(infoJson);
+        String infoJsonString = uploadRequestAdapter.toJson(infoJson);
         zos.putNextEntry(entry);
         zos.write(infoJsonString.getBytes());
         zos.closeEntry();
