@@ -66,7 +66,7 @@ public class UtilitiesTest {
 
     @Test
     public void getJobStatus() throws Exception {
-        Options options = new Options(false, false, true, true, "");
+        Options options = new Options(false, false, false, "");
         server.enqueue(new MockResponse().setBody(jobStatusResponseAdapter.toJson(response())));
         utilities.getJobStatus("user", "job-100"
                 , options);
@@ -104,7 +104,7 @@ public class UtilitiesTest {
 
     @Test
     public void pollForJobStatus() throws Exception {
-        Options options = new Options(false, false, true, true, "");
+        Options options = new Options(false, false, false, "");
         SmileIdentityService service = mock(SmileIdentityService.class);
         Whitebox.setInternalState(utilities, service);
 
@@ -125,8 +125,9 @@ public class UtilitiesTest {
 
 
     private JobStatusResponse response() {
-        PartnerParams params = new PartnerParams(JobType.BASIC_KYC,
-                new HashMap<>(), "user", "job-100");
+        PartnerParams params = new PartnerParams(
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
+        );
         JobResponse result = new JobResponse("1.0", "smile-100", params,
                 "KYC", "So Great", "90210", "Maybe", null,
                 "signature", Instant.now(), "99.99", "internet",

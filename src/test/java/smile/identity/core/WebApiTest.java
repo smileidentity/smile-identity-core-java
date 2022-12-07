@@ -4,99 +4,325 @@
 package smile.identity.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import smile.identity.core.WebApi.WEB_PRODUCT_TYPE;
+import smile.identity.core.adapters.InstantAdapter;
+import smile.identity.core.adapters.JobTypeAdapter;
+import smile.identity.core.adapters.PartnerParamsAdapter;
+import smile.identity.core.enums.ImageType;
+import smile.identity.core.enums.JobType;
+import smile.identity.core.enums.Product;
+import smile.identity.core.exceptions.InvalidImageDetails;
+import smile.identity.core.exceptions.MissingRequiredFields;
+import smile.identity.core.models.IdInfo;
+import smile.identity.core.models.ImageDetail;
+import smile.identity.core.models.JobResponse;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.Options;
+import smile.identity.core.models.PartnerParams;
+import smile.identity.core.models.PreUploadResponse;
 
 public class WebApiTest {
-	
-	private static final int PORT = 3200; //Random port number, arbitrarily chosen
-	private static final String TEST_BASE_URL = "http://localhost:" + PORT;
-	private String POST_REQUEST = "POST";
-	private String REQUEST_ENDPOINT = "/token";
-	private String API_KEY = "<API_KEY>";
-	private String USER_ID = "<USER_ID>";
-	private String PARTNER_ID = "<PARTNER_ID>";
-	private String CALL_BACK_URL = "<CALL_BACK_URL>";
-	private String JOB_ID = "<JOB_ID>";
-	private String SUCCESS_KEY = "success";
-	private String TOKEN_KEY = "token";
-	private WebApi mWebApi = null;
-	private MockWebServer mMockServer = null;
-	private MockResponse mMockResponse = null;
-	
-	@Before
-	public void setup() throws IOException {
-		mMockServer = new MockWebServer();
-		mMockServer.start(PORT);
-		mMockResponse = new MockResponse();
-		mWebApi = new WebApi(PARTNER_ID, CALL_BACK_URL, API_KEY, TEST_BASE_URL);
-	}
-	
-	@Test
-	public void testWebToken() throws Exception {
-		String tokenResponse = "{\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"}";
-		
-		mMockResponse.setResponseCode(200);
-		mMockResponse.setBody(tokenResponse);
-		mMockServer.enqueue(mMockResponse);
-		
-		String productType = WEB_PRODUCT_TYPE.AUTHENTICATION.toString();
-		Long timestamp = System.currentTimeMillis();
-		JSONObject response = (JSONObject) new JSONParser().parse(mWebApi.get_web_token(timestamp, USER_ID, JOB_ID, productType));
-		
-		RecordedRequest request = mMockServer.takeRequest();
-		assertEquals(POST_REQUEST, request.getMethod());
-		assertEquals(REQUEST_ENDPOINT, request.getPath());
-		assertEquals((TEST_BASE_URL + REQUEST_ENDPOINT), request.getRequestUrl().toString());
-		
-		JSONObject body = (JSONObject) new JSONParser().parse(request.getBody().readUtf8());
-		
-		assertTrue(body.containsKey("callback_url"));
-		assertEquals(body.get("callback_url"), CALL_BACK_URL);
-		assertEquals(body.get("callback_url"), mWebApi.getCallbackUrl());
-		
-		assertTrue(body.containsKey("product"));
-		assertEquals(body.get("product"), productType);
-		
-		assertTrue(body.containsKey("partner_id"));
-		assertEquals(body.get("partner_id"), PARTNER_ID);
-		assertEquals(body.get("partner_id"), mWebApi.getPartnerId());
-		
-		assertTrue(body.containsKey("user_id"));
-		assertEquals(body.get("user_id"), USER_ID);
-		
-		assertTrue(body.containsKey("signature"));
-		assertTrue(new Signature(PARTNER_ID, API_KEY).confirm_signature(timestamp, body.get("signature").toString()));
-		
-		assertTrue(body.containsKey("job_id"));
-		assertEquals(body.get("job_id"), JOB_ID);
-		
-		assertTrue(body.containsKey("timestamp"));
-		assertEquals(body.get("timestamp"), new SimpleDateFormat(Signature.DATE_TIME_FORMAT).format(timestamp));
-		
-		assertTrue(response.containsKey(SUCCESS_KEY));
-		assertTrue(response.containsKey(TOKEN_KEY));
-	}
-	
-	@After
-	public void reset() throws IOException {
-		mMockServer.shutdown();
-		mMockServer.close();
-		mMockResponse = null;
-		mWebApi = null;
-	}
+
+
+    private final Moshi moshi = new Moshi.Builder()
+            .add(new PartnerParamsAdapter())
+            .add(new JobTypeAdapter())
+            .add(new InstantAdapter())
+            .build();
+
+    private MockWebServer server;
+    private WebApi webApi;
+
+    @Before
+    public void setup() {
+        server = new MockWebServer();
+        webApi = new WebApi("partner", "apikey", "callback",
+                server.url("testing/").toString());
+    }
+
+    @After
+    public void shutdown() throws IOException {
+        server.shutdown();
+    }
+
+    @Test
+    public void submitJob() throws Exception {
+        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
+                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
+        server.enqueue(new MockResponse().setBody(uploadResponse()));
+        server.enqueue(new MockResponse());
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", null);
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", null);
+        imageDetails.add(selfie);
+        imageDetails.add(idCard);
+
+        Options options = new Options(false, false, false, "");
+
+        JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails,
+				idInfo, options);
+        server.takeRequest();
+        server.takeRequest();
+        RecordedRequest request = server.takeRequest();
+        System.out.println(request.getPath());
+        assertTrue(job.isJobSuccess());
+        assertEquals(request.getPath(), "/testing/uploadphotoshere");
+    }
+
+    @Test
+    public void submitBasicKYCJob() throws Exception {
+        String validResponse = "{\"id_types\": {\"GH\": { \"PASSPORT\": " +
+				"[\"id_number\"]}}}";
+        server.enqueue(new MockResponse().setBody(validResponse));
+        server.enqueue(new MockResponse().setBody(jobResponse()));
+
+
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BASIC_KYC, "user", "job", new HashMap<>()
+        );
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", "");
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", null);
+        imageDetails.add(selfie);
+        imageDetails.add(idCard);
+
+        Options options = new Options();
+
+        JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails,
+				idInfo, options);
+        assertTrue(job.isJobSuccess());
+    }
+
+    @Test
+    public void missingSelfie() throws Exception {
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", "");
+        imageDetails.add(idCard);
+
+        Options options = new Options();
+        assertThrows(InvalidImageDetails.class,
+                () -> webApi.submitJob(partnerParams, imageDetails, idInfo,
+						options));
+
+    }
+
+    @Test
+    public void emptyImageDetails() throws Exception {
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+
+        Options options = new Options();
+        assertThrows(InvalidImageDetails.class,
+                () -> webApi.submitJob(partnerParams, imageDetails, idInfo,
+						options));
+    }
+
+    @Test
+    public void invalidIdInfo() throws IOException {
+        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
+                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
+
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+
+        IdInfo idInfo = new IdInfo(
+                null, "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", "");
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", null);
+        imageDetails.add(selfie);
+        imageDetails.add(idCard);
+
+        Options options = new Options();
+        assertThrows(MissingRequiredFields.class,
+                () -> webApi.submitJob(partnerParams, imageDetails, idInfo,
+						options));
+    }
+
+    @Test
+    public void failsEnrollWithIdValidation() {
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", "");
+        imageDetails.add(selfie);
+
+        Options options = new Options();
+
+        assertThrows(InvalidImageDetails.class,
+                () -> webApi.submitJob(partnerParams, imageDetails, null,
+                        options));
+
+    }
+
+    @Test
+    public void callbackEmptyReturnJobFalse() {
+        webApi = new WebApi("partner", "apikey", "", server.url("testing" +
+                "/").toString());
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", "");
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", null);
+        imageDetails.add(selfie);
+        imageDetails.add(idCard);
+
+        Options options = new Options(false, false, false, "");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> webApi.submitJob(partnerParams, imageDetails, idInfo,
+                        options));
+
+    }
+
+    @Test
+    public void returnJobStatusTrue() throws Exception {
+        JobStatusResponse statusResponse = new JobStatusResponse("90210",
+                true, true, null, "signature", Instant.now(), null, null);
+
+        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
+                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
+        server.enqueue(new MockResponse().setBody(uploadResponse()));
+        server.enqueue(new MockResponse());
+        server.enqueue(new MockResponse().setBody(moshi.adapter(JobStatusResponse.class).toJson(statusResponse)));
+
+        PartnerParams partnerParams = new PartnerParams(
+                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
+        );
+
+        IdInfo idInfo = new IdInfo(
+                "Tom", "", "Ford", "GH",
+                "PASSPORT", "1111111", "", ""
+        );
+
+
+        List<ImageDetail> imageDetails = new ArrayList<>();
+        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
+				"imagedata", "");
+        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
+				"imagedata", null);
+        imageDetails.add(selfie);
+        imageDetails.add(idCard);
+
+        Options options = new Options();
+
+        JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails, idInfo, options);
+
+        assertTrue(job.isJobSuccess());
+    }
+
+    @Test
+    public void getWebToken() throws Exception {
+        server.enqueue(new MockResponse().setBody("{\"success\": true, \"token\": \"greattoken\"}"));
+        String token = webApi.getWebToken(System.currentTimeMillis(), "user", "job", Product.BIOMETRIC_KYC, null);
+        assert (token.equals("greattoken"));
+    }
+
+
+    private String uploadResponse() {
+        PreUploadResponse response = new PreUploadResponse(
+                "uploadphotoshere", "job-id", "", "", ""
+        );
+
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<PreUploadResponse> adapter = moshi.adapter(PreUploadResponse.class);
+        return adapter.toJson(response);
+    }
+
+    private String jobResponse() {
+        JobResponse response = new JobResponse("1.0",
+                "smile-100",
+                null,
+                "Document Verification",
+                "Great",
+                "100",
+                "Yes",
+                null,
+                "signature",
+                Instant.now(),
+                "99.99",
+                "internet",
+                new HashMap<>()
+        );
+        return moshi.adapter(JobResponse.class).toJson(response);
+    }
+
 }

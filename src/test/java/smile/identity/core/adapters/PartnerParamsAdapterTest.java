@@ -27,7 +27,7 @@ public class PartnerParamsAdapterTest {
         optional.put("more", 20);
 
         PartnerParams params = new PartnerParams(
-                JobType.BASIC_KYC, optional, "user", null
+                JobType.BASIC_KYC, "user", null, optional
         );
 
         String json = adaptor.toJson(params);

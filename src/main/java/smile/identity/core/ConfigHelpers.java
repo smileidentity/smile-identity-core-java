@@ -1,20 +1,18 @@
 package smile.identity.core;
 
-import java.util.Properties;
 
 public class ConfigHelpers {
-    private final static Properties properties = new Properties();
     private final static String TEST_ENV = "0";
     private final static String PROD_ENV = "1";
     private final static String TEST_SERVER = "https://testapi.smileidentity.com";
     private final static String PROD_SERVER = "https://api.smileidentity.com";
 
     public static String getVersion() {
-        return properties.getProperty("version");
+        return "2.0.0";
     }
 
     public static String getApiVersion() {
-        return properties.getProperty("apiVersion");
+        return "0.2.0";
     }
 
     public static String getSidServer(String sidServer) {
