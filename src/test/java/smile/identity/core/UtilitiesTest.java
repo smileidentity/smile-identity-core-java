@@ -2,11 +2,6 @@ package smile.identity.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -14,7 +9,6 @@ import com.squareup.moshi.Moshi;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -101,28 +95,6 @@ public class UtilitiesTest {
         assertEquals(request.isHistory(), options.isReturnHistory());
         assertEquals(request.isImageLinks(), options.isReturnImageLinks());
     }
-
-    @Test
-    public void pollForJobStatus() throws Exception {
-        Options options = new Options(false, false, false, "");
-        SmileIdentityService service = mock(SmileIdentityService.class);
-        Whitebox.setInternalState(utilities, service);
-
-        utilities.pollJobStatus("user", "job-100", options, 1, 200L);
-        verify(service, times(1)).pollJobStatus(any(JobStatusRequest.class),
-                eq(1), eq(200L));
-    }
-
-    @Test
-    public void pollForJobStatusWithDefaults() throws Exception {
-        SmileIdentityService service = mock(SmileIdentityService.class);
-        Whitebox.setInternalState(utilities, service);
-
-        utilities.pollJobStatus("user", "job-100");
-        verify(service, times(1)).pollJobStatus(any(JobStatusRequest.class),
-                eq(3), eq(2000L));
-    }
-
 
     private JobStatusResponse response() {
         PartnerParams params = new PartnerParams(
