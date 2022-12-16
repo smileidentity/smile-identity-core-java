@@ -12,13 +12,13 @@ public class PartnerParams {
     @Json(name = "job_type")
     JobType jobType;
 
-    @Json(name = "optional_info")
-    Map<String, Object> optionalInfo;
-
     @Json(name = "user_id")
     String userId;
 
     @Json(name = "job_id")
     String jobId;
+
+    @Json(name = "optional_info")
+    Map<String, Object> optionalInfo;
 
 }

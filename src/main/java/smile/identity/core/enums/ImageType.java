@@ -15,7 +15,17 @@ public enum ImageType {
         this.value = value;
     }
 
-    public Boolean isFile(){
-        return this.value == 0 || this.value == 1;
+    public int getValue() {
+        return this.value;
     }
+
+    public static ImageType fromValue(int value){
+        for (ImageType s : values()) {
+            if (s.value == value) {
+                return s;
+            }
+        }
+        return null;
+    }
+
 }

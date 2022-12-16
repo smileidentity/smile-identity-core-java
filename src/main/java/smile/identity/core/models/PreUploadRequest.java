@@ -3,7 +3,7 @@ package smile.identity.core.models;
 import com.squareup.moshi.Json;
 
 import lombok.Value;
-import smile.identity.core.Utils;
+import smile.identity.core.ConfigHelpers;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class PreUploadRequest {
     String sourceSdk = "java";
 
     @Json(name = "source_sdk_version")
-    String sourceSdkVersion = Utils.getVersion();
+    String sourceSdkVersion = ConfigHelpers.getVersion();
 
     public PreUploadRequest(Instant timestamp, String signature, String smileClientId, PartnerParams partnerParams, String callbackUrl) {
         this.timestamp = timestamp;

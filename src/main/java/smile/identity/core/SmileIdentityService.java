@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
+import smile.identity.core.adapters.ImageTypeAdapter;
 import smile.identity.core.adapters.JobTypeAdapter;
 import smile.identity.core.adapters.InstantAdapter;
 import smile.identity.core.adapters.PartnerParamsAdapter;
@@ -33,11 +34,16 @@ public class SmileIdentityService {
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(IDResponse.class, "ID Verification")
                 .withSubtype(IDResponse.class, "Document Verification")
-                .withFallbackJsonAdapter(new Moshi.Builder().add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
+                .withFallbackJsonAdapter(new Moshi.Builder()
+                        .add(new JobTypeAdapter())
+                        .add(new ImageTypeAdapter())
+                        .add(new PartnerParamsAdapter())
+                        .add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
 
         Moshi moshi = new Moshi.Builder()
                 .add(factory)
                 .add(new PartnerParamsAdapter())
+                .add(new ImageTypeAdapter())
                 .add(new JobTypeAdapter())
                 .add(new InstantAdapter())
                 .build();

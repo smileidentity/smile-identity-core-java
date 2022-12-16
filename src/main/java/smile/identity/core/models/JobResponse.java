@@ -1,14 +1,18 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.time.Instant;
-import java.util.Map;
-
 @Value
 @NonFinal
+@AllArgsConstructor
 public class JobResponse {
     @Json(name = "JSONVersion")
     String jsonVersion;
@@ -46,5 +50,10 @@ public class JobResponse {
 
     @Json(name = "FullData")
     Map<String, Object> fullData;
+
+    public JobResponse(String smileJobId, PartnerParams partnerParams) {
+        this("", smileJobId, partnerParams, "", "", "", "", null, "", null,
+                "", "", new HashMap<>());
+    }
 
 }
