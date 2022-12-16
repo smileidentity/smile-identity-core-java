@@ -1,14 +1,16 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-    //withSourcesJar()
+    withSourcesJar()
+    withJavadocJar()
 }
 
-apply plugin: 'java'
 repositories {
     mavenCentral()
 }
@@ -31,28 +33,6 @@ dependencies {
     testImplementation 'org.powermock:powermock-mockito-release-full:1.5.4'
 }
 
-// Signing
-apply plugin: 'signing'
-signing {
-    sign configurations.archives
-}
-
-// Deploying
-apply plugin: 'maven'
-
-// Add Javadoc JAR and sources JAR to artifact
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
 // Configure group ID, artifact ID, and version
 group = "com.smileidentity"
 archivesBaseName = "smile-identity-core"
@@ -60,54 +40,60 @@ version = "2.0.0"
 def apiVersion = "0.2.0"
 
 // Build, sign, and upload
-uploadArchives {
-    repositories {
-        mavenDeployer {
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
 
-            // Sign POM
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            // Destination
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-            }
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
-            }
-
-            // Add required metadata to POM
-            pom.project {
-                name 'smile-identity-core'
-                description 'The Official Smile Identity library'
-                packaging 'jar'
-                url 'https://github.com/smileidentity/smile-identity-core-java'
+            pom {
+                name = 'smile-identity-core'
+                description = 'The Official Smile Identity library'
+                packaging = 'jar'
+                url = 'https://github.com/smileidentity/smile-identity-core-java'
 
                 scm {
-                    connection 'scm:git:git://github.com/smileidentity/smile-identity-core-java.git'
-                    developerConnection 'scm:git:ssh://github.com:smileidentity/smile-identity-core-java.git'
-                    url 'https://github.com/smileidentity/smile-identity-core-java/tree/master'
+                    connection = 'scm:git:git://github.com/smileidentity/smile-identity-core-java.git'
+                    developerConnection = 'scm:git:ssh://github.com:smileidentity/smile-identity-core-java.git'
+                    url = 'https://github.com/smileidentity/smile-identity-core-java/tree/master'
                 }
 
                 licenses {
                     license {
-                        name 'The MIT License (MIT)'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
+                        name = 'The MIT License (MIT)'
+                        url = 'http://opensource.org/licenses/MIT'
+                        distribution = 'repo'
                     }
                 }
 
                 developers {
                     developer {
-						id = 'Support'
+                        id = 'Support'
                         name = 'Smile Identity'
                         email = 'support@smileidentity.com'
                         organization = 'Smile Identity'
                         organizationUrl = 'https://www.smileidentity.com'
                     }
-                }	
+                }
+            }
+
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username = findProperty('ossrhUsername')
+                password = findProperty('ossrhPassword')
             }
         }
     }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
 
 task createProperties(type: WriteProperties) {
