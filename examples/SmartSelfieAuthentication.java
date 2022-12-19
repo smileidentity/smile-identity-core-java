@@ -10,7 +10,7 @@ public class SmartSelfieAuthentication {
         String apiKey = "<Put your API key here>";
         String sidServer = "< 0 || 1 >";  // Use '0' for the sandbox server and '1' for production
 
-        IDApi connection = new WebApi(partnerId, apiKey, defaultCallback, sidServer);
+        WebApi connection = new WebApi(partnerId, apiKey, defaultCallback, sidServer);
 
         // Create required tracking parameters
         Map<String, Object> optionalInfo = new HashMap(); // map of optional parameters partner uses to track jobs. can be left empty
@@ -47,7 +47,7 @@ public class SmartSelfieAuthentication {
         String callBackUrl = "< optional callback url to use for this job only >";
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
-        connection.submitJob(params, imageDetails);
+        connection.submitJob(params, imageDetails, null, options);
 
 
     }

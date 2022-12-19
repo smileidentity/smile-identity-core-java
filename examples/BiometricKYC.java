@@ -70,7 +70,7 @@ public class BiometricKYC {
         String callBackUrl = "< optional callback url to use for this job only >";
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
-        connection.submitJob(params, idInfo, options);
+        connection.submitJob(params, imageDetails, idInfo, options);
     }
 
 }
