@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2023-1-17
+* Fixing bug with Sidserver in WebApi class
+
 ## [2.0.0] - 2022-12-16
 ### Breaking Changes
 * Changed return object for all public methods
