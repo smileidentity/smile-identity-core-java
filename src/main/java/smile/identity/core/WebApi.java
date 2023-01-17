@@ -63,7 +63,7 @@ public class WebApi {
         this.defaultCallbackUrl = defaultCallback;
         this.apiKey = apiKey;
         this.sidServer = ConfigHelpers.getSidServer(sidServer);
-        this.smileIdentityService = new SmileIdentityService(sidServer);
+        this.smileIdentityService = new SmileIdentityService(this.sidServer);
         Moshi moshi =
                 new Moshi.Builder().add(new JobTypeAdapter()).add(new InstantAdapter()).add(new ImageTypeAdapter()).add(new PartnerParamsAdapter()).build();
         uploadRequestAdapter = moshi.adapter(UploadRequest.class);
@@ -119,7 +119,7 @@ public class WebApi {
         byte[] uploadData = zipUpFile(infoJson, imageDetails);
         smileIdentityService.uploadImages(uploadUrl, uploadData);
         if (options.isReturnJobStatus()) {
-            return new Utilities(this.partnerId, this.apiKey, sidServer).pollJobStatus(partnerParams.getUserId(), partnerParams.getJobId());
+            return new Utilities(this.partnerId, this.apiKey, this.sidServer).pollJobStatus(partnerParams.getUserId(), partnerParams.getJobId());
         } else {
             JobResponse result =
                     new JobResponse(uploadResponse.getSmileJobId(),
