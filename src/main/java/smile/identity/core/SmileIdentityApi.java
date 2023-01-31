@@ -8,19 +8,19 @@ import smile.identity.core.models.*;
 
 public interface SmileIdentityApi {
 
-    @GET("services")
+    @GET("v1/services")
     Call<ResponseBody> getServices();
 
-    @POST("id_verification")
+    @POST("v1/id_verification")
     Call<JobResponse> submitIdVerification(@Body EnhancedKYCRequest request);
 
-    @POST("job_status")
+    @POST("v1/job_status")
     Call<JobStatusResponse> getJobStatus(@Body JobStatusRequest request);
 
-    @POST("upload")
+    @POST("v1/upload")
     Call<PreUploadResponse> prepUpload(@Body PreUploadRequest request);
 
-    @POST("token")
+    @POST("v1/token")
     Call<WebTokenResponse> getWebToken(@Body WebTokenRequest request);
 
     @PUT
