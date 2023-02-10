@@ -60,7 +60,7 @@ public class SmileIdentityService {
         Call<ResponseBody> call = smileIdentityApi.getServices();
         Response<ResponseBody> response = call.execute();
 
-        if (response.isSuccessful()){
+        if (response.isSuccessful()) {
             return response.body().string();
         } else {
             ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
@@ -71,7 +71,7 @@ public class SmileIdentityService {
     public JobResponse idVerification(EnhancedKYCRequest idVerificationRequest) throws IOException, JobFailed {
         Call<JobResponse> call = smileIdentityApi.submitIdVerification(idVerificationRequest);
         Response<JobResponse> response = call.execute();
-        if(response.isSuccessful()){
+        if (response.isSuccessful()) {
             return response.body();
         } else {
             ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
@@ -119,7 +119,7 @@ public class SmileIdentityService {
         RequestBody body = RequestBody.create(MediaType.parse("application/zip"), data);
         Call<ResponseBody> call = smileIdentityApi.uploadBinaryFile(url, body);
         Response<ResponseBody> response = call.execute();
-        if(!response.isSuccessful()){
+        if (!response.isSuccessful()) {
             ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
             throw new JobFailed(error.getError(), error.getCode());
         }
@@ -128,6 +128,10 @@ public class SmileIdentityService {
     public WebTokenResponse getWebToken(WebTokenRequest request) throws Exception{
         Call<WebTokenResponse> call = smileIdentityApi.getWebToken(request);
         Response<WebTokenResponse> response = call.execute();
+        if (!response.isSuccessful()) {
+            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+            throw new JobFailed(error.getError(), error.getCode());
+        }
         return response.body();
     }
 
