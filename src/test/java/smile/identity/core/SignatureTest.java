@@ -28,4 +28,12 @@ public class SignatureTest {
 		SignatureKey original = signature.getSignatureKey();
 		assertTrue(signature.confirmSignature(original.getTimestamp(), original.getSignature()));
 	}
+
+	@Test
+	public void itConfirmsASignatureWithStringTimestamp() {
+		Signature signature = new Signature("partner", "apiKey");
+		String timestamp = "2023-02-13T15:07:42.214Z";
+		String returnedSignature = "XxThLHZy2ij1WINkqNEPgzVs9RvUDHWlebDYzprqS74=";
+		assertTrue(signature.confirmSignature(timestamp, returnedSignature));
+	}
 }

@@ -21,11 +21,13 @@ import smile.identity.core.models.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class SmileIdentityService {
     public final SmileIdentityApi smileIdentityApi;
     private final JsonAdapter<ErrorResponse> errorAdaptor = new Moshi.Builder().build().adapter(ErrorResponse.class);
-
+    static Logger logger = LogManager.getLogger(SmileIdentityService.class);
     public SmileIdentityService(String server) {
         this(server,  new OkHttpClient.Builder());
     }
@@ -71,24 +73,20 @@ public class SmileIdentityService {
     public JobResponse idVerification(EnhancedKYCRequest idVerificationRequest) throws IOException, JobFailed {
         Call<JobResponse> call = smileIdentityApi.submitIdVerification(idVerificationRequest);
         Response<JobResponse> response = call.execute();
-        if (response.isSuccessful()) {
-            return response.body();
-        } else {
-            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
-            throw new JobFailed(error.getError(), error.getCode());
+        if (!response.isSuccessful()) {
+            handleError(response);
         }
+        return response.body();
     }
 
     public JobStatusResponse getJobStatus(JobStatusRequest request) throws Exception {
         Call<JobStatusResponse> call = smileIdentityApi.getJobStatus(request);
 
         Response<JobStatusResponse> response = call.execute();
-        if (response.isSuccessful()) {
-            return response.body();
-        } else {
-            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
-            throw new JobFailed(error.getError(), error.getCode());
+        if (!response.isSuccessful()) {
+            handleError(response);
         }
+        return response.body();
     }
 
     public JobStatusResponse pollJobStatus(JobStatusRequest request, int retryCount, long initialDelay) throws Exception {
@@ -107,12 +105,10 @@ public class SmileIdentityService {
     public PreUploadResponse preUpload(PreUploadRequest request) throws JobFailed, IOException{
         Call<PreUploadResponse> call = smileIdentityApi.prepUpload(request);
         Response<PreUploadResponse> response = call.execute();
-        if (response.isSuccessful()) {
-            return response.body();
-        } else {
-            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
-            throw new JobFailed(error.getError(), error.getCode());
+        if (!response.isSuccessful()) {
+            handleError(response);
         }
+        return response.body();
     }
 
     public void uploadImages(String url, byte[] data) throws JobFailed, IOException{
@@ -120,8 +116,7 @@ public class SmileIdentityService {
         Call<ResponseBody> call = smileIdentityApi.uploadBinaryFile(url, body);
         Response<ResponseBody> response = call.execute();
         if (!response.isSuccessful()) {
-            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
-            throw new JobFailed(error.getError(), error.getCode());
+            handleError(response);
         }
     }
 
@@ -129,10 +124,15 @@ public class SmileIdentityService {
         Call<WebTokenResponse> call = smileIdentityApi.getWebToken(request);
         Response<WebTokenResponse> response = call.execute();
         if (!response.isSuccessful()) {
-            ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
-            throw new JobFailed(error.getError(), error.getCode());
+            handleError(response);
         }
         return response.body();
+    }
+
+    private void handleError(Response<?> response) throws IOException, JobFailed {
+        ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+        logger.error(String.format("Response from server: Code %s => %s", error.getCode(), error.getError()));
+        throw new JobFailed(error.getError(), error.getCode());
     }
 
 }

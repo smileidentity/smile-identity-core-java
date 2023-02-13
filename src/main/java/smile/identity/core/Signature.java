@@ -2,6 +2,8 @@ package smile.identity.core;
 
 import smile.identity.core.keys.SignatureKey;
 
+import java.time.Instant;
+
 public class Signature {
 
     private final String partnerId;
@@ -22,6 +24,12 @@ public class Signature {
 
     public boolean confirmSignature(long timestamp, String signature){
         SignatureKey key = new SignatureKey(timestamp, this.partnerId, this.apiKey);
+        return key.validSignature(signature);
+    }
+
+    public boolean confirmSignature(String timestamp, String signature) {
+        Instant instant = Instant.parse(timestamp);
+        SignatureKey key = new SignatureKey(instant.toEpochMilli(), this.partnerId, this.apiKey);
         return key.validSignature(signature);
     }
 }

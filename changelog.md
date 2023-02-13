@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.3 ] - 2023-2-13
+* Added logging for error responses from server
+* Added method to validate signature from string timestamp
+* Updated examples
+
+## [2.0.2] - 2023-1-31
+* Updated URLs for api calls
+
 ## [2.0.1] - 2023-1-17
 * Fixing bug with Sidserver in WebApi class
 
