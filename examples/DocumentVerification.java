@@ -18,7 +18,7 @@ public class DocumentVerification {
         String apiKey = "<Put your API key here>";
         String sidServer = "< 0 || 1 >";  // Use '0' for the sandbox server and '1' for production
 
-        IDApi connection = new WebApi(partnerId, apiKey, defaultCallback, sidServer);
+        WebApi connection = new WebApi(partnerId, apiKey, defaultCallback, sidServer);
         // Create required tracking parameters
         Map<String, Object> optionalInfo = new HashMap(); // map of optional parameters partner uses to track jobs. can be left empty
         PartnerParams params = new PartnerParams(JobType.DOCUMENT_VERIFICATION, "<unique ID for user>", "< unique job ID >", optionalInfo);
