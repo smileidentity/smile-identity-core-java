@@ -132,12 +132,12 @@ public class SmileIdentityServiceTest {
 
     @Test
     public void getJobStatus() throws Exception {
-        JobResponse result = new JobResponse("", "", null, "Great Job", "",
+        JobResponse statusResult = new JobResponse("", "", null, "Great Job", "",
                 "", "done", null, "signature", Instant.now(), "99.999", "",
                 null);
 
         JobStatusResponse statusResponse = new JobStatusResponse("2020", true
-                , true, result, "signature", Instant.now(), null, null);
+                , true, statusResult, "signature", Instant.now(), null, null);
 
         JsonAdapter<JobStatusResponse> adapter =
                 new Moshi.Builder().add(new InstantAdapter()).build().adapter(JobStatusResponse.class);
@@ -147,8 +147,19 @@ public class SmileIdentityServiceTest {
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(response.getResult().getClass(), JobResponse.class);
+        assertEquals(response.getResultAsJobResponse().getClass(), JobResponse.class);
+    }
 
+    @Test
+    public void getJobStatusWithStringResult() throws Exception {
+        String result = "{\"timestamp\":\"1678216434434\",\"signature\":\"6f3dec6d6fad3cfe36fb62b38a185de1cd53088291082d6f20fddbf5ea0e4a0f\",\"job_complete\":false,\"job_success\":false,\"code\":\"2314\",\"result\":\"No zip file received\"}";
+        server.enqueue(new MockResponse().setBody(result));
+        JobStatusResponse response =
+                service.getJobStatus(new JobStatusRequest("partner", "user-01"
+                        , "10", false, false, "signature", Instant.now()));
+
+        assertEquals(response.getResult().getClass(), String.class);
+        assertEquals(response.getResultAsString(), "No zip file received");
     }
 
     @Test
@@ -172,7 +183,7 @@ public class SmileIdentityServiceTest {
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(response.getResult().getClass(), IDResponse.class);
+        assertEquals(IDResponse.class, response.getResultAsJobResponse().getClass());
     }
 
 
