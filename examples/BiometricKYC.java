@@ -30,7 +30,7 @@ public class BiometricKYC {
         PartnerParams params = new PartnerParams(JobType.BIOMETRIC_KYC, "<unique ID for user>", "< unique job ID >", optionalInfo);
 
         // Create image list
-        List<ImageDetails> imageDetails = new ArrayList<>();
+        List<ImageDetail> imageDetails = new ArrayList<>();
 
         // ImageType.SELFIE - Selfie image jpg or png (if you have the full path of
         // the selfie)

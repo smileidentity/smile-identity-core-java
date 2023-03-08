@@ -23,9 +23,7 @@ import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import smile.identity.core.adapters.InstantAdapter;
-import smile.identity.core.adapters.JobTypeAdapter;
-import smile.identity.core.adapters.PartnerParamsAdapter;
+
 import smile.identity.core.enums.ImageType;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.enums.Product;
@@ -42,12 +40,7 @@ import smile.identity.core.models.PreUploadResponse;
 public class WebApiTest {
 
 
-    private final Moshi moshi = new Moshi.Builder()
-            .add(new PartnerParamsAdapter())
-            .add(new JobTypeAdapter())
-            .add(new InstantAdapter())
-            .build();
-
+    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
     private MockWebServer server;
     private WebApi webApi;
 

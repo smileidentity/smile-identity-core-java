@@ -2,6 +2,7 @@ package smile.identity.core.adapters;
 
 import static org.junit.Assert.*;
 
+import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -11,17 +12,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import smile.identity.core.SmileIdentityMoshi;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.models.PartnerParams;
 
 public class PartnerParamsAdapterTest {
 
+    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final JsonAdapter<PartnerParams> adaptor = moshi.adapter(PartnerParams.class);
 
     @Test
     public void toJson(){
-        JsonAdapter<PartnerParams> adaptor = new Moshi.Builder()
-                .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
-
         Map<String, Object> optional = new HashMap<>();
         optional.put("random", "key_1");
         optional.put("more", 20);
@@ -36,9 +37,6 @@ public class PartnerParamsAdapterTest {
 
     @Test
     public void fromJson() throws IOException {
-        JsonAdapter<PartnerParams> adaptor = new Moshi.Builder()
-                .add(new PartnerParamsAdapter()).build().adapter(PartnerParams.class);
-
         String json = "{\"job_type\":5,\"random\":\"key_1\",\"user_id\":\"user\",\"more\":20}";
 
         PartnerParams partnerParams = adaptor.fromJson(json);

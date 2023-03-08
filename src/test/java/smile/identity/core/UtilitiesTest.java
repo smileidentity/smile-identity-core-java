@@ -22,21 +22,13 @@ import smile.identity.core.adapters.InstantAdapter;
 import smile.identity.core.adapters.JobTypeAdapter;
 import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.enums.JobType;
-import smile.identity.core.models.JobResponse;
-import smile.identity.core.models.JobStatusRequest;
-import smile.identity.core.models.JobStatusResponse;
-import smile.identity.core.models.Options;
-import smile.identity.core.models.PartnerParams;
+import smile.identity.core.models.*;
 
 public class UtilitiesTest {
     private MockWebServer server;
     private Utilities utilities;
 
-    private final Moshi moshi = new Moshi.Builder()
-            .add(new InstantAdapter())
-            .add(new PartnerParamsAdapter())
-            .add(new JobTypeAdapter())
-            .build();
+    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
 
     private final JsonAdapter<JobStatusResponse> jobStatusResponseAdapter =
             moshi.adapter(JobStatusResponse.class);
@@ -105,7 +97,7 @@ public class UtilitiesTest {
                 "signature", Instant.now(), "99.99", "internet",
                 new HashMap<>());
         JobStatusResponse statusResponse = new JobStatusResponse("90210",
-                true, true, result, "signature", Instant.now(), null, null);
+                true, true, new Result(null, result), "signature", Instant.now(), null, null);
         return statusResponse;
     }
 }

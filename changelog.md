@@ -1,9 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.0.4] - 2023-3-7
-* JobResponse now returns result as an Object
-* New methods to get result as String or JobResponse
+## [2.1.0] - 2023-3-7
+* JobResponse now returns a new Result object that contains a message and a JobResponse
 * Updated parsing of Instant
 
 ## [2.0.3 ] - 2023-2-13

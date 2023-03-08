@@ -1,10 +1,5 @@
 package smile.identity.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -21,23 +16,18 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import smile.identity.core.adapters.InstantAdapter;
+
 import smile.identity.core.enums.Product;
 import smile.identity.core.exceptions.JobFailed;
-import smile.identity.core.models.EnhancedKYCRequest;
-import smile.identity.core.models.IDResponse;
-import smile.identity.core.models.JobResponse;
-import smile.identity.core.models.JobStatusRequest;
-import smile.identity.core.models.JobStatusResponse;
-import smile.identity.core.models.PreUploadRequest;
-import smile.identity.core.models.PreUploadResponse;
-import smile.identity.core.models.WebTokenRequest;
-import smile.identity.core.models.WebTokenResponse;
+import smile.identity.core.models.*;
+
+import static org.junit.Assert.*;
 
 public class SmileIdentityServiceTest {
 
     MockWebServer server;
     SmileIdentityService service;
+    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
 
     @Before
     public void setup() {
@@ -58,8 +48,7 @@ public class SmileIdentityServiceTest {
                 "ID Verification", "", "1010", "Yes", null, "signature",
                 Instant.now(), "99.99", "", null);
 
-        JsonAdapter<JobResponse> adaptor =
-                new Moshi.Builder().add(new InstantAdapter()).build().adapter(JobResponse.class);
+        JsonAdapter<JobResponse> adaptor = moshi.adapter(JobResponse.class);
 
         server.enqueue(new MockResponse().setBody(adaptor.toJson(jobResponse)));
         EnhancedKYCRequest request = new EnhancedKYCRequest("partner",
@@ -137,17 +126,16 @@ public class SmileIdentityServiceTest {
                 null);
 
         JobStatusResponse statusResponse = new JobStatusResponse("2020", true
-                , true, statusResult, "signature", Instant.now(), null, null);
+                , true, new Result(null, statusResult), "signature", Instant.now(), null, null);
 
-        JsonAdapter<JobStatusResponse> adapter =
-                new Moshi.Builder().add(new InstantAdapter()).build().adapter(JobStatusResponse.class);
+        JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);
 
         server.enqueue(new MockResponse().setBody(adapter.toJson(statusResponse)));
         JobStatusResponse response =
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(response.getResultAsJobResponse().getClass(), JobResponse.class);
+        assertNotNull(response.getResult().getJobResponse());
     }
 
     @Test
@@ -158,8 +146,7 @@ public class SmileIdentityServiceTest {
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(response.getResult().getClass(), String.class);
-        assertEquals(response.getResultAsString(), "No zip file received");
+        assertEquals(response.getResult().getMessage(), "No zip file received");
     }
 
     @Test
@@ -172,18 +159,17 @@ public class SmileIdentityServiceTest {
                 , "");
 
         JobStatusResponse statusResponse = new JobStatusResponse("2010", true
-                , true, result, "", Instant.now(), new HashMap<>(),
+                , true, new Result(null, result), "", Instant.now(), new HashMap<>(),
                 new ArrayList<>());
 
-        JsonAdapter<JobStatusResponse> adapter =
-                new Moshi.Builder().add(new InstantAdapter()).build().adapter(JobStatusResponse.class);
+        JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);
 
         server.enqueue(new MockResponse().setBody(adapter.toJson(statusResponse)));
         JobStatusResponse response =
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(IDResponse.class, response.getResultAsJobResponse().getClass());
+        assertEquals(IDResponse.class, response.getResult().getJobResponse().getClass());
     }
 
 
@@ -228,8 +214,7 @@ public class SmileIdentityServiceTest {
         WebTokenResponse tokenResponse = new WebTokenResponse(true,
                 "heresatoken");
 
-        JsonAdapter<WebTokenResponse> adapter =
-                new Moshi.Builder().build().adapter(WebTokenResponse.class);
+        JsonAdapter<WebTokenResponse> adapter = moshi.adapter(WebTokenResponse.class);
         server.enqueue(new MockResponse().setBody(adapter.toJson(tokenResponse)));
 
         WebTokenResponse response = service.getWebToken(new WebTokenRequest(

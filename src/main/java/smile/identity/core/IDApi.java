@@ -4,12 +4,7 @@ import smile.identity.core.enums.JobType;
 import smile.identity.core.exceptions.IncorrectJobType;
 import smile.identity.core.exceptions.MissingRequiredFields;
 import smile.identity.core.keys.SignatureKey;
-import smile.identity.core.models.EnhancedKYCRequest;
-import smile.identity.core.models.IdInfo;
-import smile.identity.core.models.JobResponse;
-import smile.identity.core.models.JobStatusResponse;
-import smile.identity.core.models.Options;
-import smile.identity.core.models.PartnerParams;
+import smile.identity.core.models.*;
 
 
 public class IDApi {
@@ -68,7 +63,7 @@ public class IDApi {
 
         JobResponse result = smileIdentityService.idVerification(request);
         return new JobStatusResponse(result.getResultCode(), true, true,
-                result, result.getSignature(), result.getTimestamp(), null,
+                new Result(null, result), result.getSignature(), result.getTimestamp(), null,
                 null);
     }
 

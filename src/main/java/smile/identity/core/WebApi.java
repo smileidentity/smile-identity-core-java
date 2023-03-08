@@ -64,8 +64,7 @@ public class WebApi {
         this.apiKey = apiKey;
         this.sidServer = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(this.sidServer);
-        Moshi moshi =
-                new Moshi.Builder().add(new JobTypeAdapter()).add(new InstantAdapter()).add(new ImageTypeAdapter()).add(new PartnerParamsAdapter()).build();
+        Moshi moshi = SmileIdentityMoshi.getMoshi();
         uploadRequestAdapter = moshi.adapter(UploadRequest.class);
     }
 
