@@ -10,15 +10,16 @@ import smile.identity.core.models.Result;
 
 
 /**
- *  The job_status endpoint occasionally sends back a
- *  String response. This Adapter first tries to convert the
- *  result to a JobResponse object, if it fails it returns the
- *  response as a String.
+ * The job_status endpoint occasionally sends back a
+ * String response. This Adapter first tries to convert the
+ * result to a JobResponse object, if it fails it returns the
+ * response as a String.
  */
 public class ResultAdapter {
 
-    @ToJson Object toJson(Result result) {
-        if (result.getMessage() != null){
+    @ToJson
+    Object toJson(Result result) {
+        if (result.getMessage() != null) {
             return result.getMessage();
         } else {
             return result.getJobResponse();

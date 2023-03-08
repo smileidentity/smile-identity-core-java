@@ -13,7 +13,7 @@ public class SmileIdentityMoshi {
     /*
     Returns an instance of Moshi with Smile Identity Custom Adapters
      */
-    public static Moshi getMoshi(){
+    public static Moshi getMoshi() {
         PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
                 .withSubtype(IDResponse.class, "ID Verification")
                 .withSubtype(IDResponse.class, "Document Verification")

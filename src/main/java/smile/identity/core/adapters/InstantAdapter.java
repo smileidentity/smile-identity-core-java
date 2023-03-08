@@ -8,11 +8,13 @@ import java.time.Instant;
 
 public class InstantAdapter {
 
-    @ToJson String toJson(Instant instant){
+    @ToJson
+    String toJson(Instant instant) {
         return instant.toString();
     }
 
-    @FromJson Instant fromJson(String string) {
+    @FromJson
+    Instant fromJson(String string) {
         Instant timestamp;
         try {
             timestamp = Instant.ofEpochMilli(Long.parseLong(string));
