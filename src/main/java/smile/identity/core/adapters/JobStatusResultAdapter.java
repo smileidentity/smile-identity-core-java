@@ -4,7 +4,7 @@ import com.squareup.moshi.FromJson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.ToJson;
-import smile.identity.core.SmileIdentityMoshi;
+import smile.identity.core.MoshiUtils;
 import smile.identity.core.models.JobResponse;
 import smile.identity.core.models.Result;
 
@@ -29,7 +29,7 @@ public class ResultAdapter {
     @FromJson
     Result fromJson(Object result) {
         try {
-            Moshi moshi = SmileIdentityMoshi.getMoshi();
+            Moshi moshi = MoshiUtils.getMoshi();
             JsonAdapter<JobResponse> adapter = moshi.adapter(JobResponse.class);
             JobResponse jobResponse = adapter.fromJsonValue(result);
             return new Result(null, jobResponse);

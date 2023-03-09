@@ -8,7 +8,7 @@ import smile.identity.core.models.JobResponse;
 
 import java.lang.reflect.Type;
 
-public class SmileIdentityMoshi {
+public class MoshiUtil {
 
     /*
     Returns an instance of Moshi with Smile Identity Custom Adapters
