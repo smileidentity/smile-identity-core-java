@@ -8,7 +8,7 @@ import smile.identity.core.models.JobResponse;
 
 import java.lang.reflect.Type;
 
-public class MoshiUtil {
+public class MoshiUtils {
 
     /*
     Returns an instance of Moshi with Smile Identity Custom Adapters
@@ -29,7 +29,7 @@ public class MoshiUtil {
                 .add(new ImageTypeAdapter())
                 .add(new JobTypeAdapter())
                 .add(new InstantAdapter())
-                .add(new ResultAdapter())
+                .add(new JobStatusResponseResultAdapter())
                 .build();
     }
 }

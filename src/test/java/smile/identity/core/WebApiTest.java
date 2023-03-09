@@ -40,7 +40,7 @@ import smile.identity.core.models.PreUploadResponse;
 public class WebApiTest {
 
 
-    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final Moshi moshi = MoshiUtils.getMoshi();
     private MockWebServer server;
     private WebApi webApi;
 

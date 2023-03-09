@@ -27,7 +27,7 @@ public class SmileIdentityServiceTest {
 
     MockWebServer server;
     SmileIdentityService service;
-    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final Moshi moshi = MoshiUtils.getMoshi();
 
     @Before
     public void setup() {
@@ -126,7 +126,7 @@ public class SmileIdentityServiceTest {
                 null);
 
         JobStatusResponse statusResponse = new JobStatusResponse("2020", true
-                , true, new Result(null, statusResult), "signature", Instant.now(), null, null);
+                , true, new JobStatusResponse.Result(statusResult), "signature", Instant.now(), null, null);
 
         JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);
 
@@ -159,7 +159,7 @@ public class SmileIdentityServiceTest {
                 , "");
 
         JobStatusResponse statusResponse = new JobStatusResponse("2010", true
-                , true, new Result(null, result), "", Instant.now(), new HashMap<>(),
+                , true, new JobStatusResponse.Result(result), "", Instant.now(), new HashMap<>(),
                 new ArrayList<>());
 
         JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);

@@ -18,9 +18,6 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import smile.identity.core.adapters.InstantAdapter;
-import smile.identity.core.adapters.JobTypeAdapter;
-import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.models.*;
 
@@ -28,7 +25,7 @@ public class UtilitiesTest {
     private MockWebServer server;
     private Utilities utilities;
 
-    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final Moshi moshi = MoshiUtils.getMoshi();
 
     private final JsonAdapter<JobStatusResponse> jobStatusResponseAdapter =
             moshi.adapter(JobStatusResponse.class);
@@ -97,7 +94,7 @@ public class UtilitiesTest {
                 "signature", Instant.now(), "99.99", "internet",
                 new HashMap<>());
         JobStatusResponse statusResponse = new JobStatusResponse("90210",
-                true, true, new Result(null, result), "signature", Instant.now(), null, null);
+                true, true, new JobStatusResponse.Result(result), "signature", Instant.now(), null, null);
         return statusResponse;
     }
 }

@@ -30,7 +30,7 @@ import smile.identity.core.models.Options;
 import smile.identity.core.models.PartnerParams;
 
 public class IDApiTest {
-    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final Moshi moshi = MoshiUtils.getMoshi();
 
     private MockWebServer server;
     private IDApi idApi;

@@ -2,7 +2,6 @@ package smile.identity.core.adapters;
 
 import static org.junit.Assert.*;
 
-import com.squareup.moshi.Json;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -12,13 +11,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import smile.identity.core.SmileIdentityMoshi;
+import smile.identity.core.MoshiUtils;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.models.PartnerParams;
 
 public class PartnerParamsAdapterTest {
 
-    private final Moshi moshi = SmileIdentityMoshi.getMoshi();
+    private final Moshi moshi = MoshiUtils.getMoshi();
     private final JsonAdapter<PartnerParams> adaptor = moshi.adapter(PartnerParams.class);
 
     @Test

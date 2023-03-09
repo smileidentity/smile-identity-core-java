@@ -63,7 +63,7 @@ public class IDApi {
 
         JobResponse result = smileIdentityService.idVerification(request);
         return new JobStatusResponse(result.getResultCode(), true, true,
-                new Result(null, result), result.getSignature(), result.getTimestamp(), null,
+                new JobStatusResponse.Result(result), result.getSignature(), result.getTimestamp(), null,
                 null);
     }
 

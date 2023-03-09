@@ -30,7 +30,7 @@ public class SmileIdentityService {
 
     public SmileIdentityService(String server, OkHttpClient.Builder httpClient) {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(server)
-                .addConverterFactory(MoshiConverterFactory.create(SmileIdentityMoshi.getMoshi()))
+                .addConverterFactory(MoshiConverterFactory.create(MoshiUtils.getMoshi()))
                 .client(httpClient.build())
                 .build();
         this.smileIdentityApi = retrofit.create(SmileIdentityApi.class);

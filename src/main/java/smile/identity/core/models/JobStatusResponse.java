@@ -11,6 +11,8 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import javax.annotation.Nullable;
+
 @Value
 @AllArgsConstructor
 public class JobStatusResponse {
@@ -35,8 +37,32 @@ public class JobStatusResponse {
     List<JobResponse> history;
 
     public JobStatusResponse(JobResponse result) {
-        this("", false, true, new Result(null, result), result.getSignature(),
+        this("", false, true, new Result(result), result.getSignature(),
                 result.getTimestamp(), new HashMap<>(), new ArrayList<>());
+    }
+
+    @Value
+    public static class Result {
+        @Nullable
+        String message;
+
+        @Nullable
+        JobResponse jobResponse;
+
+        public Result(@Nullable String message) {
+            this.message = message;
+            this.jobResponse = null;
+        }
+
+        public Result(@Nullable JobResponse jobResponse) {
+            this.jobResponse = jobResponse;
+            this.message = null;
+        }
+
+        public Result() {
+            this.message = null;
+            this.jobResponse = null;
+        }
     }
 
 }

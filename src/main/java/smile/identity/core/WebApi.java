@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import smile.identity.core.adapters.ImageTypeAdapter;
-import smile.identity.core.adapters.InstantAdapter;
-import smile.identity.core.adapters.JobTypeAdapter;
-import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.enums.ImageType;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.enums.Product;
@@ -64,7 +60,7 @@ public class WebApi {
         this.apiKey = apiKey;
         this.sidServer = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(this.sidServer);
-        Moshi moshi = SmileIdentityMoshi.getMoshi();
+        Moshi moshi = MoshiUtils.getMoshi();
         uploadRequestAdapter = moshi.adapter(UploadRequest.class);
     }
 
