@@ -38,13 +38,4 @@ public class JobStatusResultAdapterTest {
         assertEquals("job-id", result.getJobResponse().getSmileJobId());
     }
 
-    @Test
-    public void FromJsonWhenInUnexpectedFormat() throws IOException {
-        String json = "{\"job_successful\": \"very\"}";
-        JobStatusResponse.Result result = adapter.fromJson(json);
-        assertNotNull(result.getMessage());
-        assertNull(result.getJobResponse());
-        assertEquals("{job_successful=very}", result.getMessage());
-    }
-
 }

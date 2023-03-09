@@ -1,6 +1,7 @@
 package smile.identity.core.adapters;
 
 import com.squareup.moshi.*;
+import jdk.nashorn.internal.scripts.JO;
 import smile.identity.core.models.JobResponse;
 import smile.identity.core.models.JobStatusResponse;
 
@@ -27,14 +28,14 @@ public class JobStatusResponseResultAdapter {
     @FromJson
     JobStatusResponse.Result fromJson(JsonReader jsonReader,
                                       JsonAdapter<JobResponse> jobResponseDelegate) throws IOException {
-        try {
-            JobResponse jobResponse = jobResponseDelegate.fromJson(jsonReader);
-            return new JobStatusResponse.Result(jobResponse);
-        } catch (Exception ex) {
-            Object object = jsonReader.readJsonValue();
-            if (object != null) {
-                return new JobStatusResponse.Result(object.toString());
-            }
+        JsonReader.Token type = jsonReader.peek();
+        if (type == JsonReader.Token.BEGIN_OBJECT) {
+            JobResponse response = jobResponseDelegate.fromJson(jsonReader);
+            return new JobStatusResponse.Result(response);
+        } else if (type == JsonReader.Token.STRING) {
+            String message = jsonReader.nextString();
+            return new JobStatusResponse.Result(message);
+        } else {
             return new JobStatusResponse.Result();
         }
     }
