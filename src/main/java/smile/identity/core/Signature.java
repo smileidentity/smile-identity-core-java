@@ -14,22 +14,35 @@ public class Signature {
         this.apiKey = apiKey;
     }
 
+    /**
+     * Generates a SignatureKey
+     *
+     * @return SignatureKey
+     */
     public SignatureKey getSignatureKey() {
-        return getSignatureKey(System.currentTimeMillis());
+        Instant instant = Instant.now();
+        return getSignatureKey(instant.toString());
     }
 
-    public SignatureKey getSignatureKey(long timestamp){
+    /**
+     * Generates a SignatureKey with an ISO String
+     *
+     * @param timestamp ISO formatted timestamp
+     * @return generated SignatureKey
+     */
+    public SignatureKey getSignatureKey(String timestamp) {
         return new SignatureKey(timestamp, this.partnerId, this.apiKey);
     }
 
-    public boolean confirmSignature(long timestamp, String signature){
-        SignatureKey key = new SignatureKey(timestamp, this.partnerId, this.apiKey);
-        return key.validSignature(signature);
-    }
-
+    /**
+     * Verifies the validity of the provided signature
+     *
+     * @param timestamp ISO formatted timestamp
+     * @param signature Signature to verify
+     * @return if signature is valid returns true. returns false if Signature is not valid
+     */
     public boolean confirmSignature(String timestamp, String signature) {
-        Instant instant = Instant.parse(timestamp);
-        SignatureKey key = new SignatureKey(instant.toEpochMilli(), this.partnerId, this.apiKey);
+        SignatureKey key = new SignatureKey(timestamp, this.partnerId, this.apiKey);
         return key.validSignature(signature);
     }
 }

@@ -285,7 +285,7 @@ public class WebApiTest {
     @Test
     public void getWebToken() throws Exception {
         server.enqueue(new MockResponse().setBody("{\"success\": true, \"token\": \"greattoken\"}"));
-        String token = webApi.getWebToken(System.currentTimeMillis(), "user", "job", Product.BIOMETRIC_KYC, null);
+        String token = webApi.getWebToken(Instant.now().toString(), "user", "job", Product.BIOMETRIC_KYC, null);
         assert (token.equals("greattoken"));
     }
 
