@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.Value;
 
 import javax.annotation.Nullable;
@@ -49,12 +50,12 @@ public class JobStatusResponse {
         @Nullable
         JobResponse jobResponse;
 
-        public Result(@Nullable String message) {
+        public Result(@NonNull String message) {
             this.message = message;
             this.jobResponse = null;
         }
 
-        public Result(@Nullable JobResponse jobResponse) {
+        public Result(@NonNull JobResponse jobResponse) {
             this.jobResponse = jobResponse;
             this.message = null;
         }
