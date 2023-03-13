@@ -1,7 +1,6 @@
 package smile.identity.core.adapters;
 
 import com.squareup.moshi.*;
-import jdk.nashorn.internal.scripts.JO;
 import smile.identity.core.models.JobResponse;
 import smile.identity.core.models.JobStatusResponse;
 
