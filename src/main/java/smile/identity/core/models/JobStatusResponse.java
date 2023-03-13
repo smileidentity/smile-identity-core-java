@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.Value;
+
+import javax.annotation.Nullable;
 
 @Value
 @AllArgsConstructor
@@ -23,7 +26,7 @@ public class JobStatusResponse {
     @Json(name = "job_success")
     boolean jobSuccess;
 
-    JobResponse result;
+    Result result;
 
     String signature;
 
@@ -35,8 +38,32 @@ public class JobStatusResponse {
     List<JobResponse> history;
 
     public JobStatusResponse(JobResponse result) {
-        this("", false, true, result, result.getSignature(),
+        this("", false, true, new Result(result), result.getSignature(),
                 result.getTimestamp(), new HashMap<>(), new ArrayList<>());
+    }
+
+    @Value
+    public static class Result {
+        @Nullable
+        String message;
+
+        @Nullable
+        JobResponse jobResponse;
+
+        public Result(@NonNull String message) {
+            this.message = message;
+            this.jobResponse = null;
+        }
+
+        public Result(@NonNull JobResponse jobResponse) {
+            this.jobResponse = jobResponse;
+            this.message = null;
+        }
+
+        public Result() {
+            this.message = null;
+            this.jobResponse = null;
+        }
     }
 
 }

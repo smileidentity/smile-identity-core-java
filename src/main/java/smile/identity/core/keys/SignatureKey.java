@@ -10,10 +10,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class SignatureKey {
 
-    private final long timestamp;
+    private final String timestamp;
     private final String signature;
 
-    public SignatureKey(long timestamp, String partnerId, String apiKey) {
+    public SignatureKey(String timestamp, String partnerId, String apiKey) {
         this.timestamp = timestamp;
         this.signature = generate(partnerId, apiKey);
     }
@@ -22,7 +22,7 @@ public class SignatureKey {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(apiKey.getBytes(), "HmacSHA256"));
-            mac.update(getInstant().toString().getBytes(StandardCharsets.UTF_8));
+            mac.update(timestamp.getBytes(StandardCharsets.UTF_8));
             mac.update(partnerId.getBytes(StandardCharsets.UTF_8));
             mac.update("sid_request".getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(mac.doFinal());
@@ -35,12 +35,12 @@ public class SignatureKey {
         return this.signature;
     }
 
-    public long getTimestamp() {
-        return this.timestamp;
+    public String getTimestamp() {
+        return timestamp;
     }
 
     public Instant getInstant() {
-        return Instant.ofEpochMilli(this.timestamp);
+        return Instant.parse(this.timestamp);
     }
 
     public boolean validSignature(String signature) {

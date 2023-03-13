@@ -2,7 +2,6 @@ package smile.identity.core;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -12,15 +11,10 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
-import smile.identity.core.adapters.ImageTypeAdapter;
-import smile.identity.core.adapters.JobTypeAdapter;
-import smile.identity.core.adapters.InstantAdapter;
-import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.exceptions.JobFailed;
 import smile.identity.core.models.*;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -35,25 +29,8 @@ public class SmileIdentityService {
     }
 
     public SmileIdentityService(String server, OkHttpClient.Builder httpClient) {
-        PolymorphicJsonAdapterFactory<JobResponse> factory = PolymorphicJsonAdapterFactory.of(JobResponse.class, "ResultType")
-                .withSubtype(IDResponse.class, "ID Verification")
-                .withSubtype(IDResponse.class, "Document Verification")
-                .withFallbackJsonAdapter(new Moshi.Builder()
-                        .add(new JobTypeAdapter())
-                        .add(new ImageTypeAdapter())
-                        .add(new PartnerParamsAdapter())
-                        .add(new InstantAdapter()).build().adapter((Type) JobResponse.class));
-
-        Moshi moshi = new Moshi.Builder()
-                .add(factory)
-                .add(new PartnerParamsAdapter())
-                .add(new ImageTypeAdapter())
-                .add(new JobTypeAdapter())
-                .add(new InstantAdapter())
-                .build();
-
         Retrofit retrofit = new Retrofit.Builder().baseUrl(server)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .addConverterFactory(MoshiConverterFactory.create(MoshiUtils.getMoshi()))
                 .client(httpClient.build())
                 .build();
         this.smileIdentityApi = retrofit.create(SmileIdentityApi.class);

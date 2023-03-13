@@ -13,8 +13,8 @@ public class SignatureKeyTest {
 
     @Test
     public void generateSignatureKey() {
-        long timestamp = 1668090818630L;
-        String signature = "KNDw4XBi92pINYzNu0Y4iXgXyTjDn2yoaoCg5z6pic0=";
+        String timestamp = "2023-03-09T21:35:00.279Z";
+        String signature = "+S/hVtmFwynoroXQQbjOQ3/l+a5zshNldrQh/iBdxRQ=";
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
 
         assertEquals(signature, key.getSignature());
@@ -23,17 +23,10 @@ public class SignatureKeyTest {
 
     @Test
     public void validateSignature() {
-        long timestamp = System.currentTimeMillis();
+        String timestamp = "2023-03-09T21:35:00.279Z";
+        String signature = "+S/hVtmFwynoroXQQbjOQ3/l+a5zshNldrQh/iBdxRQ=";
         SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
-        assertTrue(key.validSignature(key.getSignature()));
-    }
-
-    @Test
-    public void formatTimestamp() {
-        long timestamp = System.currentTimeMillis();
-        SignatureKey key = new SignatureKey(timestamp, "partner", "apikey");
-        String timestampString = key.getInstant().toString();
-        assertTrue(validFormat(timestampString));
+        assertTrue(key.validSignature(signature));
     }
 
     private boolean validFormat(String timestamp) {
