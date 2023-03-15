@@ -23,26 +23,66 @@ public class IDApi {
     }
 
 
+    /**
+     * Submits a KYC Job
+     * @param partnerParams partner parameters used for tracking job.
+     * @param idInfo id information to lookup.
+     * @return response from API
+     * @throws Exception
+     */
     public JobStatusResponse submitJob(PartnerParams partnerParams,
                                        IdInfo idInfo) throws Exception {
-        return submitJob(partnerParams, idInfo, true);
+        Options options = new Options();
+        return submitJob(partnerParams, idInfo, options);
     }
 
-    public JobStatusResponse submitJob(PartnerParams partnerParams,
-                                       IdInfo idInfo, Options options) throws Exception {
-        return submitJob(partnerParams, idInfo, true, options);
-    }
-
+    /**
+     * @deprecated
+     * The useValidationApi parameter is no longer used.
+     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo)} instead. </p>
+     * @param partnerParams partner parameters used for tracking job.
+     * @param idInfo id information to lookup.
+     * @param useValidationApi validates the correct fields are provided for id type before submitting job.
+     * @return response from API
+     * @throws Exception
+     */
+    @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
                                        IdInfo idInfo,
                                        boolean useValidationApi) throws Exception {
         Options options = new Options();
-        return submitJob(partnerParams, idInfo, useValidationApi, options);
+        return submitJob(partnerParams, idInfo, options);
     }
 
+    /**
+     * @deprecated
+     * The useValidationApi parameter is no longer used.
+     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo, Options)} instead.</p>
+     * @param partnerParams partner parameters used for tracking job.
+     * @param idInfo id information to lookup.
+     * @param useValidationApi validates the correct fields are provided for id type before submitting job.
+     * @param options job related options
+     * @return response from API
+     * @throws Exception
+     */
+    @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
                                        IdInfo idInfo,
                                        boolean useValidationApi,
+                                       Options options) throws Exception {
+        return submitJob(partnerParams, idInfo, options);
+    }
+
+    /**
+     *  Submits a KYC job
+     * @param partnerParams partner parameters used for tracking job.
+     * @param idInfo id information to lookup.
+     * @param options job related options.
+     * @return response from API
+     * @throws Exception
+     */
+    public JobStatusResponse submitJob(PartnerParams partnerParams,
+                                       IdInfo idInfo,
                                        Options options) throws Exception {
 
         if (!partnerParams.getJobType().equals(JobType.BASIC_KYC) && !partnerParams.getJobType().equals(JobType.ENHANCED_KYC)) {
@@ -55,11 +95,6 @@ public class IDApi {
 
         EnhancedKYCRequest request = setupRequests(partnerParams, idInfo,
                 options);
-
-        if (useValidationApi) {
-            IdValidator.validateIdType(smileIdentityService, idInfo,
-                    partnerParams);
-        }
 
         JobResponse result = smileIdentityService.idVerification(request);
         return new JobStatusResponse(result.getResultCode(), true, true,

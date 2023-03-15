@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2023-3-15
+* Removed pre-validation step
+
 ## [2.1.0] - 2023-3-9
 * JobResponse now returns a new Result object that contains a message and a JobResponse
 * Updated parsing of Instant

@@ -65,22 +65,51 @@ public class WebApi {
     }
 
 
+    /**
+     * Submits a job
+     * @param partnerParams partner parameters used for tracking job.
+     * @param idInfo id information to lookup
+     * @return response from API
+     * @throws Exception
+     */
     public JobStatusResponse submitJob(PartnerParams partnerParams,
                                        IdInfo idInfo) throws Exception {
         return submitJob(partnerParams, new ArrayList<>(), idInfo,
                 new Options());
     }
 
-    public JobStatusResponse submitJob(PartnerParams partnerParams,
-                                       List<ImageDetail> imageDetails,
-                                       IdInfo idInfo, Options options) throws Exception {
-        return submitJob(partnerParams, imageDetails, idInfo, options, true);
-    }
-
+    /**
+     * @deprecated
+     * useValidationApi paramtser is no longer used.
+     * <p>Use {@link WebApi#submitJob(PartnerParams, List, IdInfo, Options)} instead.</p>
+     * @param partnerParams partner parameters used for tracking job.
+     * @param imageDetails list of images.
+     * @param idInfo id information to lookup.
+     * @param options job related options
+     * @param useValidationApi validates the correct fields are provided for id type before submitting job.
+     * @return response from API
+     * @throws Exception
+     */
+    @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
                                        List<ImageDetail> imageDetails,
                                        IdInfo idInfo, Options options,
                                        boolean useValidationApi) throws Exception {
+        return submitJob(partnerParams, imageDetails, idInfo, options);
+    }
+
+    /**
+     *  Submits a job
+     * @param partnerParams partner parameters used for tracking job.
+     * @param imageDetails list of images.
+     * @param idInfo id information to lookup.
+     * @param options job related options.
+     * @return response from API
+     * @throws Exception
+     */
+    public JobStatusResponse submitJob(PartnerParams partnerParams,
+                                       List<ImageDetail> imageDetails,
+                                       IdInfo idInfo, Options options) throws Exception {
 
         JobType jobType = partnerParams.getJobType();
         String callbackUrl = getCallbackUrl(options.getCallbackUrl());
@@ -94,11 +123,6 @@ public class WebApi {
 
         if (jobType.equals(JobType.BIOMETRIC_KYC)) {
             verifyIdIsPresent(idInfo, imageDetails);
-        }
-
-        if (jobType.equals(JobType.BIOMETRIC_KYC) && useValidationApi) {
-            IdValidator.validateIdType(smileIdentityService, idInfo,
-                    partnerParams);
         }
 
         PreUploadRequest preUploadRequest =
