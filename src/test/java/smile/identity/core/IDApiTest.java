@@ -49,9 +49,6 @@ public class IDApiTest {
 
     @Test
     public void submitJob() throws Exception {
-        String validResponse = "{\"id_types\": {\"GH\": { \"PASSPORT\": " +
-                "[\"id_number\"]}}}";
-        server.enqueue(new MockResponse().setBody(validResponse));
         server.enqueue(new MockResponse().setBody(response()));
 
         PartnerParams partnerParams = new PartnerParams(
@@ -63,36 +60,7 @@ public class IDApiTest {
                 "PASSPORT", "1111111", "", ""
         );
 
-        JobStatusResponse job = idApi.submitJob(partnerParams, idInfo,
-                true, new Options());
-
-        RecordedRequest servicesRequest = server.takeRequest();
-        RecordedRequest idRequest = server.takeRequest();
-        EnhancedKYCRequest kycRequest = moshi
-                .adapter(EnhancedKYCRequest.class).fromJson(idRequest.getBody());
-
-        assertEquals(kycRequest.getCountry(), "GH");
-        assertEquals(kycRequest.getFirstName(), "Tom");
-        assertEquals(kycRequest.getLastName(), "Ford");
-        assertEquals(kycRequest.getIdType(), "PASSPORT");
-        assertEquals(kycRequest.getPartnerParams().getJobId(), "job");
-        assertEquals(kycRequest.getPartnerParams().getUserId(), "user");
-    }
-
-    @Test
-    public void submitJobWithoutValidation() throws Exception {
-        server.enqueue(new MockResponse().setBody(response()));
-
-        PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, "user", "job", new HashMap<>()
-        );
-
-        IdInfo idInfo = new IdInfo(
-                "Tom", "", "Ford", "GH",
-                "PASSPORT", "1111111", "", ""
-        );
-
-        idApi.submitJob(partnerParams, idInfo, false, new Options());
+        JobStatusResponse job = idApi.submitJob(partnerParams, idInfo);
 
         RecordedRequest idRequest = server.takeRequest();
         EnhancedKYCRequest kycRequest = moshi
@@ -136,45 +104,6 @@ public class IDApiTest {
         assertThrows(MissingRequiredFields.class,
                 () -> idApi.submitJob(partnerParams, idInfo));
     }
-
-    @Test
-    public void unsupportedCountryIdTypeCombo() {
-        String validResponse = "{\"id_types\": {\"US\": { \"PASSPORT\": " +
-                "[\"id_number\"]}}}";
-        server.enqueue(new MockResponse().setBody(validResponse));
-
-        PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, "user", "job", new HashMap<>()
-        );
-
-        IdInfo idInfo = new IdInfo(
-                "Tom", "", "Ford", "GH",
-                "PASSPORT", "1111111", "", ""
-        );
-
-        assertThrows(IdTypeNotSupported.class,
-                () -> idApi.submitJob(partnerParams, idInfo, true));
-    }
-
-    @Test
-    public void missingFieldsFromValidationEndpoint() {
-        String validResponse = "{\"id_types\": {\"GH\": { \"PASSPORT\": " +
-                "[\"favorite_color\"]}}}";
-        server.enqueue(new MockResponse().setBody(validResponse));
-
-        PartnerParams partnerParams = new PartnerParams(
-                JobType.BASIC_KYC, "user", "job", new HashMap<>()
-        );
-
-        IdInfo idInfo = new IdInfo(
-                "Tom", "", "Ford", "GH",
-                "PASSPORT", "1111111", "", ""
-        );
-
-        assertThrows(MissingRequiredFields.class,
-                () -> idApi.submitJob(partnerParams, idInfo, true));
-    }
-
 
     private String response() {
         JobResponse response = new JobResponse(

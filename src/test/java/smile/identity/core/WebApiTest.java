@@ -58,8 +58,6 @@ public class WebApiTest {
 
     @Test
     public void submitJob() throws Exception {
-        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
-                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
         server.enqueue(new MockResponse().setBody(uploadResponse()));
         server.enqueue(new MockResponse());
         PartnerParams partnerParams = new PartnerParams(
@@ -85,7 +83,6 @@ public class WebApiTest {
         JobStatusResponse job = webApi.submitJob(partnerParams, imageDetails,
 				idInfo, options);
         server.takeRequest();
-        server.takeRequest();
         RecordedRequest request = server.takeRequest();
         System.out.println(request.getPath());
         assertTrue(job.isJobSuccess());
@@ -94,9 +91,6 @@ public class WebApiTest {
 
     @Test
     public void submitBasicKYCJob() throws Exception {
-        String validResponse = "{\"id_types\": {\"GH\": { \"PASSPORT\": " +
-				"[\"id_number\"]}}}";
-        server.enqueue(new MockResponse().setBody(validResponse));
         server.enqueue(new MockResponse().setBody(jobResponse()));
 
 
@@ -168,35 +162,6 @@ public class WebApiTest {
     }
 
     @Test
-    public void invalidIdInfo() throws IOException {
-        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
-                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
-
-        PartnerParams partnerParams = new PartnerParams(
-                JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
-        );
-
-
-        IdInfo idInfo = new IdInfo(
-                null, "", "Ford", "GH",
-                "PASSPORT", "1111111", "", ""
-        );
-
-        List<ImageDetail> imageDetails = new ArrayList<>();
-        ImageDetail selfie = new ImageDetail(ImageType.SELFIE_BASE64,
-				"imagedata", "");
-        ImageDetail idCard = new ImageDetail(ImageType.ID_CARD_BASE64,
-				"imagedata", null);
-        imageDetails.add(selfie);
-        imageDetails.add(idCard);
-
-        Options options = new Options();
-        assertThrows(MissingRequiredFields.class,
-                () -> webApi.submitJob(partnerParams, imageDetails, idInfo,
-						options));
-    }
-
-    @Test
     public void failsEnrollWithIdValidation() {
         PartnerParams partnerParams = new PartnerParams(
                 JobType.BIOMETRIC_KYC, "user", "job", new HashMap<>()
@@ -251,8 +216,6 @@ public class WebApiTest {
         JobStatusResponse statusResponse = new JobStatusResponse("90210",
                 true, true, null, "signature", Instant.now(), null, null);
 
-        server.enqueue(new MockResponse().setBody("{\"id_types\": {\"GH\":" +
-                " { \"PASSPORT\": [\"first_name\", \"last_name\"]}}}"));
         server.enqueue(new MockResponse().setBody(uploadResponse()));
         server.enqueue(new MockResponse());
         server.enqueue(new MockResponse().setBody(moshi.adapter(JobStatusResponse.class).toJson(statusResponse)));
