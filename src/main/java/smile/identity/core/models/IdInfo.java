@@ -40,6 +40,7 @@ public class IdInfo {
 
     @Json(name = "postal_code")
     String postalCode;
+    boolean entered = true;
 
     public IdInfo(String country, String idType, String idNumber,
                   String businessType, String postalAddress,
@@ -58,6 +59,10 @@ public class IdInfo {
     public IdInfo(String country, String idType) {
         this("", "", "", country, idType, "", "", "", "",
         "", "");
+    }
+
+    public IdInfo(String country, String idType, String idNumber) {
+        this("", "", "", country, idType, idNumber, "", "", "", "", "");
     }
 
     public Boolean valid() {

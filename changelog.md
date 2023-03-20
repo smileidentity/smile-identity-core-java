@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2023-3-20
+* Fix for Biometric KYC Jobs
+* 
 ## [2.1.1] - 2023-3-15
 * Removed pre-validation step
 
