@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.4] - 2023-8-3
+* Updated JobStatusResponse to include kyc_receipt and kyb_receipt fields 
+
 ## [2.1.2] - 2023-3-20
 * Fix for Biometric KYC Jobs
 * 
