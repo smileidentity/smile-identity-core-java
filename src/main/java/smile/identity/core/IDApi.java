@@ -99,7 +99,7 @@ public class IDApi {
         JobResponse result = smileIdentityService.idVerification(request);
         return new JobStatusResponse(result.getResultCode(), true, true,
                 new JobStatusResponse.Result(result), result.getSignature(), result.getTimestamp(), null,
-                null);
+                null, "", "");
     }
 
     private EnhancedKYCRequest setupRequests(PartnerParams partnerParams,
