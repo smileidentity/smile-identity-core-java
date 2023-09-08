@@ -48,7 +48,8 @@ public class DocumentVerification {
         imageDetails.add(idDocument);
         imageDetails.add(backOfIdDocument); // Optional, only use if you're uploading the back of the id document image
 
-        IdInfo idInfo = new IdInfo("< 2 letter country code >", "< id type >");
+        IdInfo idInfoWithIdType = new IdInfo("< 2 letter country code >", "< id type >"); // idType is optional. If a job is submitted without id_type and the machine can't classify the document, we will reject the job.
+        IdInfo idInfoWithoutIdType = new IdInfo("< 2 letter country code >"); // idType is optional. If a job is submitted without id_type and the machine can't classify the document, we will reject the job.
 
         // Options for the job
         boolean returnJobStatus = false; // Set to true if you want to get
@@ -64,7 +65,7 @@ public class DocumentVerification {
         String callBackUrl = "< optional callback url to use for this job only >";
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
-        connection.submitJob(params, imageDetails, idInfo, options);
+        connection.submitJob(params, imageDetails, idInfoidInfoWithoutIdType, options);
     }
 
 

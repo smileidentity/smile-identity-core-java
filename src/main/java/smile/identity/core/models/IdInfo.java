@@ -56,6 +56,11 @@ public class IdInfo {
                 phoneNumber, "", "", "");
     }
 
+    public IdInfo(String country) {
+        this("", "", "", country, "", "", "", "", "",
+        "", "");
+    }
+
     public IdInfo(String country, String idType) {
         this("", "", "", country, idType, "", "", "", "",
         "", "");

@@ -80,7 +80,7 @@ public class WebApi {
 
     /**
      * @deprecated
-     * useValidationApi paramtser is no longer used.
+     * useValidationApi parameter is no longer used.
      * <p>Use {@link WebApi#submitJob(PartnerParams, List, IdInfo, Options)} instead.</p>
      * @param partnerParams partner parameters used for tracking job.
      * @param imageDetails list of images.

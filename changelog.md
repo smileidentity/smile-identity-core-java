@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.5] - 2023-8-29
+* Updated DocV request to make id_type optional
+
 ## [2.1.4] - 2023-8-3
 * Updated JobStatusResponse to include kyc_receipt and kyb_receipt fields 
 
