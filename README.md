@@ -47,7 +47,7 @@ Before that, you should take a look at the examples in the [examples](/examples)
 
 ## Getting Help
 
-For usage questions, the best resource is [our official documentation](https://docs.usesmileid.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.usesmileid.com/partner/support/tickets) or visit the [contact us page](https://portal.usesmileid.com/partner/support/tickets) on our website.
+For usage questions, the best resource is [our official documentation](https://docs.usesmileid.com). However, if you require further assistance, you can file a [support ticket via our portal](https://portal.usesmileid.com/partner/support/tickets) or visit the [contact us page](https://usesmileid.com/company/contact-us) on our website.
 
 ## Contributing
 
