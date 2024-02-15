@@ -8,7 +8,7 @@ import smile.identity.core.models.ImageDetail;
 
 public class DocumentVerification {
 
-    // See https://docs.smileidentity.com/server-to-server/java/products/document-verification for
+    // See https://docs.usesmileid.com/server-to-server/java/products/document-verification for
     // how to setup and retrieve configuation values for the WebApi class.
 
     public static main(String[] args) {

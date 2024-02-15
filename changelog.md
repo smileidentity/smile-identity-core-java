@@ -54,7 +54,7 @@ All notable changes to this project will be documented in this file.
 * Fixed possible crash when  passing null callback_url to WebApi  class
 
 ## [1.0.4] - 2020-06-23
-* Allow more image_type_id specifically 4 and 6 for more information on this please see https://docs.smileidentity.com/products/web-api/core-libraries
+* Allow more image_type_id specifically 4 and 6 for more information on this please see https://docs.usesmileid.com/products/web-api/core-libraries
 * Also removed validations on id or selfie images
 
 ## [1.0.3] - 2020-05-29
