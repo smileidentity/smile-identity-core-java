@@ -11,7 +11,7 @@ import smile.identity.core.models.PartnerParams;
 
 public class BiometricKYC {
 
-    // See https://docs.smileidentity.com/server-to-server/java/products/biometric-kyc
+    // See https://docs.usesmileid.com/server-to-server/java/products/biometric-kyc
     // for how to setup and retrieve configuation values for the WebApi class.
 
     public static main(String[] args) {
