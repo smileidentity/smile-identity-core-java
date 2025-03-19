@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.6] - 2025-03-19
+* Added 30 second timeout to Http Client
+
 ## [2.1.5] - 2023-8-29
 * Updated DocV request to make id_type optional
 
