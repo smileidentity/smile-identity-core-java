@@ -1,0 +1,49 @@
+name: Build
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [ main, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# builds library, runs tests, and publishes Snapshot
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Calculate Snapshot Version
+        id: version
+        # Read version number from the VERSION file and append -SNAPSHOT if not already present
+        run: |
+          VERSION=$(cat ./VERSION)
+          if [[ $VERSION == *"-SNAPSHOT" ]]; then
+            echo "Version $VERSION already contains -SNAPSHOT"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "Version $VERSION does not contain -SNAPSHOT"
+            echo "version=$VERSION-SNAPSHOT" >> $GITHUB_OUTPUT
+          fi
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build, Test, and Publish Snapshot
+        run: ./gradlew build test publish
+        env:
+          ORG_GRADLE_PROJECT_VERSION_NAME: ${{ steps.version.outputs.version }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ARTIFACT_GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.ARTIFACT_GPG_SIGNING_KEY_ID }}
+      - name: Archive JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: Java Library JAR
+          path: build/libs/*.jar
