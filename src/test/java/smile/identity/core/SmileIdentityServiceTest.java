@@ -5,12 +5,14 @@ import com.squareup.moshi.Moshi;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -69,7 +71,7 @@ public class SmileIdentityServiceTest {
                 Instant.now(), "signature", null, "", "", "", "", "", "", "",
                 false, false);
         assertThrows("Job already exists. Did you mean to set the retry flag " +
-                "to true", JobFailed.class,
+                        "to true", JobFailed.class,
                 () -> service.idVerification(request));
 
     }
@@ -94,7 +96,7 @@ public class SmileIdentityServiceTest {
                         "retry flag to true\", \"code\": \"2215\"}"));
 
         assertThrows("Job already exists. Did you mean to set the retry flag " +
-                "to true", JobFailed.class,
+                        "to true", JobFailed.class,
                 () -> service.preUpload(new PreUploadRequest(Instant.now(),
                         "signature", "client", null, "")));
     }
@@ -125,8 +127,7 @@ public class SmileIdentityServiceTest {
                 "", "done", null, "signature", Instant.now(), "99.999", "",
                 null);
 
-        JobStatusResponse statusResponse = new JobStatusResponse("2020", true
-                , true, new JobStatusResponse.Result(statusResult), "signature", Instant.now(), null, null);
+        JobStatusResponse statusResponse = new JobStatusResponse("2020", true, true, new JobStatusResponse.Result(statusResult), "signature", Instant.now(), new HashMap<>(), new ArrayList<>(), "", "");
 
         JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);
 
@@ -158,9 +159,7 @@ public class SmileIdentityServiceTest {
                 "99.0", "", null, "", "", "", "", "", "", "", "", "", "", "M"
                 , "");
 
-        JobStatusResponse statusResponse = new JobStatusResponse("2010", true
-                , true, new JobStatusResponse.Result(result), "", Instant.now(), new HashMap<>(),
-                new ArrayList<>());
+        JobStatusResponse statusResponse = new JobStatusResponse("2010", true, true, new JobStatusResponse.Result(result), "", Instant.now(), new HashMap<>(), new ArrayList<>(), "", "");
 
         JsonAdapter<JobStatusResponse> adapter = moshi.adapter(JobStatusResponse.class);
 

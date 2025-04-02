@@ -12,6 +12,7 @@ import com.squareup.moshi.Moshi;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -213,8 +214,7 @@ public class WebApiTest {
 
     @Test
     public void returnJobStatusTrue() throws Exception {
-        JobStatusResponse statusResponse = new JobStatusResponse("90210",
-                true, true, null, "signature", Instant.now(), null, null);
+        JobStatusResponse statusResponse = new JobStatusResponse("90210", true, true, null, "signature", Instant.now(),  new HashMap<>(), new ArrayList<>(), "", "");
 
         server.enqueue(new MockResponse().setBody(uploadResponse()));
         server.enqueue(new MockResponse());
