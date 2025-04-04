@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.7] - 2025-04-04
+* Updated OKHTTP timeouts
+
 ## [2.1.6] - 2025-03-19
 * Added 30 second timeout to Http Client
 
