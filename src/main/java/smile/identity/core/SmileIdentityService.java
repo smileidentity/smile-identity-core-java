@@ -25,7 +25,12 @@ public class SmileIdentityService {
     static Logger logger = LogManager.getLogger(SmileIdentityService.class);
 
     public SmileIdentityService(String server) {
-        this(server, new OkHttpClient.Builder().callTimeout(30, java.util.concurrent.TimeUnit.SECONDS));
+        this(server, new OkHttpClient.Builder()
+                .callTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+                .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                .writeTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+        );
     }
 
     public SmileIdentityService(String server, OkHttpClient.Builder httpClient) {
