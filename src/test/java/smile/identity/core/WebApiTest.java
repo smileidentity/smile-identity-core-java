@@ -276,6 +276,7 @@ public class WebApiTest {
                 Instant.now(),
                 "99.99",
                 "internet",
+                null,
                 new HashMap<>()
         );
         return moshi.adapter(JobResponse.class).toJson(response);
