@@ -6,7 +6,6 @@ import smile.identity.core.exceptions.MissingRequiredFields;
 import smile.identity.core.keys.SignatureKey;
 import smile.identity.core.models.*;
 
-
 public class IDApi {
 
     private final String partnerId;
@@ -14,14 +13,12 @@ public class IDApi {
 
     private final SmileIdentityService smileIdentityService;
 
-
     public IDApi(String partnerId, String apiKey, String sidServer) {
         this.partnerId = partnerId;
         this.apiKey = apiKey;
         String url = ConfigHelpers.getSidServer(sidServer);
         this.smileIdentityService = new SmileIdentityService(url);
     }
-
 
     /**
      * Submits a KYC Job
