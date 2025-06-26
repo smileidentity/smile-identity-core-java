@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.8] - 2025-06-26
+* Updated JVM Target to 17, Lombok and Retrofit dependencies
+* Added `AntiFraud` response in `JobStatus` calls
+
 ## [2.1.7] - 2025-04-04
 * Updated OKHTTP timeouts
 
