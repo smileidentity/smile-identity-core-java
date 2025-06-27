@@ -3,6 +3,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 plugins {
     id("java-library")
     id("com.vanniktech.maven.publish") version "0.31.0"
+    id("com.diffplug.spotless") version "7.0.4"
 }
 
 java {
