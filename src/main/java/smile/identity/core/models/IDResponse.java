@@ -4,6 +4,7 @@ import com.squareup.moshi.Json;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.Map;
 
@@ -46,6 +47,7 @@ public class IDResponse extends JobResponse {
     @Json(name = "Address")
     private String address;
 
+    @Nullable
     @Json(name = "Antifraud")
     private Antifraud antifraud;
 
