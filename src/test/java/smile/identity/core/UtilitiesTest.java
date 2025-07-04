@@ -93,8 +93,8 @@ public class UtilitiesTest {
                 JobType.BASIC_KYC, "user", "job", new HashMap<>()
         );
         JobResponse result = new JobResponse("1.0", "smile-100", params,
-                "KYC", "So Great", "90210", "Maybe", null, null,
-                "signature", Instant.now(), "99.99", "internet",
+                "KYC", "So Great", "90210", "Maybe", null,
+                "signature", Instant.now(), "99.99", "internet", null,
                 new HashMap<>());
         JobStatusResponse statusResponse = new JobStatusResponse("90210", true, true, new JobStatusResponse.Result(result), "signature", Instant.now(),  new HashMap<>(), new ArrayList<>(), "", "");
         return statusResponse;

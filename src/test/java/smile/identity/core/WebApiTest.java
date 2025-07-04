@@ -272,11 +272,11 @@ public class WebApiTest {
                 "100",
                 "Yes",
                 null,
-                null,
                 "signature",
                 Instant.now(),
                 "99.99",
                 "internet",
+                null,
                 new HashMap<>()
         );
         return moshi.adapter(JobResponse.class).toJson(response);
