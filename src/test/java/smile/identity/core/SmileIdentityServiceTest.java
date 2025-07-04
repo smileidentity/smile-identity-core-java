@@ -41,7 +41,7 @@ public class SmileIdentityServiceTest {
     @Test
     public void submitsIdVerificationJob() throws Exception {
         JobResponse jobResponse = new JobResponse("1.0", "smile-100", null,
-                "ID Verification", "", "1010", "Yes", null, "signature",
+                "ID Verification", "", "1010", "Yes", null, null, "signature",
                 Instant.now(), "99.99", "", null);
 
         JsonAdapter<JobResponse> adaptor = moshi.adapter(JobResponse.class);
@@ -117,7 +117,7 @@ public class SmileIdentityServiceTest {
     @Test
     public void getJobStatus() throws Exception {
         JobResponse statusResult = new JobResponse("", "", null, "Great Job", "",
-                "", "done", null, "signature", Instant.now(), "99.999", "", null);
+                "", "done", null, null, "signature", Instant.now(), "99.999", "", null);
 
         JobStatusResponse statusResponse = new JobStatusResponse("2020", true, true, new JobStatusResponse.Result(statusResult), "signature", Instant.now(), new HashMap<>(), new ArrayList<>(), "", "");
 

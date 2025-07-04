@@ -47,10 +47,6 @@ public class IDResponse extends JobResponse {
     @Json(name = "Address")
     private String address;
 
-    @Nullable
-    @Json(name = "Antifraud")
-    private Antifraud antifraud;
-
     public IDResponse(String jsonVersion, String smileJobId, PartnerParams partnerParams, String resultType, String resultText, String resultCode, String isFinalResult, Actions actions, String signature, Instant timestamp, String confidence, String source, Antifraud antifraud, Map<String, Object> fullData, String country, String idType, String idNumber, String expirationDate, String fullName, String dob, String photo, String phoneNumber, String phoneNumber2, String document, String gender, String address) {
         super(jsonVersion, smileJobId, partnerParams, resultType, resultText, resultCode, isFinalResult, actions, antifraud, signature, timestamp, confidence, source, fullData);
         this.country = country;
@@ -65,6 +61,5 @@ public class IDResponse extends JobResponse {
         this.document = document;
         this.gender = gender;
         this.address = address;
-        this.antifraud = antifraud;
     }
 }
