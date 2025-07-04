@@ -52,7 +52,7 @@ public class IDResponse extends JobResponse {
     private Antifraud antifraud;
 
     public IDResponse(String jsonVersion, String smileJobId, PartnerParams partnerParams, String resultType, String resultText, String resultCode, String isFinalResult, Actions actions, String signature, Instant timestamp, String confidence, String source, Antifraud antifraud, Map<String, Object> fullData, String country, String idType, String idNumber, String expirationDate, String fullName, String dob, String photo, String phoneNumber, String phoneNumber2, String document, String gender, String address) {
-        super(jsonVersion, smileJobId, partnerParams, resultType, resultText, resultCode, isFinalResult, actions, signature, timestamp, confidence, source, fullData);
+        super(jsonVersion, smileJobId, partnerParams, resultType, resultText, resultCode, isFinalResult, actions, antifraud, signature, timestamp, confidence, source, fullData);
         this.country = country;
         this.idType = idType;
         this.idNumber = idNumber;

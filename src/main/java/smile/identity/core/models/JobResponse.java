@@ -39,6 +39,10 @@ public class JobResponse {
     @Json(name = "Actions")
     Actions actions;
 
+    @Nullable
+    @Json(name = "Antifraud")
+    private Antifraud antifraud;
+
     String signature;
 
     Instant timestamp;
@@ -53,6 +57,6 @@ public class JobResponse {
     Map<String, Object> fullData;
 
     public JobResponse(String smileJobId, PartnerParams partnerParams) {
-        this("", smileJobId, partnerParams, "", "", "", "", null, "", null, "", "", new HashMap<>());
+        this("", smileJobId, partnerParams, "", "", "", "", null, null, "", null, "", "", new HashMap<>());
     }
 }
