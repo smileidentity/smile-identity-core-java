@@ -43,7 +43,7 @@ group: "com.smileidentity", name: "smile-identity-core", version: "<current-vers
 
 For extensive instructions on usage of the library and sample codes, please refer to the official Smile Identity [documentation](https://docs.usesmileid.com/server-to-server/java).
 
-Before that, you should take a look at the examples in the [examples](/examples) folder.
+Before that, you should take a look at the examples in the [examples](/smile/identity/core/examples) folder.
 
 ## Getting Help
 

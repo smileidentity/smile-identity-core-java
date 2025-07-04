@@ -1,16 +1,25 @@
+package smile.identity.core.examples;
+
 import smile.identity.core.IDApi;
 import smile.identity.core.enums.JobType;
+import smile.identity.core.models.IdInfo;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.Options;
+import smile.identity.core.models.PartnerParams;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EnhancedKYC {
 
-    public static main(String [] args) {
+    public static void main(String[] args) {
 
         String partnerId = "<Put your partner ID here>";
         String defaultCallback = "<Put your default callback url here>";
         String apiKey = "<Put your API key here>";
         String sidServer = "< 0 || 1 >";  // Use '0' for the sandbox server and '1' for production
 
-        IDApi connection = new IDApi(partnerId, apiKey, defaultCallback, sidServer);
+        IDApi connection = new IDApi(partnerId, apiKey, defaultCallback);
 
         // Create required tracking parameters
         Map<String, Object> optionalInfo = new HashMap(); // map of optional parameters partner uses to track jobs. can be left empty
@@ -41,8 +50,11 @@ public class EnhancedKYC {
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
         // Submit the job
-        connection.submitJob(params, idInfo, options);
-
+        try {
+            JobStatusResponse response = connection.submitJob(params, idInfo, options);
+            System.out.println(response);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }

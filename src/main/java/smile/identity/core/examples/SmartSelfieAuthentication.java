@@ -1,9 +1,21 @@
-import smile.identity.core.IDApi;
+package smile.identity.core.examples;
+
+import smile.identity.core.WebApi;
+import smile.identity.core.enums.ImageType;
 import smile.identity.core.enums.JobType;
+import smile.identity.core.models.ImageDetail;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.Options;
+import smile.identity.core.models.PartnerParams;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SmartSelfieAuthentication {
 
-    public static main(String[] args) {
+    public static void main(String[] args) {
 
         String partnerId = "<Put your partner ID here>";
         String defaultCallback = "<Put your default callback url here>";
@@ -26,7 +38,7 @@ public class SmartSelfieAuthentication {
         // ImageType.LIVENESS_BASE64 - Liveness image jpg or png base64 encoded (if you have the base64image string of the liveness image)
 
 
-        List<ImageDetails> imageDetails = new ArrayList<>();
+        List<ImageDetail> imageDetails = new ArrayList<>();
         ImageDetail selfie = new ImageDetail(ImageType.SELFIE, null, "< full path to selfie >");
         ImageDetail liveness = new ImageDetail(ImageType.LIVENESS, null, "< full path to liveness image");
 
@@ -47,8 +59,11 @@ public class SmartSelfieAuthentication {
         String callBackUrl = "< optional callback url to use for this job only >";
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
-        connection.submitJob(params, imageDetails, null, options);
-
-
+        try {
+            JobStatusResponse response = connection.submitJob(params, imageDetails, null, options);
+            System.out.println(response);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

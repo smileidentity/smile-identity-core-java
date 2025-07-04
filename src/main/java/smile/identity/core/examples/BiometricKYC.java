@@ -1,20 +1,21 @@
+package smile.identity.core.examples;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import smile.identity.core.WebApi;
 import smile.identity.core.enums.ImageType;
 import smile.identity.core.enums.JobType;
-import smile.identity.core.models.IdInfo;
-import smile.identity.core.models.ImageDetail;
-import smile.identity.core.models.Options;
-import smile.identity.core.models.PartnerParams;
+import smile.identity.core.models.*;
 
 public class BiometricKYC {
 
     // See https://docs.usesmileid.com/server-to-server/java/products/biometric-kyc
     // for how to setup and retrieve configuation values for the WebApi class.
 
-    public static main(String[] args) {
+    public static void main(String[] args) {
 
         String partnerId = "<Put your partner ID here>";
         String defaultCallback = "<Put your default callback url here>";
@@ -70,7 +71,11 @@ public class BiometricKYC {
         String callBackUrl = "< optional callback url to use for this job only >";
         Options options = new Options(returnHistory, returnImageLinks, returnJobStatus, callBackUrl);
 
-        connection.submitJob(params, imageDetails, idInfo, options);
+        try {
+            JobStatusResponse response = connection.submitJob(params, imageDetails, idInfo, options);
+            System.out.println(response);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }
