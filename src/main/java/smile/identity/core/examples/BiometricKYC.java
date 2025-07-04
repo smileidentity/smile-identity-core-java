@@ -75,7 +75,7 @@ public class BiometricKYC {
             JobStatusResponse response = connection.submitJob(params, imageDetails, idInfo, options);
             System.out.println(response);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
         }
     }
 }

@@ -73,7 +73,7 @@ public class DocumentVerification {
             JobStatusResponse response = connection.submitJob(params, imageDetails, idInfoWithoutIdType, options);
             System.out.println(response);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
         }
     }
 }

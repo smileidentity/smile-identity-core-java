@@ -54,7 +54,7 @@ public class EnhancedKYC {
             JobStatusResponse response = connection.submitJob(params, idInfo, options);
             System.out.println(response);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
         }
     }
 }
