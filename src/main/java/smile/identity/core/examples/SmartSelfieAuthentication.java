@@ -63,7 +63,7 @@ public class SmartSelfieAuthentication {
             JobStatusResponse response = connection.submitJob(params, imageDetails, null, options);
             System.out.println(response);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
         }
     }
 }
