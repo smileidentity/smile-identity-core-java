@@ -1,10 +1,9 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
+import lombok.Value;
 
 import java.util.List;
-
-import lombok.Value;
 
 @Value
 public class UploadRequest {

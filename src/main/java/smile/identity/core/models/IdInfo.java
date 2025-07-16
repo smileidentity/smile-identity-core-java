@@ -1,9 +1,7 @@
 package smile.identity.core.models;
 
-
 import com.google.common.base.Strings;
 import com.squareup.moshi.Json;
-
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
@@ -58,12 +56,12 @@ public class IdInfo {
 
     public IdInfo(String country) {
         this("", "", "", country, "", "", "", "", "",
-        "", "");
+                "", "");
     }
 
     public IdInfo(String country, String idType) {
         this("", "", "", country, idType, "", "", "", "",
-        "", "");
+                "", "");
     }
 
     public IdInfo(String country, String idType, String idNumber) {

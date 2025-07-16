@@ -1,7 +1,6 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
 import lombok.Value;
 
 @Value
@@ -19,5 +18,4 @@ public class PreUploadResponse {
     String cameraConfig;
 
     String code;
-
 }

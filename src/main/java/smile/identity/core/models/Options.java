@@ -15,5 +15,4 @@ public class Options {
 
         this(false, false, false, "");
     }
-
 }

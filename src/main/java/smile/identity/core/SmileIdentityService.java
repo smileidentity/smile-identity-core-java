@@ -2,27 +2,33 @@ package smile.identity.core;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import smile.identity.core.exceptions.JobFailed;
-import smile.identity.core.models.*;
+import smile.identity.core.models.EnhancedKYCRequest;
+import smile.identity.core.models.ErrorResponse;
+import smile.identity.core.models.JobResponse;
+import smile.identity.core.models.JobStatusRequest;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.PreUploadRequest;
+import smile.identity.core.models.PreUploadResponse;
+import smile.identity.core.models.WebTokenRequest;
+import smile.identity.core.models.WebTokenResponse;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 public class SmileIdentityService {
+    static Logger logger = LogManager.getLogger(SmileIdentityService.class);
     public final SmileIdentityApi smileIdentityApi;
     private final JsonAdapter<ErrorResponse> errorAdaptor = new Moshi.Builder().build().adapter(ErrorResponse.class);
-    static Logger logger = LogManager.getLogger(SmileIdentityService.class);
 
     public SmileIdentityService(String server) {
         this(server, new OkHttpClient.Builder()
@@ -85,7 +91,6 @@ public class SmileIdentityService {
         return response;
     }
 
-
     public PreUploadResponse preUpload(PreUploadRequest request) throws JobFailed, IOException {
         Call<PreUploadResponse> call = smileIdentityApi.prepUpload(request);
         Response<PreUploadResponse> response = call.execute();
@@ -118,5 +123,4 @@ public class SmileIdentityService {
         logger.error(String.format("Response from server: Code %s => %s", error.getCode(), error.getError()));
         throw new JobFailed(error.getError(), error.getCode());
     }
-
 }

@@ -2,7 +2,11 @@ package smile.identity.core;
 
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory;
-import smile.identity.core.adapters.*;
+import smile.identity.core.adapters.ImageTypeAdapter;
+import smile.identity.core.adapters.InstantAdapter;
+import smile.identity.core.adapters.JobStatusResponseResultAdapter;
+import smile.identity.core.adapters.JobTypeAdapter;
+import smile.identity.core.adapters.PartnerParamsAdapter;
 import smile.identity.core.models.IDResponse;
 import smile.identity.core.models.JobResponse;
 

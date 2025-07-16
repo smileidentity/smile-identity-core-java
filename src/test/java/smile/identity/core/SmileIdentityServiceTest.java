@@ -11,20 +11,32 @@ import org.junit.Before;
 import org.junit.Test;
 import smile.identity.core.enums.Product;
 import smile.identity.core.exceptions.JobFailed;
-import smile.identity.core.models.*;
+import smile.identity.core.models.EnhancedKYCRequest;
+import smile.identity.core.models.IDResponse;
+import smile.identity.core.models.JobResponse;
+import smile.identity.core.models.JobStatusRequest;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.PreUploadRequest;
+import smile.identity.core.models.PreUploadResponse;
+import smile.identity.core.models.WebTokenRequest;
+import smile.identity.core.models.WebTokenResponse;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class SmileIdentityServiceTest {
 
+    private final Moshi moshi = MoshiUtils.getMoshi();
     MockWebServer server;
     SmileIdentityService service;
-    private final Moshi moshi = MoshiUtils.getMoshi();
 
     @Before
     public void setup() {
@@ -51,9 +63,9 @@ public class SmileIdentityServiceTest {
                 Instant.now(), "signature", null, "", "", "", "", "", "", "",
                 false, false);
         JobResponse result = service.idVerification(request);
-        assertEquals(result.getSignature(), "signature");
-        assertEquals(result.getSmileJobId(), "smile-100");
-        assertEquals(result.getClass(), IDResponse.class);
+        assertEquals("signature", result.getSignature());
+        assertEquals("smile-100", result.getSmileJobId());
+        assertEquals(IDResponse.class, result.getClass());
     }
 
     @Test
@@ -79,8 +91,8 @@ public class SmileIdentityServiceTest {
                 service.preUpload(new PreUploadRequest(Instant.now(),
                         "signature", "client", null, ""));
 
-        assertEquals(response.getSmileJobId(), "123232121");
-        assertEquals(response.getUploadUrl(), "photos.com");
+        assertEquals("123232121", response.getSmileJobId());
+        assertEquals("photos.com", response.getUploadUrl());
     }
 
     @Test
@@ -111,7 +123,7 @@ public class SmileIdentityServiceTest {
         server.enqueue(new MockResponse().setBody(response));
 
         String services = service.getServices();
-        assertEquals(services, response);
+        assertEquals(response, services);
     }
 
     @Test
@@ -139,7 +151,7 @@ public class SmileIdentityServiceTest {
                 service.getJobStatus(new JobStatusRequest("partner", "user-01"
                         , "10", false, false, "signature", Instant.now()));
 
-        assertEquals(response.getResult().getMessage(), "No zip file received");
+        assertEquals("No zip file received", response.getResult().getMessage());
     }
 
     @Test
@@ -211,7 +223,6 @@ public class SmileIdentityServiceTest {
                 "user", "smile-100", Product.BASIC_KYC, "callback",
                 "signature", Instant.now(), "partner"));
         assertTrue(response.isSuccess());
-        assertEquals(response.getToken(), "heresatoken");
+        assertEquals("heresatoken", response.getToken());
     }
-
 }

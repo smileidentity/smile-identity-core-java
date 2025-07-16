@@ -27,13 +27,13 @@ public class EnhancedKYC {
 
         // Create ID number info
         IdInfo idInfo = new IdInfo("< firstName >",
-        "< middleName >",
-        "< lastName >",
-        "< 2 letter country code >",
-        "< id type >",
-        "< valid id number >",
-        "< date of birth yyyy-mm-dd >",
-        "< phone number >");
+                "< middleName >",
+                "< lastName >",
+                "< 2 letter country code >",
+                "< id type >",
+                "< valid id number >",
+                "< date of birth yyyy-mm-dd >",
+                "< phone number >");
 
         // Options for the job
         boolean returnJobStatus = false; // Set to true if you want to get

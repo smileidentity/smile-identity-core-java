@@ -38,5 +38,4 @@ public class Actions {
 
     @Json(name = "Update_Registered_Selfie_On_File")
     String updateRegisteredSelfieOnFile;
-
 }

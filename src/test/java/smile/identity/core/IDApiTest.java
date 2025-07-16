@@ -1,33 +1,28 @@
 package smile.identity.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.HashMap;
-
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import smile.identity.core.enums.JobType;
-import smile.identity.core.exceptions.IdTypeNotSupported;
 import smile.identity.core.exceptions.IncorrectJobType;
 import smile.identity.core.exceptions.MissingRequiredFields;
 import smile.identity.core.models.EnhancedKYCRequest;
 import smile.identity.core.models.IdInfo;
 import smile.identity.core.models.JobResponse;
 import smile.identity.core.models.JobStatusResponse;
-import smile.identity.core.models.Options;
 import smile.identity.core.models.PartnerParams;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class IDApiTest {
     private final Moshi moshi = MoshiUtils.getMoshi();

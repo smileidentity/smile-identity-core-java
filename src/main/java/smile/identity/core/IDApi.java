@@ -4,7 +4,12 @@ import smile.identity.core.enums.JobType;
 import smile.identity.core.exceptions.IncorrectJobType;
 import smile.identity.core.exceptions.MissingRequiredFields;
 import smile.identity.core.keys.SignatureKey;
-import smile.identity.core.models.*;
+import smile.identity.core.models.EnhancedKYCRequest;
+import smile.identity.core.models.IdInfo;
+import smile.identity.core.models.JobResponse;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.Options;
+import smile.identity.core.models.PartnerParams;
 
 public class IDApi {
 
@@ -22,8 +27,9 @@ public class IDApi {
 
     /**
      * Submits a KYC Job
+     *
      * @param partnerParams partner parameters used for tracking job.
-     * @param idInfo id information to lookup.
+     * @param idInfo        id information to lookup.
      * @return response from API
      * @throws Exception
      */
@@ -34,14 +40,13 @@ public class IDApi {
     }
 
     /**
-     * @deprecated
-     * The useValidationApi parameter is no longer used.
-     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo)} instead. </p>
-     * @param partnerParams partner parameters used for tracking job.
-     * @param idInfo id information to lookup.
+     * @param partnerParams    partner parameters used for tracking job.
+     * @param idInfo           id information to lookup.
      * @param useValidationApi validates the correct fields are provided for id type before submitting job.
      * @return response from API
      * @throws Exception
+     * @deprecated The useValidationApi parameter is no longer used.
+     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo)} instead. </p>
      */
     @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
@@ -52,15 +57,14 @@ public class IDApi {
     }
 
     /**
-     * @deprecated
-     * The useValidationApi parameter is no longer used.
-     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo, Options)} instead.</p>
-     * @param partnerParams partner parameters used for tracking job.
-     * @param idInfo id information to lookup.
+     * @param partnerParams    partner parameters used for tracking job.
+     * @param idInfo           id information to lookup.
      * @param useValidationApi validates the correct fields are provided for id type before submitting job.
-     * @param options job related options
+     * @param options          job related options
      * @return response from API
      * @throws Exception
+     * @deprecated The useValidationApi parameter is no longer used.
+     * <p> Use {@link IDApi#submitJob(PartnerParams, IdInfo, Options)} instead.</p>
      */
     @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
@@ -71,10 +75,11 @@ public class IDApi {
     }
 
     /**
-     *  Submits a KYC job
+     * Submits a KYC job
+     *
      * @param partnerParams partner parameters used for tracking job.
-     * @param idInfo id information to lookup.
-     * @param options job related options.
+     * @param idInfo        id information to lookup.
+     * @param options       job related options.
      * @return response from API
      * @throws Exception
      */
@@ -111,5 +116,4 @@ public class IDApi {
                 idInfo.getPhoneNumber(), options.isReturnImageLinks(),
                 options.isReturnHistory());
     }
-
 }

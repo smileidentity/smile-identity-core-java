@@ -1,10 +1,9 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
+import lombok.Value;
 
 import java.time.Instant;
-
-import lombok.Value;
 
 @Value
 public class MiscInformation {
@@ -27,5 +26,4 @@ public class MiscInformation {
     String callbackUrl;
 
     UserData userData;
-
 }

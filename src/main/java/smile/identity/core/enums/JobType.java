@@ -10,15 +10,12 @@ public enum JobType {
     BUSINESS_VERIFICATION(7);
 
     private final int value;
-    JobType(int value){
+
+    JobType(int value) {
         this.value = value;
     }
 
-    public int getValue(){
-        return this.value;
-    }
-
-    public static JobType fromValue(int value){
+    public static JobType fromValue(int value) {
         for (JobType s : values()) {
             if (s.value == value) {
                 return s;
@@ -27,8 +24,11 @@ public enum JobType {
         return null;
     }
 
+    public int getValue() {
+        return this.value;
+    }
+
     public boolean isKYC() {
         return this.value == 5;
     }
-
 }

@@ -1,7 +1,6 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
 import lombok.Value;
 import smile.identity.core.ConfigHelpers;
 
@@ -43,5 +42,4 @@ public class PreUploadRequest {
         this.partnerParams = partnerParams;
         this.callbackUrl = callbackUrl;
     }
-
 }

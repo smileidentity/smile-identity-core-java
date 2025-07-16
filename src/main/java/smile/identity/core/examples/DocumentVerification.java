@@ -1,14 +1,18 @@
 package smile.identity.core.examples;
 
+import smile.identity.core.WebApi;
+import smile.identity.core.enums.ImageType;
+import smile.identity.core.enums.JobType;
+import smile.identity.core.models.IdInfo;
+import smile.identity.core.models.ImageDetail;
+import smile.identity.core.models.JobStatusResponse;
+import smile.identity.core.models.Options;
+import smile.identity.core.models.PartnerParams;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import smile.identity.core.WebApi;
-import smile.identity.core.enums.ImageType;
-import smile.identity.core.enums.JobType;
-import smile.identity.core.models.*;
 
 public class DocumentVerification {
 

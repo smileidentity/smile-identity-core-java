@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class InstantAdapterTest {
 
     Moshi moshi = MoshiUtils.getMoshi();
+
     @Test
     public void testFromJsonLong() {
         long timestamp = 1678334303;
@@ -29,6 +30,4 @@ public class InstantAdapterTest {
         Instant instant = adapter.fromJsonValue(timestamp);
         assertEquals(actual, instant);
     }
-
-
 }

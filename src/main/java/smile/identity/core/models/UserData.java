@@ -17,8 +17,7 @@ public class UserData {
     String countryCode;
     String countryName;
 
-    public UserData(){
+    public UserData() {
         this(false, "", "", "", "", "", "", "", "+", "");
     }
-
 }
