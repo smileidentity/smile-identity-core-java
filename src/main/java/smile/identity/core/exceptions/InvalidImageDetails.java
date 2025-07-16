@@ -5,5 +5,4 @@ public class InvalidImageDetails extends Exception {
     public InvalidImageDetails(String message) {
         super(message);
     }
-
 }

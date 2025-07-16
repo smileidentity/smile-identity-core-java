@@ -225,5 +225,4 @@ public class SmileIdentityServiceTest {
         assertTrue(response.isSuccess());
         assertEquals("heresatoken", response.getToken());
     }
-
 }

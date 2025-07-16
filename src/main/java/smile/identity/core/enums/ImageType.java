@@ -11,12 +11,9 @@ public enum ImageType {
     ID_CARD_BACK_BASE64(7);
 
     private final int value;
+
     ImageType(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return this.value;
     }
 
     public static ImageType fromValue(int value) {
@@ -26,5 +23,9 @@ public enum ImageType {
             }
         }
         return null;
+    }
+
+    public int getValue() {
+        return this.value;
     }
 }

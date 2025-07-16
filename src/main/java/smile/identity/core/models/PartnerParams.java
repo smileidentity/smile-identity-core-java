@@ -1,11 +1,10 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
-import java.util.Map;
-
 import lombok.Value;
 import smile.identity.core.enums.JobType;
+
+import java.util.Map;
 
 @Value
 public class PartnerParams {
@@ -20,5 +19,4 @@ public class PartnerParams {
 
     @Json(name = "optional_info")
     Map<String, Object> optionalInfo;
-
 }

@@ -1,6 +1,5 @@
 package smile.identity.core;
 
-
 public class ConfigHelpers {
     private final static String TEST_ENV = "0";
     private final static String PROD_ENV = "1";

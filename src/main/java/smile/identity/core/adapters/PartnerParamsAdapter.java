@@ -2,22 +2,22 @@ package smile.identity.core.adapters;
 
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
+import smile.identity.core.enums.JobType;
+import smile.identity.core.models.PartnerParams;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import smile.identity.core.enums.JobType;
-import smile.identity.core.models.PartnerParams;
-
 /**
- *  Our API allows users to send optional fields within the partnerParams body.
- *  This adapter handles adding the values in the optionalInfo map as top level keys
- *  of the partnerParams body. It also converts those optional fields back when received
- *  from the server.
+ * Our API allows users to send optional fields within the partnerParams body.
+ * This adapter handles adding the values in the optionalInfo map as top level keys
+ * of the partnerParams body. It also converts those optional fields back when received
+ * from the server.
  */
 public class PartnerParamsAdapter {
 
-    @FromJson PartnerParams fromJson(Map<String, Object> params) {
+    @FromJson
+    PartnerParams fromJson(Map<String, Object> params) {
         String jobId = (String) params.remove("job_id");
         String userId = (String) params.remove("user_id");
         JobType jobType = getJobType(params.remove("job_type"));

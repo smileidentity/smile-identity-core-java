@@ -1,7 +1,6 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
 import lombok.Value;
 import smile.identity.core.enums.ImageType;
 
@@ -15,5 +14,4 @@ public class ImageDetail {
 
     @Json(name = "file_name")
     String fileName;
-
 }

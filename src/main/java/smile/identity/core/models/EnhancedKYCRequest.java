@@ -1,11 +1,9 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
-import java.time.Instant;
-
 import lombok.Value;
 
+import java.time.Instant;
 
 @Value
 public class EnhancedKYCRequest {
@@ -43,5 +41,4 @@ public class EnhancedKYCRequest {
     boolean imageLinks;
 
     boolean history;
-
 }

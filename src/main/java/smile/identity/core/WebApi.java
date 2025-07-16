@@ -1,24 +1,9 @@
 package smile.identity.core;
 
-//export package -tbd
-//package com.smileidentity.services.WebApi
-
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import smile.identity.core.enums.ImageType;
 import smile.identity.core.enums.JobType;
 import smile.identity.core.enums.Product;
@@ -39,6 +24,16 @@ import smile.identity.core.models.UserData;
 import smile.identity.core.models.WebTokenRequest;
 import smile.identity.core.models.WebTokenResponse;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class WebApi {
 
@@ -64,11 +59,11 @@ public class WebApi {
         uploadRequestAdapter = moshi.adapter(UploadRequest.class);
     }
 
-
     /**
      * Submits a job
+     *
      * @param partnerParams partner parameters used for tracking job.
-     * @param idInfo id information to lookup
+     * @param idInfo        id information to lookup
      * @return response from API
      * @throws Exception
      */
@@ -79,16 +74,15 @@ public class WebApi {
     }
 
     /**
-     * @deprecated
-     * useValidationApi parameter is no longer used.
-     * <p>Use {@link WebApi#submitJob(PartnerParams, List, IdInfo, Options)} instead.</p>
-     * @param partnerParams partner parameters used for tracking job.
-     * @param imageDetails list of images.
-     * @param idInfo id information to lookup.
-     * @param options job related options
+     * @param partnerParams    partner parameters used for tracking job.
+     * @param imageDetails     list of images.
+     * @param idInfo           id information to lookup.
+     * @param options          job related options
      * @param useValidationApi validates the correct fields are provided for id type before submitting job.
      * @return response from API
      * @throws Exception
+     * @deprecated useValidationApi parameter is no longer used.
+     * <p>Use {@link WebApi#submitJob(PartnerParams, List, IdInfo, Options)} instead.</p>
      */
     @Deprecated
     public JobStatusResponse submitJob(PartnerParams partnerParams,
@@ -99,11 +93,12 @@ public class WebApi {
     }
 
     /**
-     *  Submits a job
+     * Submits a job
+     *
      * @param partnerParams partner parameters used for tracking job.
-     * @param imageDetails list of images.
-     * @param idInfo id information to lookup.
-     * @param options job related options.
+     * @param imageDetails  list of images.
+     * @param idInfo        id information to lookup.
+     * @param options       job related options.
      * @return response from API
      * @throws Exception
      */
@@ -146,7 +141,6 @@ public class WebApi {
             return new JobStatusResponse(result);
         }
     }
-
 
     public String getWebToken(String timestamp, String userId, String jobId,
                               Product product) throws Exception {
@@ -232,7 +226,6 @@ public class WebApi {
                 idInfo, updatedImageDetails, uploadResponse);
     }
 
-
     private byte[] zipUpFile(UploadRequest infoJson,
                              List<ImageDetail> imageDetails) throws Exception {
         // http://www.avajava.com/tutorials/lessons/how-can-i-create-a-zip-file-from-a-set-of-files.html
@@ -268,7 +261,6 @@ public class WebApi {
         baos.close();
         return baos.toByteArray();
     }
-
 
     private String getCallbackUrl(String callbackUrl) {
         if (!Strings.isNullOrEmpty(callbackUrl)) {

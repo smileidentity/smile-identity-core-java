@@ -1,12 +1,11 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
-import java.time.Instant;
-
 import lombok.Value;
 import smile.identity.core.ConfigHelpers;
 import smile.identity.core.enums.Product;
+
+import java.time.Instant;
 
 @Value
 public class WebTokenRequest {

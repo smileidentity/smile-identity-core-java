@@ -1,10 +1,8 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.Map;
 

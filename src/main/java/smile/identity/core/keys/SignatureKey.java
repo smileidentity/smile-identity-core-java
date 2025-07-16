@@ -1,12 +1,11 @@
 package smile.identity.core.keys;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Base64;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 public class SignatureKey {
 
@@ -46,5 +45,4 @@ public class SignatureKey {
     public boolean validSignature(String signature) {
         return signature.equals(this.signature);
     }
-
 }
