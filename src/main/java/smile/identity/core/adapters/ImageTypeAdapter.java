@@ -7,7 +7,7 @@ import smile.identity.core.enums.ImageType;
 
 public class ImageTypeAdapter {
     @ToJson
-    int toJson(ImageType imageType){
+    int toJson(ImageType imageType) {
         return imageType.getValue();
     }
 

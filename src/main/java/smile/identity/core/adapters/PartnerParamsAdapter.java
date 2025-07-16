@@ -17,7 +17,7 @@ import smile.identity.core.models.PartnerParams;
  */
 public class PartnerParamsAdapter {
 
-    @FromJson PartnerParams fromJson(Map<String, Object> params){
+    @FromJson PartnerParams fromJson(Map<String, Object> params) {
         String jobId = (String) params.remove("job_id");
         String userId = (String) params.remove("user_id");
         JobType jobType = getJobType(params.remove("job_type"));
@@ -26,19 +26,19 @@ public class PartnerParamsAdapter {
     }
 
     @ToJson
-    Map<String, Object> toJson(PartnerParams partnerParams){
+    Map<String, Object> toJson(PartnerParams partnerParams) {
         Map<String, Object> map = new HashMap<>();
         map.put("user_id", partnerParams.getUserId());
         map.put("job_id", partnerParams.getJobId());
         map.put("job_type", partnerParams.getJobType().getValue());
-        for(Map.Entry<String, Object> entry : partnerParams.getOptionalInfo().entrySet()){
+        for (Map.Entry<String, Object> entry : partnerParams.getOptionalInfo().entrySet()) {
             map.put(entry.getKey(), entry.getValue());
         }
 
         return map;
     }
 
-    private JobType getJobType(Object value){
+    private JobType getJobType(Object value) {
         if (value instanceof Double) {
             return JobType.fromValue(((Double) value).intValue());
         }

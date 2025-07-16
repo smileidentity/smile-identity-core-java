@@ -14,7 +14,7 @@ public class PackageInformation {
     String language = "java";
 
 
-    private Map<String, Integer> setApiVersion(){
+    private Map<String, Integer> setApiVersion() {
         Map<String, Integer> map = new HashMap<>();
         String[] apiVersion = ConfigHelpers.getApiVersion().split("\\.");
         map.put("buildNumber", Integer.valueOf(apiVersion[0]));

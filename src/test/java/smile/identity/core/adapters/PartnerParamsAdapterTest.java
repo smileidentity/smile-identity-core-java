@@ -21,7 +21,7 @@ public class PartnerParamsAdapterTest {
     private final JsonAdapter<PartnerParams> adaptor = moshi.adapter(PartnerParams.class);
 
     @Test
-    public void toJson(){
+    public void toJson() {
         Map<String, Object> optional = new HashMap<>();
         optional.put("random", "key_1");
         optional.put("more", 20);
