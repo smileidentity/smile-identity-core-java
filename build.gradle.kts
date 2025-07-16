@@ -6,7 +6,7 @@ plugins {
     checkstyle
 }
 
-ccheckstyle {
+checkstyle {
     configFile = file("config/checkstyle/checkstyle.xml")
     toolVersion = "10.12.4"
 }
