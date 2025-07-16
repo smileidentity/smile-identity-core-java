@@ -1,18 +1,16 @@
 package smile.identity.core.models;
 
 import com.squareup.moshi.Json;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Value
 @AllArgsConstructor
@@ -36,10 +34,10 @@ public class JobStatusResponse {
     Map<String, String> imageLinks;
 
     List<JobResponse> history;
-    
+
     @Json(name = "kyc_receipt")
     String kycReceipt;
-    
+
     @Json(name = "kyb_receipt")
     String kybReceipt;
 
@@ -71,5 +69,4 @@ public class JobStatusResponse {
             this.jobResponse = null;
         }
     }
-
 }

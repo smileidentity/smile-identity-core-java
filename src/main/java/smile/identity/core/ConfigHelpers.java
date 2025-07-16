@@ -8,7 +8,7 @@ public class ConfigHelpers {
     private final static String PROD_SERVER = "https://api.smileidentity.com/";
 
     public static String getVersion() {
-        return "2.0.2";
+        return "2.1.8";
     }
 
     public static String getApiVersion() {
