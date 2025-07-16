@@ -6,7 +6,7 @@
     <module name="TreeWalker">
         <module name="EmptyBlock"/>
         <module name="RedundantImport"/>
-<!--        <module name="AvoidStarImport"/>-->
+        <module name="AvoidStarImport"/>
         <module name="WhitespaceAround"/>
     </module>
 </module>

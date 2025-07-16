@@ -1,19 +1,18 @@
 package smile.identity.core.adapters;
 
-import static org.junit.Assert.*;
-
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
-
 import org.junit.Test;
+import smile.identity.core.MoshiUtils;
+import smile.identity.core.enums.JobType;
+import smile.identity.core.models.PartnerParams;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import smile.identity.core.MoshiUtils;
-import smile.identity.core.enums.JobType;
-import smile.identity.core.models.PartnerParams;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PartnerParamsAdapterTest {
 
@@ -40,12 +39,10 @@ public class PartnerParamsAdapterTest {
 
         PartnerParams partnerParams = adaptor.fromJson(json);
 
-        assertEquals(partnerParams.getUserId(), "user");
-        assertEquals(partnerParams.getJobId(), null);
-        assertEquals(partnerParams.getJobType(), JobType.BASIC_KYC);
-        assertEquals(partnerParams.getOptionalInfo().get("random"), "key_1");
-        assertEquals(partnerParams.getOptionalInfo().get("more"), 20.0);
-
-
+        assertEquals("user", partnerParams.getUserId());
+        assertNull(partnerParams.getJobId());
+        assertEquals(JobType.BASIC_KYC, partnerParams.getJobType());
+        assertEquals("key_1", partnerParams.getOptionalInfo().get("random"));
+        assertEquals(20.0, partnerParams.getOptionalInfo().get("more"));
     }
 }

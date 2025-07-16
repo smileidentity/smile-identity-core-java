@@ -1,11 +1,13 @@
 package smile.identity.core.adapters;
 
-import com.squareup.moshi.*;
+import com.squareup.moshi.FromJson;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonReader;
+import com.squareup.moshi.ToJson;
 import smile.identity.core.models.JobResponse;
 import smile.identity.core.models.JobStatusResponse;
 
 import java.io.IOException;
-
 
 /**
  * The job_status endpoint occasionally sends back a

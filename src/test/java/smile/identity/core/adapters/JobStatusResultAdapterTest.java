@@ -12,7 +12,9 @@ import smile.identity.core.models.PartnerParams;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class JobStatusResultAdapterTest {
     private final Moshi moshi = MoshiUtils.getMoshi();
@@ -37,5 +39,4 @@ public class JobStatusResultAdapterTest {
         assertNull(result.getMessage());
         assertEquals("job-id", result.getJobResponse().getSmileJobId());
     }
-
 }

@@ -5,7 +5,9 @@ import smile.identity.core.keys.SignatureKey;
 
 import java.time.Instant;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SignatureTest {
 
