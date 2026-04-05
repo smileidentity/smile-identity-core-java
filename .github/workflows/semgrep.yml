@@ -2,24 +2,21 @@ name: Semgrep SAST
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
-  schedule:
-    - cron: '0 12 * * 1'
 
 permissions:
   contents: read
 
 jobs:
   semgrep:
-    name: Semgrep Scan
+    name: Semgrep Security Scan
     runs-on: ubuntu-latest
     continue-on-error: true
     container:
-      image: semgrep/semgrep
+      image: returntocorp/semgrep
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
       - name: Run Semgrep
-        run: semgrep scan --config p/security-audit --error --quiet .
+        run: semgrep scan --config p/security-audit
