@@ -1,0 +1,48 @@
+name: Security Audit
+
+on:
+  pull_request:
+    paths:
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+      - name: Run OSV Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@c51854704019a247608d928f370c98740469d4b5 # v2.3.5
+        with:
+          scan-args: |-
+            --recursive
+            .
+      - name: Create issue on failure
+        if: failure() && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh issue list --label "security-audit" --state open --json number --jq 'length')
+          if [ "$EXISTING" -gt 0 ]; then exit 0; fi
+          TITLE_DATE=$(date +%Y-%m-%d)
+          gh label create "security-audit" --description "Automated security audit" --color "D93F0B" 2>/dev/null || true
+          gh label create "priority:high" --description "High priority" --color "B60205" 2>/dev/null || true
+          gh issue create \
+            --title "Security: Java dependency vulnerabilities detected (${TITLE_DATE})" \
+            --label "security-audit" \
+            --label "priority:high" \
+            --body "The daily security audit has detected vulnerabilities. See [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
