@@ -4,6 +4,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Base64;
 
@@ -43,6 +44,8 @@ public class SignatureKey {
     }
 
     public boolean validSignature(String signature) {
-        return signature.equals(this.signature);
+        byte[] expected = this.signature.getBytes(StandardCharsets.UTF_8);
+        byte[] actual = signature.getBytes(StandardCharsets.UTF_8);
+        return MessageDigest.isEqual(expected, actual);
     }
 }
