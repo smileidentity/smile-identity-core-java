@@ -47,10 +47,6 @@ public class SignatureKey {
         byte[] expected = this.signature.getBytes(StandardCharsets.UTF_8);
         byte[] actual = signature.getBytes(StandardCharsets.UTF_8);
 
-        if (expected.length != actual.length) {
-            return false;
-        }
-
         return MessageDigest.isEqual(expected, actual);
     }
 }
