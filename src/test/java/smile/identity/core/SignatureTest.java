@@ -40,4 +40,11 @@ public class SignatureTest {
         String returnedSignature = "XxThLHZy2ij1WINkqNEPgzVs9RvUDHWlebDYzprqS74=";
         assertTrue(signature.confirmSignature(timestamp, returnedSignature));
     }
+
+    @Test
+    public void itRejectsAnInvalidSignature() {
+        Signature signature = new Signature("partner", "apiKey");
+        SignatureKey original = signature.getSignatureKey();
+        assertFalse(signature.confirmSignature(original.getTimestamp(), "invalidSignatureValue"));
+    }
 }
