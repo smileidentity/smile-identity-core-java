@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 * Job status polling now keeps polling after an HTTP 429 response, waiting for the `Retry-After` header (in whole seconds, up to 60) or the usual backoff, whichever is longer. It fails only if the last poll is a 429.
-* An error response that is not a Smile ID JSON error body now throws `JobFailed` with the HTTP status as its code, instead of a JSON parsing exception.
+* An error response to an ID verification, job status, upload or web token request that is not a Smile ID JSON error body now throws `JobFailed` with the HTTP status as its code, instead of a JSON parsing exception.
 
 ## [2.1.8] - 2025-06-26
 * Updated JVM Target to 17, Lombok and Retrofit dependencies
