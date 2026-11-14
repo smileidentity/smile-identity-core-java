@@ -1,6 +1,7 @@
 package smile.identity.core;
 
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -81,14 +82,42 @@ public class SmileIdentityService {
 
     public JobStatusResponse pollJobStatus(JobStatusRequest request, int retryCount, long initialDelay) throws Exception {
         int count = 0;
-        JobStatusResponse response = getJobStatus(request);
-        while (!response.isJobComplete() && count <= retryCount) {
+        Response<JobStatusResponse> response = smileIdentityApi.getJobStatus(request).execute();
+        // A 429 counts as "not complete yet"; any other error fails at once, as before.
+        while ((response.code() == 429 || response.isSuccessful() && !response.body().isJobComplete())
+                && count <= retryCount) {
             long waitTime = ((long) Math.pow(2, count) * initialDelay);
-            Thread.sleep(waitTime);
-            response = getJobStatus(request);
+            if (response.code() == 429) {
+                waitTime = Math.max(waitTime, retryAfterMillis(response));
+            }
+            sleep(waitTime);
+            response = smileIdentityApi.getJobStatus(request).execute();
             count++;
         }
-        return response;
+        if (!response.isSuccessful()) {
+            handleError(response);
+        }
+        return response.body();
+    }
+
+    // Only a whole number of seconds counts; an HTTP-date or anything else is ignored.
+    private static long retryAfterMillis(Response<?> response) {
+        String value = response.headers().get("Retry-After");
+        if (value == null || !value.trim().matches("\\d+")) {
+            return 0;
+        }
+        long seconds;
+        try {
+            seconds = Long.parseLong(value.trim());
+        } catch (NumberFormatException e) {
+            seconds = 60; // too big for a long, so over the cap anyway
+        }
+        return Math.min(seconds, 60) * 1000;
+    }
+
+    // Tests override this to skip the wait.
+    void sleep(long millis) throws InterruptedException {
+        Thread.sleep(millis);
     }
 
     public PreUploadResponse preUpload(PreUploadRequest request) throws JobFailed, IOException {
@@ -119,7 +148,17 @@ public class SmileIdentityService {
     }
 
     private void handleError(Response<?> response) throws IOException, JobFailed {
-        ErrorResponse error = errorAdaptor.fromJson(response.errorBody().string());
+        ErrorResponse error;
+        try {
+            error = errorAdaptor.fromJson(response.errorBody().string());
+        } catch (IOException | JsonDataException e) {
+            error = null;
+        }
+        if (error == null || error.getError() == null && error.getCode() == null) {
+            // Not a Smile ID error body, such as a gateway error page, so report the HTTP status.
+            String status = String.valueOf(response.code());
+            error = new ErrorResponse("Request failed with HTTP status " + status, status);
+        }
         logger.error(String.format("Response from server: Code %s => %s", error.getCode(), error.getError()));
         throw new JobFailed(error.getError(), error.getCode());
     }
