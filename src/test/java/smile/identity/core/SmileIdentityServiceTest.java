@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -209,6 +210,125 @@ public class SmileIdentityServiceTest {
                         "-01", "10", false, false, "signature",
                         Instant.now()), 3, 1);
         assertFalse(response.isJobComplete());
+    }
+
+    private static final String COMPLETE = "{\"job_complete\": true, " +
+            "\"signature\": \"tMPhsPdh3k3PejTNGG970gQSA41oO9/I3oERRlSSBUc=\"," +
+            " \"timestamp\": \"2022-11-10T19:05:42.775Z\"}";
+
+    private final List<Long> sleeps = new ArrayList<>();
+
+    private SmileIdentityService recordingSleeps() {
+        return new SmileIdentityService(server.url("testing/").toString()) {
+            @Override
+            void sleep(long millis) {
+                sleeps.add(millis);
+            }
+        };
+    }
+
+    private JobStatusRequest statusRequest() {
+        return new JobStatusRequest("partner", "user-01", "10", false, false,
+                "signature", Instant.now());
+    }
+
+    private MockResponse tooManyRequests(String retryAfter) {
+        MockResponse response = new MockResponse().setResponseCode(429)
+                .setBody("Too Many Requests");
+        return retryAfter == null ? response
+                : response.setHeader("Retry-After", retryAfter);
+    }
+
+    @Test
+    public void pollJobStatusKeepsPollingOn429() throws Exception {
+        server.enqueue(tooManyRequests("5"));
+        server.enqueue(new MockResponse().setBody(COMPLETE));
+
+        JobStatusResponse response =
+                recordingSleeps().pollJobStatus(statusRequest(), 3, 1);
+
+        assertTrue(response.isJobComplete());
+        assertEquals(List.of(5000L), sleeps);
+        assertEquals(2, server.getRequestCount());
+    }
+
+    @Test
+    public void pollJobStatusUsesBackoffWhenLongerThanRetryAfter() throws Exception {
+        server.enqueue(tooManyRequests("1"));
+        server.enqueue(new MockResponse().setBody(COMPLETE));
+
+        recordingSleeps().pollJobStatus(statusRequest(), 3, 5000);
+
+        assertEquals(List.of(5000L), sleeps);
+    }
+
+    @Test
+    public void pollJobStatusCapsRetryAfterAt60Seconds() throws Exception {
+        server.enqueue(tooManyRequests("120"));
+        server.enqueue(tooManyRequests("99999999999999999999"));
+        server.enqueue(new MockResponse().setBody(COMPLETE));
+
+        recordingSleeps().pollJobStatus(statusRequest(), 3, 1);
+
+        assertEquals(List.of(60000L, 60000L), sleeps);
+    }
+
+    @Test
+    public void pollJobStatusIgnoresUnusableRetryAfter() throws Exception {
+        server.enqueue(tooManyRequests("Wed, 21 Oct 2015 07:28:00 GMT"));
+        server.enqueue(tooManyRequests("1.5"));
+        server.enqueue(tooManyRequests("-3"));
+        server.enqueue(tooManyRequests(null));
+        server.enqueue(new MockResponse().setBody(COMPLETE));
+
+        JobStatusResponse response =
+                recordingSleeps().pollJobStatus(statusRequest(), 3, 1);
+
+        assertTrue(response.isJobComplete());
+        assertEquals(List.of(1L, 2L, 4L, 8L), sleeps);
+    }
+
+    @Test
+    public void pollJobStatusFailsWhenLastPollIs429() {
+        for (int i = 0; i < 3; i++) {
+            server.enqueue(tooManyRequests("1"));
+        }
+        SmileIdentityService service = recordingSleeps();
+
+        JobFailed error = assertThrows(JobFailed.class,
+                () -> service.pollJobStatus(statusRequest(), 1, 1));
+
+        assertEquals("429", error.getErrorCode());
+        assertEquals(3, server.getRequestCount());
+        assertEquals(List.of(1000L, 1000L), sleeps);
+    }
+
+    @Test
+    public void pollJobStatusStillFailsFastOnServerError() {
+        server.enqueue(new MockResponse().setResponseCode(500).setBody(
+                "{\"error\": \"System error\", \"code\": \"2201\"}"));
+        server.enqueue(new MockResponse().setBody(COMPLETE));
+        SmileIdentityService service = recordingSleeps();
+
+        JobFailed error = assertThrows(JobFailed.class,
+                () -> service.pollJobStatus(statusRequest(), 3, 1));
+
+        assertEquals("2201", error.getErrorCode());
+        assertEquals("System error", error.getMessage());
+        assertEquals(1, server.getRequestCount());
+    }
+
+    @Test
+    public void nonJsonErrorBodyFailsWithHttpStatus() {
+        server.enqueue(new MockResponse().setResponseCode(502).setBody(
+                "<html>Bad Gateway</html>"));
+
+        JobFailed error = assertThrows(JobFailed.class,
+                () -> service.getWebToken(new WebTokenRequest("user",
+                        "smile-100", Product.BASIC_KYC, "callback",
+                        "signature", Instant.now(), "partner")));
+
+        assertEquals("502", error.getErrorCode());
     }
 
     @Test
